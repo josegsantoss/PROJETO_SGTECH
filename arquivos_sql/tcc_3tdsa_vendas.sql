@@ -23,7 +23,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-266';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-449';
 
 --
 -- Table structure for table `vendas`
@@ -48,7 +48,7 @@ CREATE TABLE `vendas` (
   PRIMARY KEY (`id_venda`),
   KEY `id_usuario` (`id_usuario`),
   CONSTRAINT `vendas_ibfk_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -57,7 +57,7 @@ CREATE TABLE `vendas` (
 
 LOCK TABLES `vendas` WRITE;
 /*!40000 ALTER TABLE `vendas` DISABLE KEYS */;
-INSERT INTO `vendas` VALUES (1,NULL,'Caique','01002003040','81978673465','caique@gmail.com','Rua Frank Ocean','Dinheiro',30000.00,5000.00,25000.00,'2026-08-01 20:19:01'),(2,NULL,'Agustinho Carrara','01002003040','81978673000','pilintra123@gmail.com','Rua Runaway','Dinheiro',10000.00,0.00,10000.00,'2026-08-01 22:21:06'),(3,NULL,'Pilintra','12345678900','81978673465','pilintra123@gmail.com','Rua Bitter Sweet Symphony','Cartão Débito',10000.00,2000.00,8000.00,'2026-08-01 23:14:59');
+INSERT INTO `vendas` VALUES (1,NULL,'Agustinho Carrara','982.374.928-73','(63) 54563-5463',NULL,NULL,'Dinheiro',140.00,0.00,140.00,'2026-08-06 10:52:29'),(2,NULL,'Agustinho Carrara','010.020.030-40','(81) 98167-4598',NULL,NULL,'Dinheiro',280.00,0.00,280.00,'2026-08-06 10:52:52'),(3,NULL,'Caique','022.033.044-66','(81) 98167-4598',NULL,NULL,'Dinheiro',140.00,0.00,140.00,'2026-08-06 11:07:41'),(4,NULL,'Caique','676.676.670-00','(81) 90000-0000',NULL,NULL,'Dinheiro',140.00,0.00,140.00,'2026-08-06 11:08:02'),(5,NULL,'Pilintra','676.676.676-67','(81) 97867-3000',NULL,NULL,'Dinheiro',420.00,0.00,420.00,'2026-08-06 11:10:50'),(6,NULL,'Augusto','022.033.044-66','(81) 97867-3000',NULL,NULL,'Dinheiro',140.00,0.00,140.00,'2026-08-06 11:11:14'),(7,NULL,'Pilintra','022.033.044-66','(81) 90000-0000',NULL,NULL,'Dinheiro',140.00,0.00,140.00,'2026-08-06 11:20:14');
 /*!40000 ALTER TABLE `vendas` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
@@ -71,4 +71,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-02  0:22:28
+-- Dump completed on 2026-08-06 11:21:49

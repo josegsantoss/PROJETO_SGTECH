@@ -23,7 +23,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-266';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-449';
 
 --
 -- Table structure for table `configuracoes`
@@ -42,6 +42,7 @@ CREATE TABLE `configuracoes` (
   `notificacoes_ativas` tinyint(1) DEFAULT '0',
   `relatorios_ativos` tinyint(1) DEFAULT '0',
   `two_factor_ativo` tinyint(1) DEFAULT '0',
+  `backup_frequencia` varchar(50) DEFAULT 'semanal',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -52,7 +53,7 @@ CREATE TABLE `configuracoes` (
 
 LOCK TABLES `configuracoes` WRITE;
 /*!40000 ALTER TABLE `configuracoes` DISABLE KEYS */;
-INSERT INTO `configuracoes` VALUES (1,'','','','','',0,0,1);
+INSERT INTO `configuracoes` VALUES (1,'SGE','71.731.263/0001-19','81981675467','t123@gmail.com','Rua bilola',0,0,1,'semanal');
 /*!40000 ALTER TABLE `configuracoes` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
@@ -66,4 +67,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-02  0:22:28
+-- Dump completed on 2026-08-06 11:21:49

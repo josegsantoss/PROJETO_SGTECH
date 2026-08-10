@@ -23,7 +23,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-266';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-449';
 
 --
 -- Table structure for table `orcamentos`
@@ -41,19 +41,27 @@ CREATE TABLE `orcamentos` (
   `cliente_doc` varchar(50) DEFAULT NULL,
   `cliente_contato` varchar(100) DEFAULT NULL,
   `vendedor` varchar(100) DEFAULT NULL,
-  `subtotal` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `subtotal` decimal(10,2) DEFAULT NULL,
   `desconto_percent` decimal(5,2) DEFAULT '0.00',
   `desconto_reais` decimal(10,2) DEFAULT '0.00',
   `frete` decimal(10,2) DEFAULT '0.00',
   `imposto_percent` decimal(5,2) DEFAULT '0.00',
-  `total_geral` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `total_geral` decimal(10,2) DEFAULT NULL,
   `metodo_pagamento` varchar(50) DEFAULT NULL,
   `condicao_pagamento` varchar(50) DEFAULT NULL,
   `garantia` varchar(50) DEFAULT NULL,
   `observacoes` text,
   `data_criacao` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` varchar(50) DEFAULT 'Pendente',
+  `cliente_endereco` varchar(255) DEFAULT NULL,
+  `cliente_cidade` varchar(100) DEFAULT NULL,
+  `cliente_cep` varchar(20) DEFAULT NULL,
+  `equipamento` varchar(100) DEFAULT NULL,
+  `marca_modelo` varchar(100) DEFAULT NULL,
+  `numero_serie` varchar(100) DEFAULT NULL,
+  `problema_relatado` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -62,7 +70,7 @@ CREATE TABLE `orcamentos` (
 
 LOCK TABLES `orcamentos` WRITE;
 /*!40000 ALTER TABLE `orcamentos` DISABLE KEYS */;
-INSERT INTO `orcamentos` VALUES (2,'TECH-161949','2026-08-02','2026-09-01','Pedrao','89889890076','edson@gmail.com','Python',10000.00,20.00,0.00,100.00,70.00,1370000.00,'PIX','À vista','1 ano','PRONTINHO','2026-08-02 03:09:15');
+INSERT INTO `orcamentos` VALUES (1,'TECH-556115','2026-08-06','2026-08-05','Luan','Não informado','Não informado','pvd110x@gmail.com',0.00,0.00,0.00,0.00,0.00,12000.00,'PIX (À Vista)','À vista','90 Dias','','2026-08-06 01:09:53','Aprovado',NULL,NULL,NULL,'Macbook',NULL,'SN678120120',NULL),(2,'TECH-932634','2026-08-06','2026-08-05','Ned','Não informado','Não informado','pvd110x@gmail.com',0.00,0.00,0.00,0.00,0.00,1000.00,'PIX (À Vista)','À vista','90 Dias','','2026-08-06 02:02:42','Finalizado',NULL,NULL,NULL,'Iphone 3',NULL,'SN65765765',NULL),(3,'TECH-519694','2026-08-06','2026-08-06','Gustavo','Não informado','Não informado','pvd110x@gmail.com',0.00,0.00,0.00,0.00,0.00,1000.00,'PIX (À Vista)','À vista','90 Dias','Resolvido problemas','2026-08-06 12:20:24','Finalizado',NULL,NULL,NULL,'S24 Plus',NULL,'SN12345678000',NULL);
 /*!40000 ALTER TABLE `orcamentos` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
@@ -76,4 +84,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-02  0:22:28
+-- Dump completed on 2026-08-06 11:21:49

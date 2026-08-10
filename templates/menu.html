@@ -3,346 +3,632 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Finança Pro · Gestão Inteligente</title>
+    <title>Página Inicial · TechManager</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Tema síncrono para evitar flash de cor
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
+
+    <style>
+        body { background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%); min-height: 100vh; padding: 2rem 1rem; position: relative; margin: 0; font-family: 'Inter', sans-serif; display: flex;}
+        .dashboard { margin-left: 70px; padding: 0 1.5rem; width: 100%; transition: all 0.3s ease; box-sizing: border-box; max-width: 1480px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;}
+        
+        /* ==================== TOPO DIVIDIDO (SALDO + NOTIFICAÇÕES) ==================== */
+        .top-grid {
+            display: grid;
+            grid-template-columns: 2fr 1.2fr;
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        /* CARD BANCÁRIO (ESQUERDA) */
+        .balance-header-card {
+            background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.3);
+            flex-wrap: wrap;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .balance-header-card::before {
+            content: ''; position: absolute; right: -5%; top: -20%; width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%); border-radius: 50%; pointer-events: none;
+        }
+
+        .balance-left { display: flex; flex-direction: column; gap: 10px; z-index: 1; }
+        .balance-title { font-size: 0.95rem; font-weight: 600; color: #cbd5e1; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+        
+        .btn-eye { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; backdrop-filter: blur(4px); }
+        .btn-eye:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
+
+        .balance-amount { font-size: 3.2rem; font-weight: 800; letter-spacing: -1px; margin: 5px 0 15px 0; display: inline-block; min-height: 60px;}
+        
+        .balance-row { display: flex; gap: 30px; flex-wrap: wrap; }
+        .balance-sub-item { display: flex; flex-direction: column; gap: 5px; }
+        .balance-subtitle { font-size: 0.8rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
+        .balance-sub-amount { font-size: 1.3rem; font-weight: 700; }
+        .text-green { color: #34d399; }
+        .text-red { color: #f87171; }
+
+        .balance-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-start; height: 100%; gap: 10px; z-index: 1; }
+        
+        .system-status { text-align: right; background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .status-badge { color: #34d399; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 6px; justify-content: flex-end; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .datetime-info { font-size: 0.9rem; color: #cbd5e1; font-weight: 500; }
+
+        /* BLOCO DE NOTIFICAÇÕES (DIREITA) */
+        .notif-panel {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            border: 1px solid #f0f2f6;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 100%;
+            max-height: 280px; /* Alinhado com a altura do saldo */
+            transition: 0.3s;
+        }
+        
+        .notif-header {
+            padding: 16px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notif-header h3 { margin: 0; font-size: 1.05rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 8px;}
+        .notif-header h3 i { color: #3b82f6; }
+        .btn-clear-notif { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: none; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: 0.2s;}
+        .btn-clear-notif:hover { background: #ef4444; color: white; }
+
+        .notif-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .notif-body::-webkit-scrollbar { width: 6px; }
+        .notif-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .notif-item { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 15px; align-items: flex-start; transition: background 0.2s; }
+        .notif-item:hover { background: #f8fafc; }
+        .notif-icon { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+        .notif-content { display: flex; flex-direction: column; gap: 4px; }
+        .notif-content strong { font-size: 0.95rem; color: #1e293b; font-weight: 700; line-height: 1.2;}
+        .notif-content p { margin: 0; font-size: 0.85rem; color: #64748b; line-height: 1.4; }
+        .notif-content span { font-size: 0.75rem; color: #94a3b8; font-weight: 600; display: flex; align-items: center; gap: 4px;}
+
+        .notif-empty { padding: 40px 20px; text-align: center; color: #94a3b8; font-size: 0.95rem; font-weight: 600; display: flex; flex-direction: column; align-items: center; gap: 10px; margin: auto; }
+        
+        .notif-empty i { font-size: 2.5rem; opacity: 0.5; color: #cbd5e1; }
+
+        /* CLASSES DE CORES PARA NOTIFICAÇÕES (Para evitar erros no editor) */
+        .notif-venda { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .notif-cliente { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+        .notif-produto { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .notif-servico { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
+        .notif-orcamento { background: rgba(6, 182, 212, 0.2); color: #06b6d4; }
+        .notif-default { background: rgba(100, 116, 139, 0.2); color: #64748b; }
+
+
+
+        /* ==================== MÉTRICAS (GRID 4 CARTÕES) ==================== */
+        .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+        .metric-card { background: white; border-radius: 1.5rem; padding: 24px; border: 1px solid #f0f2f6; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); transition: 0.3s; position: relative; overflow: hidden;}
+        .metric-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1); border-color: #cbd5e1; }
+        .metric-card::after { content: ''; position: absolute; right: -20px; bottom: -20px; width: 100px; height: 100px; background: radial-gradient(circle, rgba(0,0,0,0.02) 0%, transparent 70%); border-radius: 50%; pointer-events: none;}
+        
+        .metric-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .metric-icon { width: 50px; height: 50px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+        .icon-blue { background: #eff6ff; color: #3b82f6; }
+        .icon-orange { background: #fff7ed; color: #f59e0b; }
+        .icon-purple { background: #f3e8ff; color: #8b5cf6; }
+        .icon-green { background: #dcfce7; color: #10b981; }
+        
+        .metric-value { font-size: 1.8rem; font-weight: 800; color: #1e293b; letter-spacing: -0.5px; }
+        .metric-label { font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* ==================== LAYOUT INFERIOR (2 COLUNAS) ==================== */
+        .bottom-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 24px; }
+        
+        .card-pro { background: #ffffff; border-radius: 1.5rem; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid #f0f2f6; display: flex; flex-direction: column;}
+        .card-header-pro { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .card-header-pro h2 { font-size: 1.2rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin: 0; }
+        .card-header-pro h2 i { color: #3b82f6; background: #eff6ff; padding: 8px; border-radius: 10px; }
+
+        /* FINANÇAS RÁPIDAS */
+        .financas-rapidas { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .fin-item { background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 5px; }
+        .fin-item strong { color: #1e293b; font-size: 1.1rem; }
+        .fin-item span { color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+
+        /* PROGRESSO DA META */
+        .meta-container { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 1.2rem; padding: 24px; display: flex; flex-direction: column; align-items: center; }
+        .meta-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .meta-title { font-size: 1rem; font-weight: 700; color: #1e293b; }
+        .meta-value { font-size: 1.3rem; font-weight: 800; color: #3b82f6; }
+        
+        .progress-circle-container { position: relative; width: 160px; height: 160px; margin-bottom: 20px; }
+        .progress-circle svg { width: 100%; height: 100%; }
+        .bg-circle { stroke: #e2e8f0; }
+        .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        .progress-percent { font-size: 1.8rem; font-weight: 800; color: #1e293b; }
+        .progress-label { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+
+        .meta-controls { width: 100%; display: flex; gap: 10px; }
+        .meta-controls input { flex: 1; padding: 12px 15px; border-radius: 10px; border: 2px solid #e2e8f0; font-size: 0.95rem; font-weight: 600; outline: none; transition: 0.2s; font-family: 'Inter', sans-serif;}
+        .meta-controls input:focus { border-color: #3b82f6; }
+        .btn-meta { background: #3b82f6; color: white; border: none; border-radius: 10px; padding: 0 20px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-meta:hover { background: #2563eb; transform: translateY(-2px); }
+
+        /* GRÁFICO (Chart.js Container) */
+        .chart-container-wrapper { position: relative; height: 320px; width: 100%; flex-grow: 1; }
+
+        /* ==================== TEMA ESCURO ==================== */
+        [data-theme="dark"] body { background: linear-gradient(135deg, #0f172a 0%, #020617 100%) !important; }
+        [data-theme="dark"] .metric-card, [data-theme="dark"] .card-pro, [data-theme="dark"] .notif-panel { background: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .metric-value, [data-theme="dark"] .card-header-pro h2, [data-theme="dark"] .fin-item strong, [data-theme="dark"] .meta-title, [data-theme="dark"] .progress-percent { color: #f8fafc; }
+        [data-theme="dark"] .card-header-pro { border-color: #334155; }
+        [data-theme="dark"] .fin-item { background: #0f172a; border-color: #334155; }
+        [data-theme="dark"] .meta-container { background: #0f172a; border-color: #334155; }
+        [data-theme="dark"] .bg-circle { stroke: #334155; }
+        [data-theme="dark"] .meta-controls input { background: #1e293b; border-color: #475569; color: white; }
+        
+        [data-theme="dark"] .notif-header { background: #0f172a; border-color: #334155; }
+        [data-theme="dark"] .notif-header h3, [data-theme="dark"] .notif-content strong { color: #f8fafc; }
+        [data-theme="dark"] .notif-item { border-color: #334155; }
+        [data-theme="dark"] .notif-item:hover { background: #0f172a; }
+
+        @media (max-width: 1024px) {
+            .metrics-grid { grid-template-columns: 1fr 1fr; }
+            .top-grid { grid-template-columns: 1fr; }
+            .bottom-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .metrics-grid { grid-template-columns: 1fr; }
+            .balance-header-card { flex-direction: column; align-items: flex-start; }
+            .balance-right { align-items: flex-start; }
+        }
+    </style>
 </head>
 <body>
 
-    <div class="menu-trigger">
-        <i class="fas fa-bars"></i>
-    </div>
+    <div class="menu-trigger"><i class="fas fa-bars"></i></div>
 
     <div class="side-menu">
         <div class="menu-header">
-            <div class="user-avatar"><i class="fas fa-user-circle"></i></div>
-            <h3>Olá, {{ 'Administrador' if session.get('cargo') == 'admin' else 'Funcionário' }}</h3>
-            <p><i class="fas fa-envelope"></i> {{ session.get('usuario_logado') }}</p>
+            <div class="user-avatar" style="background: none;">
+                {% set primeira_letra = session.get('usuario_logado', 'User') | first | upper %}
+                <img class="user-avatar-img" 
+                    src="{{ url_for('static', filename='uploads/' + session.get('foto_perfil', 'default_avatar.png')) }}" 
+                    style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.3); background-color: #1e293b;" 
+                    onerror="this.onerror=null; this.src='//ui-avatars.com/api/?name={{ primeira_letra }}&background=3b82f6&color=fff&size=80';">
+            </div>
+            <h3 style="margin-top: 10px; margin-bottom: 5px;">
+                Olá, {{ 'Administrador' if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' else 'Funcionário' }}
+            </h3>
+            <p style="margin: 0 0 8px 0;"><i class="fas fa-envelope"></i> {{ session.get('usuario_logado') }}</p>
+            <div style="font-size: 0.75rem; background: rgba(255,255,255,0.15); padding: 3px 10px; border-radius: 6px; display: inline-block; font-weight: 600;">
+                <i class="fas fa-building"></i> {{ config_global.empresa_nome | default('TechManager', true) }}
+            </div>
         </div>
+        
         <div class="menu-items">
-            <a class="menu-item active" href="{{ url_for('menu') }}" style="background: #e0f2fe; color: #0284c7;">
-                <i class="fas fa-home"></i><span>Início</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('cadastro') }}">
-                <i class="fas fa-address-card"></i><span>Cadastro de Clientes</span>
-            </a>
-            
-            {% if session.get('cargo') == 'admin' %}
-            <a class="menu-item" href="{{ url_for('cadastro_funcionario') }}">
-                <i class="fas fa-users"></i><span>Cadastro de Funcionários</span>
-            </a>
+            <a class="menu-item" href="{{ url_for('menu') }}" style="background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; color: #3b82f6;"><i class="fas fa-home"></i><span>Início</span></a>
+            <a class="menu-item" href="{{ url_for('cadastro') }}"><i class="fas fa-address-card"></i><span>Cadastro de Clientes</span></a>
+            {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
+            <a class="menu-item" href="{{ url_for('cadastro_funcionario') }}"><i class="fas fa-users"></i><span>Cadastro de Funcionários</span></a>
             {% endif %}
-            
-            <a class="menu-item" href="{{ url_for('cadastro_produtos') }}">
-                <i class="fas fa-box"></i><span>Cadastro de Produtos</span>
-            </a>
-
-            <a class="menu-item" href="{{ url_for('conserto') }}">
-                <i class="fas fa-wrench"></i><span>Conserto</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('vendas') }}">
-                <i class="fas fa-cash-register"></i><span>Vendas</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('extrato') }}">
-                <i class="fas fa-file-invoice"></i><span>Extrato</span>
-            </a>
-
-            <a class="menu-item" href="{{ url_for('orcamento') }}">
-                <i class="fas fa-calculator"></i><span>Orçamento</span>
-            </a>
-            
+            <a class="menu-item" href="{{ url_for('cadastro_produtos') }}"><i class="fas fa-box"></i><span>Cadastro de Produtos</span></a>
+            <a class="menu-item" href="{{ url_for('conserto') }}"><i class="fas fa-wrench"></i><span>Gestão de Serviços</span></a>
+            <a class="menu-item" href="{{ url_for('vendas') }}"><i class="fas fa-cash-register"></i><span>Vendas</span></a>
+            {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
+            <a class="menu-item" href="{{ url_for('extrato') }}"><i class="fas fa-file-invoice"></i><span>Extrato</span></a>
+            {% endif %}
             <div class="menu-divider"></div>
-            
-            <a class="menu-item" href="{{ url_for('configuracao') }}">
-                <i class="fas fa-cog"></i><span>Configuração</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('suporte') }}">
-                <i class="fas fa-headset"></i><span>Suporte</span>
-            </a>
-            
-            <a class="menu-item" href="#" onclick="toggleTheme(event)">
-                <i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('logout') }}" onclick="return confirm('Tem certeza que deseja sair?')">
-                <i class="fas fa-sign-out-alt"></i><span>Sair</span>
-            </a>
+            {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
+            <a class="menu-item" href="{{ url_for('configuracao') }}"><i class="fas fa-cog"></i><span>Configuração</span></a>
+            {% endif %}
+            <a class="menu-item" href="#" onclick="toggleTheme(event)"><i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span></a>
+            <a class="menu-item" href="{{ url_for('logout') }}" onclick="return confirm('Tem certeza que deseja sair?')"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
          </div>
     </div>
 
     <div class="dashboard">
-        <div class="card grid-full">
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 1rem; width: 100%;">
-                
-                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 3rem; width: 100%;">
-                    <div>
-                        <div class="text-muted"><i class="fas fa-wallet"></i> Saldo atual</div>
-                        <div class="value-large">R$ {{ saldo_atual_fmt }}</div>
+        
+        <div class="top-grid">
+            
+            <div class="balance-header-card">
+                <div class="balance-left">
+                    <div class="balance-title">
+                        <i class="fas fa-wallet"></i> Saldo Atual da Empresa
+                        <button class="btn-eye" onclick="togglePrivacy()" title="Ocultar/Mostrar Saldo"><i class="fas fa-eye" id="privacyEye"></i></button>
                     </div>
-                    <div>
-                        <div class="text-muted"><i class="fas fa-arrow-up"></i> Receita hoje</div>
-                        <div class="value-medium" id="receitaHoje" style="color: #10b981;">R$ {{ receita_hoje_fmt }}</div>
+                    
+                    <div class="balance-amount privacy-value" data-value="R$ {{ saldo_atual_fmt }}">R$ {{ saldo_atual_fmt }}</div>
+                    
+                    <div class="balance-row">
+                        <div class="balance-sub-item">
+                            <span class="balance-subtitle"><i class="fas fa-arrow-up"></i> Receita Hoje</span>
+                            <div class="balance-sub-amount text-green privacy-value" data-value="R$ {{ receita_hoje_fmt }}">R$ {{ receita_hoje_fmt }}</div>
+                        </div>
+                        <div class="balance-sub-item">
+                            <span class="balance-subtitle"><i class="fas fa-arrow-down"></i> Despesas Hoje</span>
+                            <div class="balance-sub-amount text-red privacy-value" data-value="R$ {{ despesa_hoje_fmt }}">R$ {{ despesa_hoje_fmt }}</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="text-muted"><i class="fas fa-arrow-down"></i> Despesas hoje</div>
-                        <div class="value-medium" style="color: #ef4444;">R$ {{ despesa_hoje_fmt }}</div>
-                    </div>
-                </div>
-                
-                <div>
-                    <span class="badge"><i class="fas fa-chart-line"></i> Última atualização: <span id="data-hora"></span></span>
                 </div>
 
+                <div class="balance-right">
+                    <div class="system-status">
+                        <div class="status-badge"><i class="fas fa-circle" style="font-size: 8px;"></i> Sistema Online</div>
+                        <div class="datetime-info">
+                            <span id="data-atual-topo">--/--/----</span> • <span id="hora-atual-topo">--:--:--</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="notif-panel">
+                <div class="notif-header">
+                    <h3><i class="fas fa-bell"></i> Notificações</h3>
+                    {% if notificacoes %}
+                    <form action="{{ url_for('limpar_notificacoes') }}" method="POST" style="margin: 0;">
+                        <button type="submit" class="btn-clear-notif"><i class="fas fa-check-double"></i> Limpar Lidas</button>
+                    </form>
+                    {% endif %}
+                </div>
+                
+                <div class="notif-body">
+                    {% for notif in notificacoes %}
+                    <div class="notif-item">
+                        {% set msg_lower = notif.mensagem | lower %}
+                        {% if 'venda' in msg_lower or 'faturado' in msg_lower %}
+                            {% set icon, theme_class = 'fa-cash-register', 'notif-venda' %}
+                        {% elif 'cliente' in msg_lower %}
+                            {% set icon, theme_class = 'fa-user-plus', 'notif-cliente' %}
+                        {% elif 'produto' in msg_lower %}
+                            {% set icon, theme_class = 'fa-box', 'notif-produto' %}
+                        {% elif 'equipamento' in msg_lower or 'serviço' in msg_lower %}
+                            {% set icon, theme_class = 'fa-wrench', 'notif-servico' %}
+                        {% elif 'orçamento' in msg_lower %}
+                            {% set icon, theme_class = 'fa-file-invoice-dollar', 'notif-orcamento' %}
+                        {% else %}
+                            {% set icon, theme_class = 'fa-bell', 'notif-default' %}
+                        {% endif %}
+                        <div class="notif-icon {{ theme_class }}">
+                            <i class="fas {{ icon }}"></i>
+                        </div>
+                        <div class="notif-content">
+                            <strong>Notificação do Sistema</strong>
+                            <p>{{ notif.mensagem }}</p>
+                            <span><i class="far fa-clock"></i> {{ notif.data_criacao }}</span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="notif-empty">
+                        <i class="far fa-bell-slash"></i>
+                        <span>Tudo tranquilo! Nenhuma notificação nova no momento.</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon icon-blue"><i class="fas fa-shopping-cart"></i></div>
+                </div>
+                <div class="metric-value">{{ vendas_hoje }}</div>
+                <div class="metric-label">Vendas Hoje</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon icon-orange"><i class="fas fa-tools"></i></div>
+                </div>
+                <div class="metric-value">{{ servicos_hoje }}</div>
+                <div class="metric-label">Serviços Hoje</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon icon-purple"><i class="fas fa-users"></i></div>
+                </div>
+                <div class="metric-value">{{ clientes_atendidos }}</div>
+                <div class="metric-label">Clientes Atendidos</div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-header">
+                    <div class="metric-icon icon-green"><i class="fas fa-chart-line"></i></div>
+                </div>
+                <div class="metric-value privacy-value" data-value="R$ {{ ticket_medio_fmt }}">R$ {{ ticket_medio_fmt }}</div>
+                <div class="metric-label">Ticket Médio</div>
             </div>
         </div>
 
-        <div class="card grid-full">
-            <div class="card-header">
-                <i class="fas fa-sun"></i>
-                <h3>Resumo do Dia · Visão Completa</h3>
-            </div>
+        <div class="bottom-grid">
             
-            <div class="resumo-expandido">
-                <div class="indicadores-grid">
-                    <div class="card-metrica">
-                        <i class="fas fa-tags" style="font-size: 1.4rem; color:#1e4f8a;"></i>
-                        <div class="metrica-valor" id="vendasHoje">{{ vendas_hoje }}</div>
-                        <div class="metrica-label">Vendas Hoje</div>
-                    </div>
-                    <div class="card-metrica">
-                        <i class="fas fa-tools" style="font-size: 1.4rem; color:#1e4f8a;"></i>
-                        <div class="metrica-valor">{{ servicos_hoje }}</div>
-                        <div class="metrica-label">Serviços Hoje</div>
-                    </div>
-                    <div class="card-metrica">
-                        <i class="fas fa-users" style="font-size: 1.4rem; color:#1e4f8a;"></i>
-                        <div class="metrica-valor">{{ clientes_atendidos }}</div>
-                        <div class="metrica-label">Clientes Atendidos</div>
-                    </div>
-                    <div class="card-metrica">
-                        <i class="fas fa-chart-line" style="font-size: 1.4rem; color:#1e4f8a;"></i>
-                        <div class="metrica-valor">R$ {{ ticket_medio_fmt }}</div>
-                        <div class="metrica-label">Ticket Médio</div>
-                    </div>
+            <div class="card-pro">
+                <div class="card-header-pro">
+                    <h2><i class="fas fa-bullseye"></i> Desempenho e Metas</h2>
                 </div>
                 
                 <div class="financas-rapidas">
-                    <div><i class="fas fa-chart-pie"></i> <strong>Margem Lucro:</strong> {{ margem_lucro }}% </div>
-                    <div><i class="fas fa-calendar-week"></i> <strong>Meta Mensal:</strong> R$ {{ meta_mensal }}</div>
-                    <div><i class="fas fa-percent"></i> <strong>Conversão Hoje:</strong> {{ conversao }}% </div>
-                    <div><i class="fas fa-charging-station"></i> <strong>Projeção Mês:</strong> R$ {{ projecao_mes_fmt }}</div>
+                    <div class="fin-item">
+                        <span><i class="fas fa-chart-pie" style="color: #3b82f6;"></i> Margem Lucro</span>
+                        <strong>{{ margem_lucro }}%</strong>
+                    </div>
+                    <div class="fin-item">
+                        <span><i class="fas fa-percent" style="color: #10b981;"></i> Conversão Hoje</span>
+                        <strong>{{ conversao }}%</strong>
+                    </div>
+                    <div class="fin-item" style="grid-column: span 2;">
+                        <span><i class="fas fa-chart-area" style="color: #8b5cf6;"></i> Projeção Mês Baseado no Ritmo Atual</span>
+                        <strong class="privacy-value" data-value="R$ {{ projecao_mes_fmt }}">R$ {{ projecao_mes_fmt }}</strong>
+                    </div>
                 </div>
                 
-                <div class="meta-container" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 24px; margin-top: 20px;">
-                    <div class="meta-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <span class="meta-title" style="font-size: 1.1rem; font-weight: 600; color: #fff;"><i class="fas fa-chart-simple" style="color: #3b82f6; margin-right: 8px;"></i> Meta Mensal de Receita</span>
-                        <span class="meta-value" id="metaValorExibido" style="font-size: 1.3rem; font-weight: 700; color: #3b82f6;">R$ 30.000,00</span>
+                <div class="meta-container">
+                    <div class="meta-header">
+                        <span class="meta-title">Meta de Receita</span>
+                        <span class="meta-value privacy-value" id="metaValorExibido" data-value="R$ 30.000,00">R$ 30.000,00</span>
                     </div>
                     
-                    <div class="progress-circle-container" style="display: flex; justify-content: center; margin: 20px 0;">
+                    <div class="progress-circle-container">
                         <div class="progress-circle">
-                            <svg width="140" height="140" viewBox="0 0 140 140">
+                            <svg width="160" height="160" viewBox="0 0 160 160">
                                 <defs>
                                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
                                         <stop offset="0%" style="stop-color:#3b82f6"/>
                                         <stop offset="100%" style="stop-color:#1d4ed8"/>
                                     </linearGradient>
                                 </defs>
-                                <circle class="bg-circle" cx="70" cy="70" r="65" style="fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 10;"></circle>
-                                <circle class="progress-circle-fill" cx="70" cy="70" r="65" id="progressCircle" style="fill: none; stroke: url(#gradient); stroke-width: 10; stroke-linecap: round; transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 0.5s ease;"></circle>
+                                <circle class="bg-circle" cx="80" cy="80" r="70" style="fill: none; stroke-width: 12;"></circle>
+                                <circle class="progress-circle-fill" cx="80" cy="80" r="70" id="progressCircle" style="fill: none; stroke: url(#gradient); stroke-width: 12; stroke-linecap: round; transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);"></circle>
                             </svg>
-                            <div class="progress-text" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-                                <div class="progress-percent" id="progressPercent" style="font-size: 1.5rem; font-weight: 700; color: #fff;">0%</div>
-                                <div class="progress-label" style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">concluído</div>
+                            <div class="progress-text">
+                                <div class="progress-percent" id="progressPercent">0%</div>
+                                <div class="progress-label">Concluído</div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="meta-values-row" style="display: flex; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 12px 16px; border-radius: 12px; margin-bottom: 20px; font-size: 0.95rem;">
-                        <div><span class="text-muted"><i class="fas fa-coins" style="color: #10b981; margin-right: 4px;"></i> Arrecadado:</span> <strong id="receitaAtual" style="color: #fff;">R$ {{ saldo_atual_fmt }}</strong></div>
-                        <div><span class="text-muted"><i class="fas fa-hourglass-half" style="color: #f59e0b; margin-right: 4px;"></i> Faltam:</span> <strong id="faltandoMeta" style="color: #fff;">R$ 0,00</strong></div>
-                    </div>
-                    
-                    <div class="meta-controls" style="display: flex; gap: 12px; align-items: flex-end;">
-                        <div class="meta-control-group" style="flex: 1;">
-                            <label style="display: block; font-size: 0.85rem; color: #94a3b8; margin-bottom: 6px;"><i class="fas fa-pencil-alt"></i> Nova Meta Mensal (R$)</label>
-                            <input type="number" id="novaMetaInput" placeholder="Ex: 40000" step="1000" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; color: #fff; font-size: 1rem; outline: none;">
-                        </div>
-                        <button type="button" class="btn-meta" id="atualizarMetaBtn" style="background: #3b82f6; color: #fff; border: none; border-radius: 10px; padding: 12px 20px; font-weight: 600; cursor: pointer; transition: background 0.2s;">
-                            <i class="fas fa-sync-alt" style="margin-right: 6px;"></i> Salvar Meta
-                        </button>
-                    </div>
-                    
-                    <div id="achievementMessage" class="achievement-message" style="display: none; align-items: center; gap: 10px; margin-top: 15px; padding: 12px 16px; border-radius: 10px; border-left: 4px solid #f59e0b;">
-                        <i class="fas fa-trophy" style="color:#f59e0b; font-size: 1.2rem;"></i>
-                        <span id="achievementText" style="color: #fff; font-weight: 500;"></span>
+                    <div class="meta-controls">
+                        <input type="number" id="novaMetaInput" placeholder="Nova meta (Ex: 40000)" min="1" max="9999999999" oninput="if(this.value.length > 10) this.value = this.value.slice(0, 10);">
+                        <button type="button" class="btn-meta" id="atualizarMetaBtn" title="Salvar Nova Meta"><i class="fas fa-check"></i></button>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card grid-full">
-            <div class="card-header">
-                <i class="fas fa-chart-line"></i>
-                <h3>Gráfico de Receitas · Últimos 7 Dias</h3>
+            <div class="card-pro">
+                <div class="card-header-pro">
+                    <h2><i class="fas fa-chart-line"></i> Evolução Diária de Receita (7 Dias)</h2>
+                </div>
+                <!-- O GRÁFICO INTUITIVO COM CHART.JS VAI AQUI -->
+                <div class="chart-container-wrapper">
+                    <canvas id="receitaChart"></canvas>
+                </div>
             </div>
-            <div class="chart-bars" id="chartContainer"></div>
+
         </div>
     </div>
 
+    <script type="application/json" id="dadosDias">
+        {{ labels_dias | default([], true) | tojson | safe }}
+    </script>
+    <script type="application/json" id="dadosReceitas">
+        {{ valores_dias | default([], true) | tojson | safe }}
+    </script>
+
     <script>
-        // ======= MÁGICA 1: PUXAR AS VARIÁVEIS DO PYTHON PARA O JAVASCRIPT ======
-
-        // ==================== FUNÇÕES GERAIS ====================
-        function atualizarDataHora() {
-            const agora = new Date();
-            const data = agora.toLocaleDateString('pt-BR');
-            const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('data-hora').textContent = `${data} às ${hora}`;
-        }
-
-        // ==================== CÁLCULO DA RODA DE PROGRESSO ====================
-        function atualizarProgresso() {
-            let percentual = metaMensal > 0 ? Math.min((receitaAtual / metaMensal) * 100, 100) : 0;
-            const offset = circumference - (percentual / 100) * circumference;
-            if (progressCircle) progressCircle.style.strokeDashoffset = offset;
-            if (progressPercent) progressPercent.textContent = `${Math.round(percentual)}%`;
-            if (metaValorExibido) metaValorExibido.textContent = `R$ ${metaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
-            
-            const faltando = metaMensal - receitaAtual;
-            if (faltandoMetaSpan) faltandoMetaSpan.textContent = `R$ ${faltando > 0 ? faltando.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : '0,00'}`;
-            
-            // Achievement messages (Mensagens de conquista)
-            if (achievementMessage && achievementText) {
-                if (percentual >= 100) {
-                    achievementMessage.style.display = 'flex';
-                    achievementText.innerHTML = '🎉 PARABÉNS! Meta atingida!';
-                    achievementMessage.style.background = '#fef3c7';
-                    achievementMessage.style.borderLeftColor = '#f59e0b';
-                } else if (percentual >= 75) {
-                    achievementMessage.style.display = 'flex';
-                    achievementText.innerHTML = `🔥 Quase lá! Faltam ${100 - Math.round(percentual)}%`;
-                    achievementMessage.style.background = '#fef3c7';
-                    achievementMessage.style.borderLeftColor = '#f59e0b';
-                } else if (percentual >= 50) {
-                    achievementMessage.style.display = 'flex';
-                    achievementText.innerHTML = `📈 Bom progresso! ${Math.round(percentual)}% concluído`;
-                    achievementMessage.style.background = '#e0f2fe';
-                    achievementMessage.style.borderLeftColor = '#0284c7';
-                } else {
-                    achievementMessage.style.display = 'none';
-                }
+        // ==================== OLHO MÁGICO (PRIVACIDADE DE SALDOS) ====================
+        function applyPrivacyMode(isPrivate) {
+            const icon = document.getElementById('privacyEye');
+            const values = document.querySelectorAll('.privacy-value');
+            if (isPrivate) {
+                if(icon) icon.className = 'fas fa-eye-slash';
+                values.forEach(el => el.innerText = 'R$ ••••••••');
+            } else {
+                if(icon) icon.className = 'fas fa-eye';
+                values.forEach(el => {
+                    // Restaura o valor original que está protegido no atributo data-value
+                    el.innerText = el.getAttribute('data-value');
+                });
             }
         }
 
-        // ==================== ATUALIZAR META (Apenas visualmente por enquanto) ====================
+        function togglePrivacy() {
+            let isPrivate = localStorage.getItem('privacyMode') === 'true';
+            isPrivate = !isPrivate;
+            localStorage.setItem('privacyMode', isPrivate);
+            applyPrivacyMode(isPrivate);
+        }
+
+        // ==================== CÁLCULO DA META MENSAL ====================
         let receitaAtual = Number("{{ saldo_numerico | default(0, true) }}");
-        
-        // Puxa a meta salva no navegador ou usa 30000 como padrão
         let metaMensal = Number(localStorage.getItem('metaMensalPersonalizada')) || 30000;
         
         const progressCircle = document.getElementById('progressCircle');
         const progressPercent = document.getElementById('progressPercent');
         const metaValorExibido = document.getElementById('metaValorExibido');
-        const receitaAtualSpan = document.getElementById('receitaAtual');
-        const faltandoMetaSpan = document.getElementById('faltandoMeta');
         const novaMetaInput = document.getElementById('novaMetaInput');
         const atualizarMetaBtn = document.getElementById('atualizarMetaBtn');
-        const achievementMessage = document.getElementById('achievementMessage');
-        const achievementText = document.getElementById('achievementText');
-        
-        const circumference = 408.4;
-
-        function atualizarDataHora() {
-            const agora = new Date();
-            const data = agora.toLocaleDateString('pt-BR');
-            const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('data-hora').textContent = `${data} às ${hora}`;
-        }
+        const circumference = 439.8; 
 
         function atualizarProgresso() {
             let percentual = metaMensal > 0 ? Math.min((receitaAtual / metaMensal) * 100, 100) : 0;
             const offset = circumference - (percentual / 100) * circumference;
-            if (progressCircle) progressCircle.style.strokeDashoffset = offset;
+            
+            if (progressCircle) {
+                progressCircle.style.strokeDasharray = circumference;
+                progressCircle.style.strokeDashoffset = offset;
+            }
             if (progressPercent) progressPercent.textContent = `${Math.round(percentual)}%`;
-            if (metaValorExibido) metaValorExibido.textContent = `R$ ${metaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
             
-            const faltando = metaMensal - receitaAtual;
-            if (faltandoMetaSpan) faltandoMetaSpan.textContent = `R$ ${faltando > 0 ? faltando.toLocaleString('pt-BR', {minimumFractionDigits: 2}) : '0,00'}`;
-            
-            if (achievementMessage && achievementText) {
-                if (percentual >= 100) {
-                    achievementMessage.style.display = 'flex';
-                    achievementText.innerHTML = '🎉 PARABÉNS! Meta atingida com sucesso!';
-                    achievementMessage.style.background = 'rgba(245, 158, 11, 0.15)';
-                    achievementMessage.style.borderLeftColor = '#f59e0b';
-                } else if (percentual >= 75) {
-                    achievementMessage.style.display = 'flex';
-                    achievementText.innerHTML = `🔥 Quase lá! Faltam apenas ${100 - Math.round(percentual)}% para bater a meta.`;
-                    achievementMessage.style.background = 'rgba(59, 130, 246, 0.15)';
-                    achievementMessage.style.borderLeftColor = '#3b82f6';
-                } else {
-                    achievementMessage.style.display = 'none';
+            const valorFormatado = `R$ ${metaMensal.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+            if (metaValorExibido) {
+                metaValorExibido.setAttribute('data-value', valorFormatado);
+                if (localStorage.getItem('privacyMode') !== 'true') {
+                    metaValorExibido.textContent = valorFormatado;
                 }
             }
         }
 
-        // ==================== SALVAR META NO LOCALSTORAGE ====================
         function atualizarMetas() {
             const novaMeta = parseFloat(novaMetaInput.value);
-            if (!isNaN(novaMeta) && novaMeta > 0) {
-                metaMensal = novaMeta;
-                localStorage.setItem('metaMensalPersonalizada', novaMeta); // Salva fixo no browser
-                
-                novaMetaInput.value = '';
-                atualizarProgresso();
-                alert('✨ Meta mensal atualizada e salva com sucesso!');
-            } else {
-                alert('⚠️ Por favor, insira um valor válido.');
-            }
+            if (isNaN(novaMeta) || novaMeta <= 0) return alert('Insira um valor válido maior que zero.');
+            if (novaMeta > 9999999999) return alert('O limite máximo é de 10 dígitos para a meta.');
+
+            metaMensal = novaMeta;
+            localStorage.setItem('metaMensalPersonalizada', novaMeta); 
+            novaMetaInput.value = '';
+            atualizarProgresso();
         }
 
-        function atualizarGraficoDinamico() {
-            const dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Hoje'];
-            let receitas = [1870, 2100, 1950, 2300, 2580, 2430, receitaAtual];
-            const chartContainer = document.getElementById('chartContainer');
-            if (!chartContainer) return;
+        // ==================== NOVO GRÁFICO INTUITIVO COM CHART.JS ====================
+        function initReceitaChart() {
+            const ctx = document.getElementById('receitaChart');
+            if (!ctx) return;
             
-            chartContainer.innerHTML = '';
-            const maxReceita = Math.max(...receitas, 2000);
+            const dias = JSON.parse(document.getElementById('dadosDias').textContent || '[]');
+            const receitas = JSON.parse(document.getElementById('dadosReceitas').textContent || '[]');
             
-            receitas.forEach((valor, index) => {
-                const barHeight = (valor / maxReceita) * 120;
-                const wrapper = document.createElement('div');
-                wrapper.className = 'bar-wrapper';
-                
-                wrapper.innerHTML = `
-                    <div class="bar-value">R$ ${Math.round(valor)}</div>
-                    <div class="bar" style="height: ${Math.max(barHeight, 30)}px"></div>
-                    <div class="bar-label">${dias[index]}</div>
-                `;
-                chartContainer.appendChild(wrapper);
+            if (dias.length === 0) {
+                ctx.parentElement.innerHTML = '<div style="color: #94a3b8; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-weight: 500;">Sem movimentações registradas nos últimos 7 dias.</div>';
+                return;
+            }
+
+            const textColor = document.documentElement.getAttribute('data-theme') === 'dark' ? '#94a3b8' : '#64748b';
+            const gridColor = document.documentElement.getAttribute('data-theme') === 'dark' ? 'rgba(148, 163, 184, 0.1)' : '#e2e8f0';
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dias,
+                    datasets: [{
+                        label: 'Receita Diária (R$)',
+                        data: receitas,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#3b82f6',
+                        pointBorderWidth: 3,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        fill: true,
+                        tension: 0.4 // Suaviza a linha (curvas)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleFont: { family: 'Inter', size: 13, weight: 'bold' },
+                            bodyFont: { family: 'Inter', size: 14, weight: 'bold' },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor, font: { family: 'Inter', weight: 600 } }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor, drawBorder: false },
+                            ticks: {
+                                color: textColor,
+                                font: { family: 'Inter' },
+                                callback: function(value) {
+                                    return 'R$ ' + value;
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
+                }
             });
         }
 
-        if (atualizarMetaBtn) atualizarMetaBtn.addEventListener('click', atualizarMetas);
-        if (progressCircle) progressCircle.style.strokeDasharray = circumference;
+        // ==================== INICIALIZAÇÃO ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Relógio e Data Topo
+            setInterval(() => {
+                const agora = new Date();
+                document.getElementById('data-atual-topo').textContent = agora.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                document.getElementById('hora-atual-topo').textContent = agora.toLocaleTimeString('pt-BR');
+            }, 1000);
 
-        atualizarDataHora();
-        atualizarProgresso();
-        atualizarGraficoDinamico();
-        setInterval(atualizarDataHora, 60000);
+            if (atualizarMetaBtn) atualizarMetaBtn.addEventListener('click', atualizarMetas);
+            atualizarProgresso();
+            
+            // Inicializa o novo gráfico
+            initReceitaChart();
+            
+            
+            
+            // Aplica estado inicial da Privacidade
+            applyPrivacyMode(localStorage.getItem('privacyMode') === 'true');
 
+            // Sincroniza Ícone Tema
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                const icon = document.getElementById('theme-icon');
+                const text = document.getElementById('theme-text');
+                if (icon && text) { icon.className = 'fas fa-sun'; text.textContent = 'Tema Claro'; }
+            }
+        });
+
+        // Alternância de Tema
         function toggleTheme(event) {
             if(event) event.preventDefault();
-            
             const body = document.body;
             const currentTheme = body.getAttribute('data-theme');
             const icon = document.getElementById('theme-icon');
@@ -359,90 +645,9 @@
                 if(icon) icon.className = 'fas fa-sun';
                 if(text) text.textContent = 'Tema Claro';
             }
+            // Recarrega a página para atualizar as cores do gráfico
+            setTimeout(() => { window.location.reload(); }, 100);
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.setAttribute('data-theme', 'dark');
-                const icon = document.getElementById('theme-icon');
-                const text = document.getElementById('theme-text');
-                if (icon && text) {
-                    icon.className = 'fas fa-sun';
-                    text.textContent = 'Tema Claro';
-                }
-            }
-        });
-
-        // ==================== GRÁFICO BÁSICO SIMULADO ====================
-        function atualizarGraficoDinamico() {
-            const dias = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Hoje'];
-            // A última barra (Hoje) reflete a receita real de hoje
-            let receitas = [1870, 2100, 1950, 2300, 2580, 2430, receitaAtual];
-            const chartContainer = document.getElementById('chartContainer');
-            if (!chartContainer) return;
-            
-            chartContainer.innerHTML = '';
-            const maxReceita = Math.max(...receitas, 2000);
-            
-            receitas.forEach((valor, index) => {
-                const barHeight = (valor / maxReceita) * 120;
-                const wrapper = document.createElement('div');
-                wrapper.className = 'bar-wrapper';
-                
-                wrapper.innerHTML = `
-                    <div class="bar-value">R$ ${Math.round(valor)}</div>
-                    <div class="bar" style="height: ${Math.max(barHeight, 30)}px"></div>
-                    <div class="bar-label">${dias[index]}</div>
-                `;
-                chartContainer.appendChild(wrapper);
-            });
-        }
-
-        // Inicialização
-        if (atualizarMetaBtn) atualizarMetaBtn.addEventListener('click', atualizarMetas);
-        if (progressCircle) progressCircle.style.strokeDasharray = circumference;
-
-        atualizarDataHora();
-        atualizarProgresso();
-        atualizarGraficoDinamico();
-        setInterval(atualizarDataHora, 60000);
-
-        // ==================== SISTEMA DE TEMA ESCURO ====================
-        function toggleTheme(event) {
-            if(event) event.preventDefault();
-            
-            const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
-            const icon = document.getElementById('theme-icon');
-            const text = document.getElementById('theme-text');
-
-            if (currentTheme === 'dark') {
-                body.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'light');
-                if(icon) icon.className = 'fas fa-moon';
-                if(text) text.textContent = 'Tema Escuro';
-            } else {
-                body.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-                if(icon) icon.className = 'fas fa-sun';
-                if(text) text.textContent = 'Tema Claro';
-            }
-        }
-
-        // Aplica o tema imediatamente ao carregar a página
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.setAttribute('data-theme', 'dark');
-                const icon = document.getElementById('theme-icon');
-                const text = document.getElementById('theme-text');
-                if (icon && text) {
-                    icon.className = 'fas fa-sun';
-                    text.textContent = 'Tema Claro';
-                }
-            }
-        });
     </script>
 </body>
 </html>

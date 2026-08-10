@@ -1,118 +1,180 @@
+body {
+    background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    padding: 1rem;
+    transition: background 0.3s ease;
+}
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+/* Botão pequeno flutuante de troca de tema */
+.theme-toggle-btn {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    width: 45px;
+    height: 45px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    transition: 0.3s;
+    z-index: 1000;
+}
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%);
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+.theme-toggle-btn:hover {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.3);
+}
 
-    .login-box {
-      background: white;
-      padding: 40px 40px 35px;
-      border-radius: 20px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
+.theme-toggle-btn i {
+    font-size: 1.1rem;
+    color: white;
+}
 
-    /* Logo SVG - AUMENTADO para 150px */
-    .logo-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 10px;
-    }
+.login-box {
+    background: #ffffff;
+    width: 100%;
+    max-width: 420px;
+    padding: 2.5rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
 
-    .logo-container svg {
-      width: 150px;  /* ← AUMENTE AQUI! */
-      height: auto;
-    }
+.logo-container {
+    text-align: center;
+    margin-bottom: 1rem;
+}
 
-    .login-box h1 {
-      text-align: center;
-      margin-bottom: 25px;
-      color: #333;
-      font-size: 1.8rem;
-    }
+.login-box h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    transition: color 0.3s ease;
+}
 
-    .form-group {
-      margin-bottom: 20px;
-      text-align: left;
-    }
+.form-group {
+    margin-bottom: 1.25rem;
+}
 
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      color: #555;
-      font-weight: 500;
-    }
+.form-group label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    transition: color 0.3s ease;
+}
 
-    .form-group input {
-      width: 100%;
-      padding: 12px 15px;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      font-size: 1rem;
-      transition: all 0.3s;
-    }
+.form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+    color: #1e293b;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
 
-    .form-group input:focus {
-      outline: none;
-      border-color: #0c2b4f;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
+.form-group input:focus {
+    border-color: #3b82f6;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
+}
 
-    .mostrar-senha-wrapper {
-      margin-top: 10px;
-    }
+.mostrar-senha-wrapper {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+}
 
-    .checkbox-container {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      user-select: none;
-    }
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #64748b;
+    user-select: none;
+    transition: color 0.3s ease;
+}
 
-    .checkbox-container input {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      margin: 0;
-    }
+.checkbox-container input {
+    cursor: pointer;
+    accent-color: #3b82f6;
+    width: 16px;
+    height: 16px;
+}
 
-    .checkbox-container span {
-      color: #555;
-      font-size: 0.9rem;
-    }
+#btnEntrar {
+    width: 100%;
+    margin-top: 1rem;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(30, 79, 138, 0.3);
+}
 
-    .checkbox-container:hover span {
-      color: #0c2b4f;
-    }
+#btnEntrar:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+    box-shadow: 0 6px 20px rgba(30, 79, 138, 0.4);
+}
 
-    button[type="button"] {
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      margin-top: 5px;
-    }
+/* ==================== ESTILOS DO TEMA ESCURO ==================== */
+[data-theme="dark"] body {
+    background: #0f172a;
+}
 
-    button[type="button"]:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-    }
+[data-theme="dark"] .login-box {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .login-box h1 {
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .form-group label {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .form-group input {
+    background-color: #0f172a !important;
+    border-color: #334155 !important;
+    color: #f8fafc !important;
+}
+
+[data-theme="dark"] .checkbox-container {
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .theme-toggle-btn {
+    background: #1e293b;
+    border: 1px solid #334155;
+}

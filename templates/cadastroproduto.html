@@ -3,198 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Produtos · TechManager</title>
+    <title>Cadastro de Produtos</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='cadastroproduto.css') }}">
+
+    <style>
+        /* ==================== ALERTAS ==================== */
+        .alerta-pro { padding: 14px 20px; border-radius: 12px; margin-bottom: 20px; font-weight: 600; border-left: 4px solid; display: flex; align-items: center; gap: 8px; }
+        .alerta-sucesso { background-color: #dcfce7; color: #166534; border-left-color: #10b981; }
+        .alerta-erro { background-color: #fee2e2; color: #b91c1c; border-left-color: #ef4444; }
+
+        body { background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%); min-height: 100vh; padding: 2rem 1rem; position: relative; margin: 0; font-family: 'Inter', sans-serif;}
+        .container { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+        .card-pro { background: #ffffff; border-radius: 1.5rem; padding: 2.5rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); border: 1px solid #f0f2f6; transition: 0.3s; }
+        
+        .card-header-pro { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px;}
+        .card-header-pro h2 { font-size: 1.4rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin: 0; border: none; padding: 0;}
+        .card-header-pro h2 i { color: #3b82f6; background: #eff6ff; padding: 8px; border-radius: 10px; }
+
+        .form-section-title { font-size: 0.95rem; font-weight: 600; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px; margin: 24px 0 14px 0; display: flex; align-items: center; gap: 8px; }
+        .form-grid-pro { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .form-grid-pro.grid-4 { grid-template-columns: repeat(4, 1fr); }
+        .form-group-pro { display: flex; flex-direction: column; gap: 6px; }
+        .form-group-pro.span-2 { grid-column: span 2; }
+        .form-group-pro.span-3 { grid-column: span 3; }
+
+        .form-group-pro label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; display: flex; align-items: center; gap: 6px; }
+        .form-group-pro input, .form-group-pro select { width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 0.95rem; background: #fff; color: #1e293b; font-weight: 500; transition: 0.2s; outline: none; box-sizing: border-box; }
+        .form-group-pro input:focus, .form-group-pro select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+        .input-money { position: relative; }
+        .input-money::before { content: "R$"; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; font-weight: 600; font-size: 0.9rem; }
+        .input-money input { padding-left: 40px; }
+
+        .acoes-form { display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 35px; border-top: 1px solid #e2e8f0; padding-top: 25px; }
+        .btn-limpar { background: #f8fafc; color: #475569; border: 1px solid #cbd5e1; padding: 14px 30px; border-radius: 12px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-width: 200px; }
+        .btn-limpar:hover { background: #e2e8f0; color: #1e293b; }
+        .btn-salvar { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; border: none; padding: 14px 30px; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); transition: 0.2s; min-width: 200px; }
+        .btn-salvar:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);}
+
+        .barra-ferramentas { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 20px; margin-bottom: 20px; background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; }
+        .categorias-pro { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .categoria-btn { background: #ffffff; border: 1px solid #cbd5e1; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: #475569; transition: 0.2s; }
+        .categoria-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; box-shadow: 0 4px 10px rgba(59,130,246,0.2); }
+
+        .search-pro { position: relative; width: 100%; max-width: 550px; }
+        .search-pro i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+        .search-pro input { width: 100%; padding: 10px 14px 10px 40px; border-radius: 10px; border: 1px solid #cbd5e1; font-size: 0.9rem; outline: none; transition: 0.2s; }
+        .search-pro input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.1); }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+        th { background: #f8fafc; font-weight: 700; color: #475569; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
+        td { color: #1e293b; font-weight: 500; }
+        tr:hover { background: #f8fafc; }
+
+        /* Estilo Botão de Edição na Tabela */
+        .btn-action { border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .edit-btn { background: #eff6ff; color: #3b82f6; }
+        .edit-btn:hover { background: #3b82f6; color: white; }
+
+        .exportar-container { display: flex; justify-content: flex-end; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+        .btn-exportar { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+        .btn-exportar:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        /* MODAL CATEGORIAS */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);}
+        .modal-content { background: #fff; width: 100%; max-width: 450px; border-radius: 1.5rem; padding: 2rem; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); animation: fadeIn 0.2s ease;}
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        [data-theme="dark"] .card-pro, [data-theme="dark"] .modal-content { background-color: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .card-pro h2, [data-theme="dark"] td, [data-theme="dark"] .modal-content h2 { color: #f8fafc; }
+        [data-theme="dark"] .card-header-pro { border-color: #334155; }
+        [data-theme="dark"] .form-group-pro input, [data-theme="dark"] .form-group-pro select, [data-theme="dark"] .search-pro input { background-color: #0f172a !important; border-color: #334155 !important; color: #f8fafc !important; }
+        [data-theme="dark"] .barra-ferramentas { background: #0f172a; border-color: #334155; }
+        [data-theme="dark"] .categoria-btn { background: #1e293b; border-color: #475569; color: #cbd5e1; }
+        [data-theme="dark"] .categoria-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+        [data-theme="dark"] th { background: #0f172a; color: #94a3b8; border-bottom: 1px solid #334155; }
+        [data-theme="dark"] tr:hover { background: #334155; }
+        [data-theme="dark"] .acoes-form, [data-theme="dark"] .exportar-container { border-color: #334155; }
+        [data-theme="dark"] .btn-limpar { background: #1e293b; border-color: #475569; color: #cbd5e1; }
+        [data-theme="dark"] .btn-limpar:hover { background: #334155; color: #f8fafc; }
+        [data-theme="dark"] .edit-btn { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        [data-theme="dark"] .edit-btn:hover { background: #3b82f6; color: white; }
+
+        @media (max-width: 900px) {
+            .form-grid-pro, .form-grid-pro.grid-4 { grid-template-columns: 1fr; }
+            .form-group-pro.span-2, .form-group-pro.span-3 { grid-column: span 1; }
+            .search-pro { width: 100%; }
+            .acoes-form { flex-direction: column; }
+            .btn-limpar, .btn-salvar, .btn-exportar { width: 100%; justify-content: center; }
+        }
+    </style>
 </head>
 <body>
+    <script>
+    if (localStorage.getItem('theme') === 'dark') document.body.setAttribute('data-theme', 'dark');
+    </script>
+    <iframe id="printFrame" style="display:none;"></iframe>
 
-    <div class="menu-trigger">
-        <i class="fas fa-bars"></i>
-    </div>
-
-    <div class="menu-trigger">
-        <i class="fas fa-bars"></i>
-    </div>
+    <div class="menu-trigger"><i class="fas fa-bars"></i></div>
 
     <div class="side-menu">
         <div class="menu-header">
-            <div class="user-avatar"><i class="fas fa-user-circle"></i></div>
-            <h3>Olá, {{ 'Administrador' if session.get('cargo') == 'admin' else 'Funcionário' }}</h3>
-            <p><i class="fas fa-envelope"></i> {{ session.get('usuario_logado') }}</p>
+            <div class="user-avatar" style="background: none;">
+                {% set primeira_letra = session.get('usuario_logado', 'User') | first | upper %}
+                <img class="user-avatar-img" 
+                    src="{{ url_for('static', filename='uploads/' + session.get('foto_perfil', 'default_avatar.png')) }}" 
+                    style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.3); background-color: #1e293b;" 
+                    onerror="this.onerror=null; this.src='//ui-avatars.com/api/?name={{ primeira_letra }}&background=3b82f6&color=fff&size=80';">
+            </div>
+            <h3 style="margin-top: 10px; margin-bottom: 5px;">Olá, {{ 'Administrador' if session.get('nivel') in [1, '1'] else 'Funcionário' }}</h3>
+            <p style="margin: 0 0 8px 0;"><i class="fas fa-envelope"></i> {{ session.get('usuario_logado') }}</p>
         </div>
-        
         <div class="menu-items">
-            <a class="menu-item" href="{{ url_for('menu') }}">
-                <i class="fas fa-home"></i><span>Início</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('cadastro') }}">
-                <i class="fas fa-address-card"></i><span>Cadastro de Clientes</span>
-            </a>
-            
-            {% if session.get('cargo') == 'admin' %}
-            <a class="menu-item" href="{{ url_for('cadastro_funcionario') }}">
-                <i class="fas fa-users"></i><span>Cadastro de Funcionários</span>
-            </a>
+            <a class="menu-item" href="{{ url_for('menu') }}"><i class="fas fa-home"></i><span>Início</span></a>
+            <a class="menu-item" href="{{ url_for('cadastro') }}"><i class="fas fa-address-card"></i><span>Cadastro de Clientes</span></a>
+            {% if session.get('nivel') in [1, '1'] %}
+            <a class="menu-item" href="{{ url_for('cadastro_funcionario') }}"><i class="fas fa-users"></i><span>Cadastro de Funcionários</span></a>
             {% endif %}
-            
-            <a class="menu-item" href="{{ url_for('cadastro_produtos') }}">
-                <i class="fas fa-box"></i><span>Cadastro de Produtos</span>
-            </a>
-
-            <a class="menu-item" href="{{ url_for('conserto') }}">
-                <i class="fas fa-wrench"></i><span>Conserto</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('vendas') }}">
-                <i class="fas fa-cash-register"></i><span>Vendas</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('extrato') }}">
-                <i class="fas fa-file-invoice"></i><span>Extrato</span>
-            </a>
-
-            <a class="menu-item" href="{{ url_for('orcamento') }}">
-                <i class="fas fa-calculator"></i><span>Orçamento</span>
-            </a>
-            
+            <a class="menu-item" href="{{ url_for('cadastro_produtos') }}" style="background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; color: #3b82f6;"><i class="fas fa-box"></i><span>Cadastro de Produtos</span></a>
+            <a class="menu-item" href="{{ url_for('conserto') }}"><i class="fas fa-wrench"></i><span>Gestão de Serviços</span></a>
+            <a class="menu-item" href="{{ url_for('vendas') }}"><i class="fas fa-cash-register"></i><span>Vendas</span></a>
+            {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
+            <a class="menu-item" href="{{ url_for('extrato') }}"><i class="fas fa-file-invoice"></i><span>Extrato</span></a>
+            {% endif %}
             <div class="menu-divider"></div>
-            
-            <a class="menu-item" href="{{ url_for('configuracao') }}">
-                <i class="fas fa-cog"></i><span>Configuração</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('suporte') }}">
-                <i class="fas fa-headset"></i><span>Suporte</span>
-            </a>
-
-            <a class="menu-item" href="#" onclick="toggleTheme(event)">
-                <i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('logout') }}" onclick="return confirm('Tem certeza que deseja sair?')">
-                <i class="fas fa-sign-out-alt"></i><span>Sair</span>
-            </a>
+            {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
+            <a class="menu-item" href="{{ url_for('configuracao') }}"><i class="fas fa-cog"></i><span>Configuração</span></a>
+            {% endif %}
+            <a class="menu-item" href="#" onclick="toggleTheme(event)"><i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span></a>
+            <a class="menu-item" href="{{ url_for('logout') }}" onclick="return confirm('Tem certeza que deseja sair?')"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
          </div>
     </div>
-
-    <div class="dashboard">
-        <div class="card grid-full">
-            <div class="card-header">
-                <i class="fas fa-box"></i>
-                <h2>Cadastro de Produtos</h2>
-            </div>
-            <div style="font-size: 0.85rem; color: #64748b;">
-                <i class="fas fa-info-circle"></i> Gerencie seu catálogo de produtos, marcas e preços
-            </div>
-        </div>
-
-        <div class="card grid-full">
-            <div class="card-header">
-                <i class="fas fa-plus-circle"></i>
-                <h3>Cadastrar Novo Produto</h3>
+    
+    <div class="dashboard container">
+        
+        <div class="card-pro">
+            <div class="card-header-pro">
+                <h2><i class="fas fa-box-open"></i> Registro de Produto</h2>
+                
+                {% if session.get('nivel') in [1, '1'] %}
+                <button type="button" onclick="document.getElementById('modalCat').style.display='flex'" style="background:#3b82f6; color:white; padding: 8px 16px; font-size: 0.85rem; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s;"><i class="fas fa-tags"></i> Gerenciar Categorias</button>
+                {% endif %}
             </div>
 
             {% if erro %}
-                <div style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
-                    <i class="fas fa-exclamation-circle"></i> {{ erro }}
-                </div>
+                <div class="alerta-pro alerta-erro"><i class="fas fa-exclamation-circle"></i> {{ erro }}</div>
             {% endif %}
-            {% if sucesso %}
-                <div style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 20px;">
-                    <i class="fas fa-check-circle"></i> {{ sucesso }}
-                </div>
-            {% endif %}
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alerta-pro {{ 'alerta-sucesso' if category == 'success' else 'alerta-erro' }}">
+                        <i class="fas {{ 'fa-check-circle' if category == 'success' else 'fa-exclamation-circle' }}"></i> 
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                {% endif %}
+            {% endwith %}
 
             <form action="{{ url_for('cadastro_produtos') }}" method="POST">
+                <input type="hidden" name="id_produto" id="inputIdProduto">
                 
-                <div class="form-row">
-                    <div class="input-group">
-                        <label><i class="fas fa-tag"></i> Nome do Produto</label>
-                        <input type="text" name="nome_produto" required placeholder="Ex: Mouse Sem Fio">
+                <div class="form-section-title"><i class="fas fa-info-circle"></i> Detalhes Principais</div>
+                <div class="form-grid-pro">
+                    <div class="form-group-pro span-2">
+                        <label>Nome do Produto</label>
+                        <input type="text" name="nome_produto" id="inputNomeProduto" required placeholder="Ex: Teclado Mecânico RGB">
                     </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-layer-group"></i> Categoria</label>
-                        <select name="categoria_produto">
-                            <option value="hardware">💻 Hardware</option>
-                            <option value="software">💿 Software</option>
-                            <option value="periferico">🎮 Periférico</option>
+                    <div class="form-group-pro">
+                        <label>Marca / Fabricante</label>
+                        <input type="text" name="marca" id="inputMarca" placeholder="Ex: Logitech, Dell, Razer...">
+                    </div>
+                    <div class="form-group-pro span-3">
+                        <label>Categoria do Produto</label>
+                        <select name="categoria_produto" id="inputCategoriaProduto">
+                            {% for cat in categorias %}
+                                <option value="{{ cat.nome }}">{{ cat.nome }}</option>
+                            {% endfor %}
                         </select>
                     </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-industry"></i> Marca</label>
-                        <input type="text" name="marca" placeholder="Ex: Logitech, Dell...">
+                </div>
+
+                <div class="form-section-title"><i class="fas fa-tags"></i> Precificação & Estoque</div>
+                <div class="form-grid-pro grid-4">
+                    <div class="form-group-pro">
+                        <label>Preço de Custo</label>
+                        <div class="input-money">
+                            <input type="number" name="preco_custo" id="inputPrecoCusto" step="0.01" required placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="form-group-pro">
+                        <label>Preço de Atacado</label>
+                        <div class="input-money">
+                            <input type="number" name="preco_at" id="inputPrecoAt" step="0.01" required placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="form-group-pro">
+                        <label>Preço de Varejo</label>
+                        <div class="input-money">
+                            <input type="number" name="preco_vrj" id="inputPrecoVrj" step="0.01" required placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="form-group-pro">
+                        <label>Qtd. em Estoque</label>
+                        <input type="number" name="estoque_atual" id="inputEstoqueAtual" value="0" required placeholder="Ex: 50">
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="input-group">
-                        <label><i class="fas fa-dollar-sign"></i> Preço de Custo</label>
-                        <input type="number" name="preco_custo" step="0.01" required placeholder="0,00">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-dollar-sign"></i> Preço Atacado</label>
-                        <input type="number" name="preco_at" step="0.01" required placeholder="0,00">
-                    </div>
-                    <div class="input-group">
-                        <label><i class="fas fa-dollar-sign"></i> Preço Varejo</label>
-                        <input type="number" name="preco_vrj" step="0.01" required placeholder="0,00">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="input-group">
-                        <label><i class="fas fa-cubes"></i> Estoque Atual</label>
-                        <input type="number" name="estoque_atual" value="0" required>
-                    </div>
-                    <div class="input-group"></div>
-                    <div class="input-group"></div>
-                </div>
-
-                <div class="actions-bar">
-                    <button type="reset" class="outline"><i class="fas fa-eraser"></i> Limpar</button>
-                    <button type="submit" class="success"><i class="fas fa-save"></i> Salvar Produto</button>
+                <div class="acoes-form">
+                    <button type="reset" class="btn-limpar" onclick="resetFormProduto()"><i class="fas fa-eraser"></i> Limpar / Cancelar</button>
+                    <button type="submit" class="btn-salvar" id="btnSalvarProduto"><i class="fas fa-save"></i> Salvar Produto</button>
                 </div>
             </form>
         </div>
 
-        <div class="card grid-full">
-            <div class="card-header">
-                <i class="fas fa-list"></i>
-                <h3>Lista de Produtos</h3>
-            </div>
+        <div class="card-pro">
+            <h2><i class="fas fa-boxes"></i> Catálogo de Produtos</h2>
 
-            <div class="categorias">
-                <button class="categoria-btn active" data-filtro="todos">📌 Todos</button>
-                <button class="categoria-btn" data-filtro="hardware">💻 Hardware</button>
-                <button class="categoria-btn" data-filtro="software">💿 Software</button>
-                <button class="categoria-btn" data-filtro="periferico">🎮 Periférico</button>
-            </div>
+            <div class="barra-ferramentas">
+                <div class="categorias-pro">
+                    <button class="categoria-btn active" data-filtro="todos">📌 Todos</button>
+                    {% for cat in categorias %}
+                        <button class="categoria-btn" data-filtro="{{ cat.nome }}"><i class="fas fa-tag"></i> {{ cat.nome }}</button>
+                    {% endfor %}
+                </div>
 
-            <div class="search-bar">
-                <div class="input-group">
-                    <label><i class="fas fa-search"></i> Buscar produto</label>
-                    <input type="text" id="buscaProduto" placeholder="Nome ou código...">
+                <div class="search-pro">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="buscaProduto" placeholder="Buscar por nome ou código..." title="Busca segura habilitada">
                 </div>
             </div>
 
-            <div class="table-responsive">
+            <div style="overflow-x: auto;">
                 <table id="tabelaProdutos">
                     <thead>
                         <tr>
                             <th>Código (ID)</th>
                             <th>Produto</th>
                             <th>Categoria</th>
+                            <th>Preço Custo</th>
                             <th>Preço Varejo</th>
-                            <th>Estoque</th>
-                            <th>Total Estoque</th>
+                            <th>Qtd. Estoque</th>
+                            <th style="text-align: center;">Ações</th>
                         </tr>
                     </thead>
                     <tbody id="corpoTabela">
                         </tbody>
+                </table>
+            </div>
+
+            <div class="exportar-container">
+                <button class="btn-exportar" onclick="baixarRelatorioEstoque()">
+                    <i class="fas fa-file-csv"></i> Baixar Relatório de Estoque
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalCat" class="modal-overlay">
+        <div class="modal-content">
+            <button onclick="document.getElementById('modalCat').style.display='none'" style="position: absolute; right: 20px; top: 20px; background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer;"><i class="fas fa-times"></i></button>
+            <h2 style="margin-top: 0; font-size: 1.4rem; color: #1e293b; margin-bottom: 20px;"><i class="fas fa-tags" style="color: #3b82f6;"></i> Gerenciar Categorias</h2>
+            
+            <form action="{{ url_for('adicionar_categoria') }}" method="POST" style="display: flex; gap: 10px; margin-bottom: 25px;">
+                <input type="text" name="nome_categoria" placeholder="Ex: Câmeras de Segurança" required style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; outline: none; font-size: 0.95rem;">
+                <button type="submit" style="background: #10b981; color: white; border: none; padding: 0 20px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1rem;"><i class="fas fa-plus"></i></button>
+            </form>
+
+            <div style="max-height: 250px; overflow-y: auto;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    {% for cat in categorias %}
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 12px 5px; font-weight: 600; color: #475569;"><i class="fas fa-tag" style="color: #94a3b8; margin-right: 8px;"></i> {{ cat.nome }}</td>
+                        <td style="text-align: right; padding: 12px 5px;">
+                            <form action="{{ url_for('excluir_categoria', id_cat=cat.id_categoria) }}" method="POST" style="margin: 0; display: inline;">
+                                <button type="submit" onclick="return confirm('ATENÇÃO: Tem certeza que deseja excluir esta categoria?')" style="background: rgba(239,68,68,0.1); color: #ef4444; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold;"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
                 </table>
             </div>
         </div>
@@ -209,66 +299,103 @@
         let produtos = JSON.parse(dadosElement);
         let filtroAtivo = "todos";
 
-        function getCategoriaClass(categoria) {
-            const classes = { 'hardware': 'categoria-hardware', 'software': 'categoria-software', 'periferico': 'categoria-perifericos' };
-            return classes[categoria] || 'categoria-hardware';
+        // ==================== LÓGICA DE EDIÇÃO (PREENCHE ESPAÇO VAZIO) ====================
+        function editarProduto(id_prod) {
+            const p = produtos.find(item => item.id === id_prod);
+            if (!p) return;
+
+            document.getElementById('inputIdProduto').value = p.id;
+            document.getElementById('inputNomeProduto').value = p.nome;
+            document.getElementById('inputMarca').value = p.marca || '';
+            document.getElementById('inputCategoriaProduto').value = p.categoria;
+            document.getElementById('inputPrecoCusto').value = p.preco_custo;
+            document.getElementById('inputPrecoAt').value = p.preco_at;
+            document.getElementById('inputPrecoVrj').value = p.preco;
+            document.getElementById('inputEstoqueAtual').value = p.estoque;
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            const btn = document.getElementById('btnSalvarProduto');
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar Produto';
+            btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
         }
 
-        function getCategoriaIcone(categoria) {
-            const icones = { 'hardware': '💻', 'software': '💿', 'periferico': '🎮' };
-            return icones[categoria] || '📦';
+        function resetFormProduto() {
+            document.getElementById('inputIdProduto').value = '';
+            
+            setTimeout(() => { // Aguarda a limpeza padrão do formulário
+                const btn = document.getElementById('btnSalvarProduto');
+                btn.innerHTML = '<i class="fas fa-save"></i> Salvar Produto';
+                btn.style.background = 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)';
+            }, 10);
         }
 
-        function getCategoriaNome(categoria) {
-            const nomes = { 'hardware': 'Hardware', 'software': 'Software', 'periferico': 'Periférico' };
-            return nomes[categoria] || categoria;
-        }
+        // ==================== BUSCA E BARREIRA DE SEGURANÇA ====================
+        const campoBusca = document.getElementById('buscaProduto');
+        campoBusca.addEventListener('input', (e) => {
+            // SEGURANÇA: Remove qualquer tentativa de digitar HTML (<script>) ou caracteres perigosos (XSS Injection)
+            e.target.value = e.target.value.replace(/[^a-zA-Z0-9À-ÿ\s\-#]/g, "");
+            atualizarTabela();
+        });
 
         function atualizarTabela() {
             const tbody = document.getElementById('corpoTabela');
             const busca = document.getElementById('buscaProduto').value.toLowerCase().trim();
             let filtrados = produtos;
 
+            // ===== FILTRO INTELIGENTE DE CATEGORIAS =====
             if (filtroAtivo !== "todos") {
-                filtrados = filtrados.filter(p => p.categoria === filtroAtivo);
-            }
+                // Função que remove acentos e joga tudo para minúsculo
+                const normalizar = (texto) => String(texto || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+                
+                const filtroFormatado = normalizar(filtroAtivo);
 
-            if (busca) {
                 filtrados = filtrados.filter(p => {
-                    // Cria a versão enfeitada do ID só para a busca entender
-                    const idFormatado = "#" + String(p.codigo).padStart(4, '0');
-                    
-                    return idFormatado.includes(busca) || 
-                           String(p.codigo).includes(busca) || 
-                           p.nome.toLowerCase().includes(busca);
+                    const catProduto = normalizar(p.categoria);
+                    // Compara perfeitamente produtos antigos com categorias novas
+                    return catProduto === filtroFormatado; 
                 });
             }
 
+            // ===== FILTRO DE BUSCA POR TEXTO =====
+            if (busca) {
+                filtrados = filtrados.filter(p => {
+                    const idFormatado = "#" + String(p.codigo).padStart(4, '0');
+                    return idFormatado.includes(busca) || String(p.codigo).includes(busca) || p.nome.toLowerCase().includes(busca);
+                });
+            }
+
+            // Renderiza se não encontrar nada
             if (filtrados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:32px;"><i class="fas fa-box-open"></i> Nenhum produto encontrado</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:32px; color: #94a3b8; font-weight: 500;"><i class="fas fa-box-open" style="font-size: 1.5rem; display: block; margin-bottom: 10px;"></i> Nenhum produto encontrado nesta categoria</td></tr>';
                 return;
             }
 
+            // Renderiza a tabela
             let html = '';
             filtrados.forEach(prod => {
                 const totalEstoque = prod.preco * prod.estoque;
                 const codigoFormatado = "#" + String(prod.codigo).padStart(4, '0');
-                
+                const estiloEstoque = prod.estoque <= 0 ? 'color: #ef4444; font-weight: 700;' : '';
+
                 html += `
                 <tr>
-                    <td><strong>${codigoFormatado}</strong></td>
-                    <td>${prod.nome}</td>
-                    <td><span class="categoria-badge ${getCategoriaClass(prod.categoria)}">${getCategoriaIcone(prod.categoria)} ${getCategoriaNome(prod.categoria)}</span></td>
-                    <td>R$ ${prod.preco.toFixed(2)}</td>
-                    <td>${prod.estoque} un</td>
-                    <td>R$ ${totalEstoque.toFixed(2)}</td>
+                    <td><strong style="color: #3b82f6;">${codigoFormatado}</strong></td>
+                    <td><div style="font-weight: 600;">${prod.nome}</div><div style="font-size: 0.75rem; color: #94a3b8;">${prod.marca || 'Sem marca'}</div></td>
+                    <td><span style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;"><i class="fas fa-tag" style="margin-right:4px;"></i>${prod.categoria || 'N/I'}</span></td>
+                    <td><strong style="color: #64748b;">R$ ${(prod.preco_custo || 0).toFixed(2)}</strong></td>
+                    <td><strong style="color: #10b981;">R$ ${prod.preco.toFixed(2)}</strong></td>
+                    <td style="${estiloEstoque}">${prod.estoque} un</td>
+                    <td style="text-align: center;">
+                        <button type="button" class="btn-action edit-btn" onclick="editarProduto(${prod.id})" title="Editar Produto">
+                            <i class="fas fa-pen"></i>
+                        </button>
+                    </td>
                 </tr>
                 `;
             });
             tbody.innerHTML = html;
         }
-
-        document.getElementById('buscaProduto').addEventListener('input', () => atualizarTabela());
 
         document.querySelectorAll('.categoria-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -281,39 +408,161 @@
 
         atualizarTabela();
 
+        
+        // ==================== SEGURANÇA E HIGIENIZAÇÃO DE DADOS ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sanitiza inputs de texto para impedir XSS/Scripts maliciosos em tempo real
+            const camposTexto = document.querySelectorAll('input[type="text"]');
+            camposTexto.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    // Remove tags HTML perigosas (<, >, script, etc.) mantendo acentuação e caracteres válidos
+                    let val = e.target.value;
+                    // Se houver tags HTML óbvias, limpa
+                    if (val.includes('<') || val.includes('>')) {
+                        e.target.value = val.replace(/[<>]/g, '');
+                    }
+                });
+            });
+
+            // Validação de formulários de produtos e categorias contra inserts inválidos ou negativos
+            const formProduto = document.querySelector('form[action*="cadastro_produtos"]');
+            if (formProduto) {
+                formProduto.addEventListener('submit', (e) => {
+                    const nome = document.getElementById('inputNomeProduto').value.trim();
+                    const precoVenda = parseFloat(document.getElementById('inputPrecoVrj').value) || 0;
+                    const estoque = parseInt(document.getElementById('inputEstoqueAtual').value) || 0;
+
+                    if (!nome) {
+                        alert('O nome do produto não pode estar vazio.');
+                        e.preventDefault();
+                        return;
+                    }
+                    if (precoVenda < 0) {
+                        alert('O preço de venda não pode ser negativo.');
+                        e.preventDefault();
+                        return;
+                    }
+                    if (estoque < 0) {
+                        alert('A quantidade em estoque não pode ser negativa.');
+                        e.preventDefault();
+                        return;
+                    }
+                });
+            }
+
+            const formCategoria = document.querySelector('form[action*="adicionar_categoria"]');
+            if (formCategoria) {
+                formCategoria.addEventListener('submit', (e) => {
+                    const inputCat = formCategoria.querySelector('input[name="nome_categoria"]');
+                    if (inputCat) {
+                        let catVal = inputCat.value.trim();
+                        if (!catVal || catVal.length < 2) {
+                            alert('O nome da categoria deve ter pelo menos 2 caracteres.');
+                            e.preventDefault();
+                            return;
+                        }
+                        // Remove qualquer caractere HTML/script
+                        inputCat.value = catVal.replace(/[<>]/g, '');
+                    }
+                });
+            }
+        });
+
+        
+        // ==================== VALIDAÇÃO DE NÚMEROS (SEM NEGATIVOS E MÁX 11 DÍGITOS) ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            const numInputs = document.querySelectorAll('input[type="number"]');
+            numInputs.forEach(input => {
+                input.setAttribute('min', '0');
+                input.setAttribute('max', '99999999999');
+
+                input.addEventListener('input', (e) => {
+                    let val = e.target.value;
+                    if (val.includes('-')) {
+                        e.target.value = val.replace(/-/g, '');
+                        val = e.target.value;
+                    }
+                    // Remove ponto e vírgula para contar apenas os dígitos numéricos
+                    let digits = val.replace(/[\.,]/g, '');
+                    if (digits.length > 11) {
+                        e.target.value = val.slice(0, 11 + (val.length - digits.length));
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+                        e.preventDefault();
+                    }
+                });
+            });
+
+            // Validação no envio do formulário de produtos
+            const formProduto = document.querySelector('form[action*="cadastro_produtos"]');
+            if (formProduto) {
+                formProduto.addEventListener('submit', (e) => {
+                    const precoCusto = parseFloat(document.getElementById('inputPrecoCusto').value) || 0;
+                    const precoAt = parseFloat(document.getElementById('inputPrecoAt').value) || 0;
+                    const precoVrj = parseFloat(document.getElementById('inputPrecoVrj').value) || 0;
+                    const estoque = parseInt(document.getElementById('inputEstoqueAtual').value) || 0;
+
+                    if (precoCusto < 0 || precoAt < 0 || precoVrj < 0 || estoque < 0) {
+                        alert('Erro: Não são permitidos valores negativos.');
+                        e.preventDefault();
+                        return;
+                    }
+
+                    // Verifica se algum número excede 11 dígitos inteiros
+                    if (String(Math.floor(precoCusto)).length > 11 || 
+                        String(Math.floor(precoAt)).length > 11 || 
+                        String(Math.floor(precoVrj)).length > 11 || 
+                        String(Math.abs(estoque)).length > 11) {
+                        alert('Erro: Os valores não podem exceder 11 dígitos.');
+                        e.preventDefault();
+                        return;
+                    }
+                });
+            }
+        });
+
+        // ==================== EXPORTAR RELATÓRIO ====================
+        function baixarRelatorioEstoque() {
+            if (produtos.length === 0) { alert("Não há produtos cadastrados para exportar."); return; }
+            let csv = "Código,Produto,Marca,Categoria,Preço Varejo,Quantidade Estoque,Total em Estoque\n";
+            produtos.forEach(p => {
+                const totalEstoque = (p.preco * p.estoque).toFixed(2);
+                const precoFormatado = p.preco.toFixed(2);
+                const nomeSeguro = p.nome ? p.nome.replace(/"/g, '""') : '';
+                const marcaSegura = p.marca ? p.marca.replace(/"/g, '""') : '';
+                const categoriaSegura = p.categoria ? p.categoria.replace(/"/g, '""') : '';
+                csv += `"${p.codigo}","${nomeSeguro}","${marcaSegura}","${categoriaSegura}","${precoFormatado}","${p.estoque}","${totalEstoque}"\n`;
+            });
+            const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url); link.setAttribute("download", "relatorio_estoque.csv");
+            link.style.visibility = 'hidden'; document.body.appendChild(link);
+            link.click(); document.body.removeChild(link);
+        }
+
         // ==================== SISTEMA DE TEMA ESCURO ====================
         function toggleTheme(event) {
             if(event) event.preventDefault();
-            
             const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
-            const icon = document.getElementById('theme-icon');
-            const text = document.getElementById('theme-text');
-
-            if (currentTheme === 'dark') {
-                body.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'light');
-                if(icon) icon.className = 'fas fa-moon';
-                if(text) text.textContent = 'Tema Escuro';
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme'); localStorage.setItem('theme', 'light');
+                const ic = document.getElementById('theme-icon'); if(ic) ic.className = 'fas fa-moon'; 
+                const tt = document.getElementById('theme-text'); if(tt) tt.textContent = 'Tema Escuro';
             } else {
-                body.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-                if(icon) icon.className = 'fas fa-sun';
-                if(text) text.textContent = 'Tema Claro';
+                body.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark');
+                const ic = document.getElementById('theme-icon'); if(ic) ic.className = 'fas fa-sun'; 
+                const tt = document.getElementById('theme-text'); if(tt) tt.textContent = 'Tema Claro';
             }
         }
-
-        // Aplica o tema imediatamente ao carregar a página
         document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
+            if (localStorage.getItem('theme') === 'dark') {
                 document.body.setAttribute('data-theme', 'dark');
-                const icon = document.getElementById('theme-icon');
-                const text = document.getElementById('theme-text');
-                if (icon && text) {
-                    icon.className = 'fas fa-sun';
-                    text.textContent = 'Tema Claro';
-                }
+                const ic = document.getElementById('theme-icon'); if(ic) ic.className = 'fas fa-sun'; 
+                const tt = document.getElementById('theme-text'); if(tt) tt.textContent = 'Tema Claro';
             }
         });
     </script>

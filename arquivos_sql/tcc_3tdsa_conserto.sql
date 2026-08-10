@@ -23,7 +23,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-266';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-449';
 
 --
 -- Table structure for table `conserto`
@@ -36,15 +36,16 @@ CREATE TABLE `conserto` (
   `id_conserto` int NOT NULL AUTO_INCREMENT,
   `nome_cliente` varchar(150) NOT NULL,
   `equipamento` varchar(150) NOT NULL,
+  `numero_serie` varchar(100) DEFAULT NULL,
   `tipo` varchar(50) NOT NULL,
-  `defeito` varchar(255) NOT NULL,
+  `defeito` varchar(500) DEFAULT NULL,
   `prioridade` varchar(20) NOT NULL,
-  `status_servico` varchar(50) NOT NULL,
+  `status_servico` varchar(50) DEFAULT 'recebido',
   `valor_estimado` decimal(10,2) DEFAULT '0.00',
   `observacoes` text,
   `data_entrada` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id_conserto`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -53,7 +54,7 @@ CREATE TABLE `conserto` (
 
 LOCK TABLES `conserto` WRITE;
 /*!40000 ALTER TABLE `conserto` DISABLE KEYS */;
-INSERT INTO `conserto` VALUES (1,'Pedro','Iphone 18 ','celular','Queimou a tela','media','recebido',1000.00,'Quero tambem que troque a capa dele.','2026-08-01 20:20:01'),(2,'Pedro','Iphone 18 ','celular','Queimou a tela','media','recebido',1000.00,'Quero tambem que troque a capa dele.','2026-08-01 20:20:08'),(3,'Pedro','Iphone 18 ','celular','Queimou a tela','media','recebido',1000.00,'Quero tambem que troque a capa dele.','2026-08-01 20:20:13'),(4,'Pedro','Iphone 18 ','celular','Queimou a tela','media','recebido',1000.00,'Quero tambem que troque a capa dele.','2026-08-01 20:28:25'),(5,'Pedro','Iphone 18 ','celular','Queimou a tela','media','recebido',1000.00,'Quero tambem que troque a capa dele.','2026-08-01 20:29:12'),(6,'Pedro','Iphone 18 ','celular','Queimou a tela','media','recebido',1000.00,'Quero tambem que troque a capa dele.','2026-08-01 20:30:21'),(7,'Pedro','Iphone 18 ','celular','Queimou a tela','media','recebido',1000.00,'Quero tambem que troque a capa dele.','2026-08-01 20:37:12'),(8,'Arthur','Positivo Master','notebook','Derramei uranio enriquecido e cesio-137 no meu computador','baixa','recebido',1000000.00,'','2026-08-01 20:38:21'),(9,'Messi','Bola de futebol','outros','Furou a bola','alta','conserto',1000.00,'Hola tengo 8 bolas de oro, e duas de carne quieres ver','2026-08-01 21:26:29');
+INSERT INTO `conserto` VALUES (1,'Ned','Iphone 3','SN65765765','notebook',NULL,'media','recebido',0.00,NULL,'2026-08-05 23:02:18'),(2,'Gustavo','S24 Plus','SN12345678000','celular',NULL,'media','recebido',0.00,NULL,'2026-08-06 09:20:07');
 /*!40000 ALTER TABLE `conserto` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
@@ -67,4 +68,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-02  0:22:28
+-- Dump completed on 2026-08-06 11:21:49

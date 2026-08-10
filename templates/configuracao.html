@@ -5,344 +5,407 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configurações · TechManager</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='configuracao.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
+    
+    <style>
+        /* ==================== ESTILOS PROFISSIONAIS (Configurações) ==================== */
+        body { background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%); min-height: 100vh; padding: 2rem 1rem; position: relative; margin: 0; font-family: 'Inter', sans-serif; display: flex;}
+        .main-content { margin-left: 70px; padding: 0 1.5rem; width: 100%; transition: all 0.3s ease; box-sizing: border-box; max-width: 1200px; margin: 0 auto;}
+        
+        .card-pro { background: #ffffff; border-radius: 1.5rem; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); border: 1px solid #f0f2f6; transition: 0.3s; margin-bottom: 24px;}
+        .card-header-pro { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .card-header-pro h2 { font-size: 1.3rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin: 0; }
+        .card-header-pro h2 i { color: #3b82f6; background: #eff6ff; padding: 8px; border-radius: 10px; }
+
+        /* GRID ELASTIC (Ajusta os espaços em branco perfeitamente) */
+        .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: stretch; margin-bottom: 24px; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;}
+        .form-group label i { margin-right: 4px; color: #94a3b8; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; outline: none; transition: 0.2s; box-sizing: border-box; background: #f8fafc; color: #1e293b; font-weight: 500; font-family: 'Inter', sans-serif;}
+        .form-group input:focus, .form-group select:focus { border-color: #3b82f6; background: #ffffff; box-shadow: 0 4px 15px rgba(59,130,246,0.1); }
+
+        /* ==================== CUSTOM FILE INPUT (Foto) ==================== */
+        .file-upload-wrapper { position: relative; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .file-upload-wrapper input[type="file"] { position: absolute; width: 0; height: 0; opacity: 0; overflow: hidden; }
+        .btn-choose-file { background: #f1f5f9; color: #475569; border: 2px dashed #cbd5e1; padding: 10px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .btn-choose-file:hover { background: #e2e8f0; border-color: #94a3b8; color: #1e293b; }
+        .file-name-display { font-size: 0.85rem; color: #64748b; font-weight: 500; font-style: italic; }
+
+        /* ==================== BOTÕES ==================== */
+        .btn-save { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); font-size: 0.95rem; }
+        .btn-save:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
+        .btn-outline { background: transparent; color: #64748b; border: 2px solid #cbd5e1; padding: 12px 24px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; font-size: 0.95rem; }
+        .btn-outline:hover { background: #f1f5f9; color: #1e293b; }
+        .btn-blue { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+        .btn-blue:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+        /* ==================== TOGGLE SWITCHES ==================== */
+        .toggle-switch { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 16px 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 12px; }
+        .toggle-info { display: flex; align-items: center; gap: 15px; }
+        .toggle-info i { font-size: 1.5rem; color: #3b82f6; }
+        .toggle-info strong { display: block; color: #1e293b; font-size: 0.95rem; margin-bottom: 4px; }
+        .toggle-info p { margin: 0; color: #64748b; font-size: 0.8rem; font-weight: 500; }
+        
+        .toggle { position: relative; display: inline-block; width: 46px; height: 26px; }
+        .toggle input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: #10b981; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* ==================== TEMA ESCURO ==================== */
+        [data-theme="dark"] body { background: linear-gradient(135deg, #0f172a 0%, #020617 100%) !important; }
+        [data-theme="dark"] .card-pro { background-color: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .card-header-pro { border-color: #334155; }
+        [data-theme="dark"] .card-header-pro h2, [data-theme="dark"] .toggle-info strong { color: #f8fafc; }
+        [data-theme="dark"] .form-group input, [data-theme="dark"] .form-group select { background-color: #0f172a !important; border-color: #334155 !important; color: #f8fafc !important; }
+        [data-theme="dark"] .toggle-switch { background: #0f172a; border-color: #334155; }
+        [data-theme="dark"] .btn-choose-file { background: #0f172a; border-color: #475569; color: #cbd5e1; }
+        [data-theme="dark"] .btn-choose-file:hover { background: #334155; color: #f8fafc; }
+        [data-theme="dark"] .btn-outline { border-color: #475569; color: #cbd5e1; }
+        [data-theme="dark"] .btn-outline:hover { background: #334155; color: #f8fafc; }
+
+        @media (max-width: 900px) {
+            .grid-layout { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 
-    <div class="menu-trigger">
-        <i class="fas fa-bars"></i>
-    </div>
-
+    <div class="menu-trigger"><i class="fas fa-bars"></i></div>
     <div class="side-menu">
         <div class="menu-header">
-            <div class="user-avatar"><i class="fas fa-user-circle"></i></div>
-            <h3>Olá, Usuário</h3>
-            <p><i class="fas fa-envelope"></i> {{ session.get('usuario_logado', 'admin@techmanager.com') }}</p>
+            <div class="user-avatar" style="background: none;">
+                <img class="user-avatar-img" src="{{ url_for('static', filename='uploads/' + session.get('foto_perfil', 'default_avatar.png')) }}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.3);" onerror="this.src='https://via.placeholder.com/80?text=U'">
+            </div>
+            <h3 style="margin-top: 10px; margin-bottom: 5px;">
+                Olá, {{ 'Administrador' if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' else 'Funcionário' }}
+            </h3>
+            <p style="margin: 0 0 8px 0;"><i class="fas fa-envelope"></i> {{ session.get('usuario_logado') }}</p>
+            <div style="font-size: 0.75rem; background: rgba(255,255,255,0.15); padding: 3px 10px; border-radius: 6px; display: inline-block; font-weight: 600;">
+                <i class="fas fa-building"></i> {{ config_global.empresa_nome | default('TechManager', true) }}
+            </div>
         </div>
+        
         <div class="menu-items">
-            <a class="menu-item" href="{{ url_for('menu') }}">
-                <i class="fas fa-home"></i><span>Início</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('cadastro') }}">
-                <i class="fas fa-address-card"></i><span>Cadastro de Clientes</span>
-            </a>
-            
-            {% if session.get('nivel') == 2 %}
-            <a class="menu-item" href="{{ url_for('cadastro_funcionario') }}">
-                <i class="fas fa-users"></i><span>Cadastro de Funcionários</span>
-            </a>
+            <a class="menu-item" href="{{ url_for('menu') }}"><i class="fas fa-home"></i><span>Início</span></a>
+            <a class="menu-item" href="{{ url_for('cadastro') }}"><i class="fas fa-address-card"></i><span>Cadastro de Clientes</span></a>
+            {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
+            <a class="menu-item" href="{{ url_for('cadastro_funcionario') }}"><i class="fas fa-users"></i><span>Cadastro de Funcionários</span></a>
             {% endif %}
-            
-            <a class="menu-item" href="{{ url_for('cadastro_produtos') }}">
-                <i class="fas fa-box"></i><span>Cadastro de Produtos</span>
-            </a>
-
-            <a class="menu-item" href="{{ url_for('conserto') }}">
-                <i class="fas fa-wrench"></i><span>Conserto</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('vendas') }}">
-                <i class="fas fa-cash-register"></i><span>Vendas</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('extrato') }}">
-                <i class="fas fa-file-invoice"></i><span>Extrato</span>
-            </a>
-
-            <a class="menu-item" href="{{ url_for('orcamento') }}">
-                <i class="fas fa-calculator"></i><span>Orçamento</span>
-            </a>
-            
+            <a class="menu-item" href="{{ url_for('cadastro_produtos') }}"><i class="fas fa-box"></i><span>Cadastro de Produtos</span></a>
+            <a class="menu-item" href="{{ url_for('conserto') }}"><i class="fas fa-wrench"></i><span>Gestão de Serviços</span></a>
+            <a class="menu-item" href="{{ url_for('vendas') }}"><i class="fas fa-cash-register"></i><span>Vendas</span></a>
+            {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
+            <a class="menu-item" href="{{ url_for('extrato') }}"><i class="fas fa-file-invoice"></i><span>Extrato</span></a>
+            {% endif %}
             <div class="menu-divider"></div>
-            
-            <a class="menu-item" href="{{ url_for('configuracao') }}">
-                <i class="fas fa-cog"></i><span>Configuração</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('suporte') }}">
-                <i class="fas fa-headset"></i><span>Suporte</span>
-            </a>
-            
-            <a class="menu-item" href="#" onclick="toggleTheme(event)">
-                <i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('logout') }}" onclick="return confirm('Tem certeza que deseja sair?')">
-                <i class="fas fa-sign-out-alt"></i><span>Sair</span>
-            </a>
+            <a class="menu-item" href="{{ url_for('configuracao') }}" style="background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; color: #3b82f6;"><i class="fas fa-cog"></i><span>Configuração</span></a>
+            <a class="menu-item" href="#" onclick="toggleTheme(event)"><i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span></a>
+            <a class="menu-item" href="{{ url_for('logout') }}" onclick="return confirm('Tem certeza que deseja sair?')"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
          </div>
     </div>
 
-    <div class="dashboard">
-        <div class="card grid-full">
-            <div class="card-header">
-                <i class="fas fa-cog"></i>
-                <h2>Configurações do Sistema</h2>
-            </div>
-            <div class="sub-header-info">
-                <i class="fas fa-info-circle"></i> Gerencie as configurações da sua conta e preferências do sistema
-            </div>
-        </div>
-
-        <div class="card grid-half">
-            <div class="card-header">
-                <i class="fas fa-building"></i>
-                <h3>Perfil da Empresa</h3>
-            </div>
-            <div class="form-row">
-                <div class="input-group">
-                    <label><i class="fas fa-building"></i> Nome da Empresa</label>
-                    <input type="text" id="empresaNome" value="">
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-id-card"></i> CNPJ</label>
-                    <input type="text" id="empresaCnpj" value="">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="input-group">
-                    <label><i class="fas fa-phone"></i> Telefone</label>
-                    <input type="text" id="empresaTelefone" value="">
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-envelope"></i> E-mail</label>
-                    <input type="email" id="empresaEmail" value="">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="input-group">
-                    <label><i class="fas fa-map-marker-alt"></i> Endereço</label>
-                    <input type="text" id="empresaEndereco" value="">
+    <div class="main-content">
+        
+        <div class="card-pro" style="background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%); color: white; padding: 1.5rem 2.5rem; margin-top: 30px;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <i class="fas fa-cog" style="font-size: 2.2rem; color: rgba(255,255,255,0.9);"></i>
+                <div>
+                    <h1 style="font-size: 1.6rem; font-weight: 700; margin: 0; text-transform: uppercase;">Configurações do Sistema</h1>
+                    <span style="opacity: 0.8; font-size: 0.9rem; font-weight: 500;">Gerencie as configurações da sua conta e preferências</span>
                 </div>
             </div>
         </div>
 
-        <div class="card grid-half">
-            <div class="card-header">
-                <i class="fas fa-sliders-h"></i>
-                <h3>Preferências</h3>
+        <div class="card-pro">
+            <div class="card-header-pro">
+                <h2><i class="fas fa-user-circle"></i> O Meu Perfil</h2>
             </div>
-            <div class="toggle-switch">
-                <div class="toggle-info">
-                    <i class="fas fa-bell"></i>
-                    <div>
-                        <strong>Notificações</strong>
-                        <p>Receber alertas e notificações do sistema</p>
+            
+            <form action="{{ url_for('upload_foto') }}" method="POST" enctype="multipart/form-data" style="display: flex; gap: 24px; align-items: center; padding: 10px 0; flex-wrap: wrap;">
+                
+                <div style="width: 100px; height: 100px; min-width: 100px; min-height: 100px; border-radius: 50%; border: 3px solid #3b82f6; overflow: hidden; background-color: #1e293b; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin: 0; padding: 0;">
+                    {% set primeira_letra = session.get('usuario_logado', 'User') | first | upper %}
+                    <img src="{{ url_for('static', filename='uploads/' + session.get('foto_perfil', 'default_avatar.png')) }}" 
+                        style="width: 100px !important; height: 100px !important; object-fit: cover !important; display: block !important; border: none !important; margin: 0 !important; padding: 0 !important;" 
+                        onerror="this.onerror=null; this.src='//ui-avatars.com/api/?name={{ primeira_letra }}&background=3b82f6&color=fff&size=100';">
+                </div>
+
+                <div>
+                    <h4 style="margin: 0 0 8px 0; color: #1e293b; font-size: 1.1rem;" class="title-dark">Foto de Perfil</h4>
+                    <div class="file-upload-wrapper">
+                        <label class="btn-choose-file">
+                            <i class="fas fa-folder-open"></i> Escolher Arquivo
+                            <input type="file" name="foto" id="fotoInput" accept="image/jpeg, image/png" required>
+                        </label>
+                        <span class="file-name-display" id="fileNameDisplay">Nenhum arquivo selecionado</span>
+                        <button type="submit" class="btn-blue"><i class="fas fa-upload"></i> Salvar Foto</button>
+                    </div>
+                    <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 8px; margin-bottom: 0;">Recomendado: Formato JPG ou PNG quadrado (A foto antiga será automaticamente removida).</p>
+                </div>
+            </form>
+        </div>
+
+        <form action="{{ url_for('salvar_config') }}" method="POST" id="formConfig" style="display: contents;">
+            <div class="grid-layout">
+                
+                <div class="card-pro" style="margin-bottom: 0; display: flex; flex-direction: column;">
+                    <div class="card-header-pro">
+                        <h2><i class="fas fa-building"></i> Perfil da Empresa</h2>
+                    </div>
+                    
+                    <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div class="form-group">
+                            <label><i class="fas fa-signature"></i> Nome da Empresa</label>
+                            <input type="text" name="empresaNome" class="safe-text" maxlength="80" value="{{ config.empresa_nome | default('', true) }}">
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label><i class="fas fa-id-card"></i> CNPJ</label>
+                                <input type="text" name="empresaCnpj" class="safe-doc" maxlength="25" value="{{ config.empresa_cnpj | default('', true) }}">
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fas fa-phone"></i> Telefone</label>
+                                <input type="text" name="empresaTelefone" class="safe-tel" maxlength="20" value="{{ config.empresa_telefone | default('', true) }}">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label><i class="fas fa-envelope"></i> E-mail Corporativo</label>
+                            <input type="email" name="empresaEmail" maxlength="100" value="{{ config.empresa_email | default('', true) }}">
+                        </div>
+                        
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label><i class="fas fa-map-marker-alt"></i> Endereço Completo</label>
+                            <input type="text" name="empresaEndereco" class="safe-text" maxlength="150" value="{{ config.empresa_endereco | default('', true) }}">
+                        </div>
                     </div>
                 </div>
-                <label class="toggle">
-                    <input type="checkbox" id="notificacoesToggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
-            <div class="toggle-switch">
-                <div class="toggle-info">
-                    <i class="fas fa-chart-line"></i>
-                    <div>
-                        <strong>Relatórios Automáticos</strong>
-                        <p>Enviar relatórios por e-mail semanalmente</p>
+
+                <div class="card-pro" style="margin-bottom: 0; display: flex; flex-direction: column;">
+                    <div class="card-header-pro">
+                        <h2><i class="fas fa-sliders-h"></i> Preferências</h2>
+                    </div>
+                    
+                    <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 25px;">
+                        <div class="toggle-switch" style="margin-bottom: 0;">
+                            <div class="toggle-info">
+                                <i class="fas fa-bell"></i>
+                                <div>
+                                    <strong>Notificações Visuais</strong>
+                                    <p>Receber notificações na tela ao salvar e excluir</p>
+                                </div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" name="notificacoesToggle" {% if config.notificacoes_ativas == 1 %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="toggle-switch" style="margin-bottom: 0;">
+                            <div class="toggle-info">
+                                <i class="fas fa-shield-alt"></i>
+                                <div>
+                                    <strong>Autenticação (2FA)</strong>
+                                    <p>Segurança extra ao iniciar sessão</p>
+                                </div>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" name="twoFactorToggle" {% if config.two_factor_ativo == 1 %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
                     </div>
                 </div>
-                <label class="toggle">
-                    <input type="checkbox" id="relatoriosToggle">
-                    <span class="slider"></span>
-                </label>
             </div>
-            <div class="toggle-switch">
-                <div class="toggle-info">
-                    <i class="fas fa-lock"></i>
-                    <div>
-                        <strong>Autenticação em Dois Fatores</strong>
-                        <p>Aumente a segurança da sua conta</p>
+
+            <div class="card-pro">
+                <div class="card-header-pro">
+                    <h2><i class="fas fa-lock"></i> Segurança & Dados</h2>
+                </div>
+                
+                <div style="background: rgba(239, 68, 68, 0.05); border: 1px dashed rgba(239, 68, 68, 0.4); padding: 25px; border-radius: 12px; margin-bottom: 24px;">
+                    <h4 style="margin: 0 0 15px 0; font-size: 1rem; color: #ef4444;"><i class="fas fa-key"></i> Alterar Palavra-passe</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                        <div class="form-group" style="margin:0;">
+                            <label style="color: #ef4444;">Senha Atual</label>
+                            <input type="password" name="senhaAtual" maxlength="30" placeholder="Digite a senha atual" style="border-color: rgba(239,68,68,0.3);">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Nova Senha</label>
+                            <input type="password" name="novaSenha" maxlength="30" placeholder="Digite a nova senha">
+                        </div>
+                        <div class="form-group" style="margin:0;">
+                            <label>Confirmar Senha</label>
+                            <input type="password" name="confirmarSenha" maxlength="30" placeholder="Repita a nova senha">
+                        </div>
                     </div>
                 </div>
-                <label class="toggle">
-                    <input type="checkbox" id="twoFactorToggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
 
-        <div class="card grid-full">
-            <div class="card-header">
-                <i class="fas fa-shield-alt"></i>
-                <h3>Segurança</h3>
-            </div>
-            <div class="form-row">
-                <div class="input-group">
-                    <label><i class="fas fa-key"></i> Alterar Senha</label>
-                    <input type="password" id="novaSenha" placeholder="Nova senha">
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-check-circle"></i> Confirmar Senha</label>
-                    <input type="password" id="confirmarSenha" placeholder="Confirme a nova senha">
-                </div>
-                <div class="input-group">
-                    <label><i class="fas fa-database"></i> Backup dos Dados</label>
-                    <select id="backupFrequencia">
-                        <option value="diario">Diário</option>
-                        <option value="semanal" selected>Semanal</option>
-                        <option value="mensal">Mensal</option>
-                    </select>
+                <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.2); padding: 25px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <div style="background: #3b82f6; color: white; width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                            <i class="fas fa-database"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0 0 4px 0; font-size: 1.1rem; color: #1e293b;" class="title-dark">Backup do Sistema</h4>
+                            <p style="margin: 0; font-size: 0.85rem; color: #64748b;">Baixe uma cópia de segurança criptografada do banco de dados.</p>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('download_backup') }}" class="btn-blue" style="text-decoration: none;">
+                            <i class="fas fa-cloud-download-alt"></i> Fazer Backup Agora
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="card grid-full">
-            <div class="actions-bar">
-                <button id="btnCancelar" class="outline"><i class="fas fa-times"></i> Cancelar</button>
-                <button id="btnSalvar" class="success"><i class="fas fa-save"></i> Salvar Configurações</button>
-                <button id="btnTesteRelatorio" class="info"><i class="fas fa-paper-plane"></i> Enviar Relatório Agora</button>
-                <button id="btnResetar" class="danger"><i class="fas fa-undo-alt"></i> Restaurar Padrões</button>
+            <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-bottom: 40px;">
+                <button type="button" class="btn-outline" onclick="if(confirm('Cancelar as edições não salvas?')) window.location.reload();">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button type="submit" class="btn-save">
+                    <i class="fas fa-save"></i> Salvar Configurações
+                </button>
             </div>
-        </div>
+            
+        </form>
     </div>
 
+    <script type="application/json" id="mensagensFlash">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {{ messages | default([], true) | tojson | safe }}
+        {% endwith %}
+    </script>
+
     <script>
+        // ==================== SEGURANÇA E BLINDAGEM ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Sanitização Textual (Bloqueia tags HTML e injeção de scripts)
+            const textInputs = document.querySelectorAll('.safe-text');
+            textInputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    let val = e.target.value;
+                    e.target.value = val.replace(/[<>]/g, ''); // Remove tags < >
+                });
+            });
+
+            // 2. Formata Documentos e Telefones
+            const docInputs = document.querySelectorAll('.safe-doc');
+            docInputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    let val = e.target.value;
+                    e.target.value = val.replace(/[^0-9\.\-\/]/g, ''); // Apenas números e pontuação
+                });
+            });
+
+            const telInputs = document.querySelectorAll('.safe-tel');
+            telInputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    let val = e.target.value;
+                    e.target.value = val.replace(/[^0-9\-\(\)\s\+]/g, ''); // Apenas formato telefone
+                });
+            });
+
+            // 3. Atualiza o nome do arquivo selecionado visualmente
+            const fotoInput = document.getElementById('fotoInput');
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
+            
+            if (fotoInput) {
+                fotoInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                        if (!validTypes.includes(file.type)) {
+                            mostrarNotificacao("Formato inválido! Use apenas JPG ou PNG.", "error");
+                            e.target.value = '';
+                            fileNameDisplay.textContent = "Nenhum arquivo selecionado";
+                            fileNameDisplay.style.color = "#ef4444";
+                        } else {
+                            fileNameDisplay.textContent = file.name;
+                            fileNameDisplay.style.color = "#10b981";
+                        }
+                    }
+                });
+            }
+        });
+
+        // ==================== NOTIFICAÇÕES ====================
         function mostrarNotificacao(mensagem, tipo) {
             const notificacao = document.createElement('div');
             const cor = tipo === 'success' ? '#10b981' : tipo === 'error' ? '#ef4444' : '#3b82f6';
             const icone = tipo === 'success' ? 'fa-check-circle' : (tipo === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle');
             
             notificacao.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                right: 20px;
-                background: ${cor};
-                color: white;
-                padding: 12px 20px;
-                border-radius: 12px;
-                font-weight: 500;
-                z-index: 2000;
-                animation: slideIn 0.3s ease;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                display: flex;
-                align-items: center;
-                gap: 8px;
+                position: fixed; bottom: 20px; right: 20px; background: ${cor}; color: white;
+                padding: 14px 24px; border-radius: 12px; font-weight: 600; font-size: 0.95rem;
+                z-index: 9999; animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px;
             `;
-            notificacao.innerHTML = `<i class="fas ${icone}"></i> ${mensagem}`;
+            notificacao.innerHTML = `<i class="fas ${icone}" style="font-size: 1.2rem;"></i> ${mensagem}`;
             document.body.appendChild(notificacao);
             
             setTimeout(() => {
-                notificacao.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => notificacao.remove(), 300);
-            }, 3000);
+                notificacao.style.opacity = '0';
+                notificacao.style.transform = 'translateY(20px)';
+                notificacao.style.transition = '0.4s ease';
+                setTimeout(() => notificacao.remove(), 400);
+            }, 3500);
         }
 
-        document.getElementById('btnSalvar').addEventListener('click', () => {
-            const novaSenha = document.getElementById('novaSenha').value;
-            const confirmarSenha = document.getElementById('confirmarSenha').value;
-            
-            if (novaSenha && novaSenha !== confirmarSenha) {
-                mostrarNotificacao('As senhas não coincidem!', 'error');
-                return;
-            }
-            
-            const config = {
-                empresa: {
-                    nome: document.getElementById('empresaNome').value,
-                    cnpj: document.getElementById('empresaCnpj').value,
-                    telefone: document.getElementById('empresaTelefone').value,
-                    email: document.getElementById('empresaEmail').value,
-                    endereco: document.getElementById('empresaEndereco').value
-                },
-                preferencias: {
-                    notificacoes: document.getElementById('notificacoesToggle').checked,
-                    relatorios: document.getElementById('relatoriosToggle').checked,
-                    twoFactor: document.getElementById('twoFactorToggle').checked
-                }
-            };
-            
-            fetch('/api/salvar-config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(config)
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'sucesso') {
-                    mostrarNotificacao('Configurações salvas com sucesso!', 'success');
-                } else {
-                    mostrarNotificacao('Erro ao salvar: ' + (data.mensagem || ''), 'error');
-                }
-            })
-            .catch(() => mostrarNotificacao('Erro de conexão ao salvar!', 'error'));
-        });
-
-        // Botão Enviar Relatório Agora
-        document.getElementById('btnTesteRelatorio').addEventListener('click', () => {
-            if (!confirm('Deseja enviar um relatório teste agora?')) return;
-
-            fetch('/teste-relatorio')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'sucesso') {
-                        mostrarNotificacao(data.mensagem, 'success');
-                    } else {
-                        mostrarNotificacao('Erro ao enviar relatório', 'error');
-                    }
-                })
-                .catch(() => mostrarNotificacao('Erro de conexão ao enviar relatório', 'error'));
-        });
-
-        // Carregar configurações
-        function carregarConfiguracoes() {
-            fetch('/api/carregar-config')
-                .then(res => res.json())
-                .then(data => {
-                    if (data && data.status !== 'erro') {
-                        document.getElementById('empresaNome').value = data.empresa_nome || '';
-                        document.getElementById('empresaCnpj').value = data.empresa_cnpj || '';
-                        document.getElementById('empresaTelefone').value = data.empresa_telefone || '';
-                        document.getElementById('empresaEmail').value = data.empresa_email || '';
-                        document.getElementById('empresaEndereco').value = data.empresa_endereco || '';
-
-                        document.getElementById('notificacoesToggle').checked = Boolean(data.notificacoes_ativas);
-                        document.getElementById('relatoriosToggle').checked = Boolean(data.relatorios_ativos);
-                        document.getElementById('twoFactorToggle').checked = Boolean(data.two_factor_ativo);
-                    }
-                })
-                .catch(err => console.error("Erro ao carregar configurações:", err));
+        const flashData = document.getElementById('mensagensFlash');
+        if (flashData) {
+            const messages = JSON.parse(flashData.textContent || '[]');
+            messages.forEach(msg => {
+                mostrarNotificacao(msg[1], msg[0]);
+            });
         }
-        
-        document.addEventListener('DOMContentLoaded', carregarConfiguracoes);
 
-        // ==================== SISTEMA DE TEMA ESCURO ====================
+        // ==================== TEMA ESCURO ====================
         function toggleTheme(event) {
             if(event) event.preventDefault();
-            
-            const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
             const icon = document.getElementById('theme-icon');
             const text = document.getElementById('theme-text');
 
             if (currentTheme === 'dark') {
-                body.removeAttribute('data-theme');
+                html.removeAttribute('data-theme');
                 localStorage.setItem('theme', 'light');
                 if(icon) icon.className = 'fas fa-moon';
                 if(text) text.textContent = 'Tema Escuro';
             } else {
-                body.setAttribute('data-theme', 'dark');
+                html.setAttribute('data-theme', 'dark');
                 localStorage.setItem('theme', 'dark');
                 if(icon) icon.className = 'fas fa-sun';
                 if(text) text.textContent = 'Tema Claro';
             }
+            
+            // Corrige texto nos cards escuros
+            document.querySelectorAll('.title-dark').forEach(el => {
+                el.style.color = currentTheme === 'dark' ? '#1e293b' : '#f8fafc';
+            });
         }
 
-        // Aplica o tema imediatamente ao carregar a página
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('theme');
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
             if (savedTheme === 'dark') {
-                document.body.setAttribute('data-theme', 'dark');
-                const icon = document.getElementById('theme-icon');
-                const text = document.getElementById('theme-text');
-                if (icon && text) {
-                    icon.className = 'fas fa-sun';
-                    text.textContent = 'Tema Claro';
-                }
+                if (icon && text) { icon.className = 'fas fa-sun'; text.textContent = 'Tema Claro'; }
+                document.querySelectorAll('.title-dark').forEach(el => el.style.color = '#f8fafc');
             }
         });
     </script>

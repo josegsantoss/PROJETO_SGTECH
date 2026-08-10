@@ -23,7 +23,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-266';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-449';
 
 --
 -- Table structure for table `itens_orcamento`
@@ -44,7 +44,7 @@ CREATE TABLE `itens_orcamento` (
   PRIMARY KEY (`id`),
   KEY `orcamento_id` (`orcamento_id`),
   CONSTRAINT `itens_orcamento_ibfk_1` FOREIGN KEY (`orcamento_id`) REFERENCES `orcamentos` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -53,7 +53,6 @@ CREATE TABLE `itens_orcamento` (
 
 LOCK TABLES `itens_orcamento` WRITE;
 /*!40000 ALTER TABLE `itens_orcamento` DISABLE KEYS */;
-INSERT INTO `itens_orcamento` VALUES (2,2,'2','Macbook Pro','hardware',1,10000.00,10000.00);
 /*!40000 ALTER TABLE `itens_orcamento` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
@@ -67,4 +66,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-02  0:22:28
+-- Dump completed on 2026-08-06 11:21:49

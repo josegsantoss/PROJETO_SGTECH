@@ -3,331 +3,519 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro de Clientes</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='cadastrocliente.css') }}">
+  <title>Cadastro de Clientes · TechManager</title>
+  
+  <script>
+      if (localStorage.getItem('theme') === 'dark') {
+          document.documentElement.setAttribute('data-theme', 'dark');
+      }
+  </script>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
+  
+  <style>
+      body { background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%); min-height: 100vh; padding: 2rem 1rem; position: relative; margin: 0; font-family: 'Inter', sans-serif; display: flex;}
+      
+      .main-content { margin-left: 70px; padding: 0 1.5rem; width: 100%; transition: all 0.3s ease; box-sizing: border-box; max-width: 1480px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;}
+      
+      .card-pro { background: #ffffff; border-radius: 1.5rem; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); border: 1px solid #f0f2f6; transition: 0.3s; display: flex; flex-direction: column;}
+      .card-header-pro { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+      .card-header-pro h2 { font-size: 1.2rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin: 0; }
+      .card-header-pro h2 i { color: #3b82f6; background: #eff6ff; padding: 8px; border-radius: 10px; }
+
+      .form-grid-pro { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: start;}
+      .form-group-pro { display: flex; flex-direction: column; gap: 6px; }
+      .span-2 { grid-column: span 2; }
+      .span-3 { grid-column: span 3; }
+      .span-4 { grid-column: span 4; }
+      
+      .form-group-pro label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;}
+      .form-group-pro input, .form-group-pro select { 
+          width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; 
+          background: #f8fafc; color: #1e293b; font-weight: 500; outline: none; box-sizing: border-box; 
+          transition: 0.2s; font-family: 'Inter', sans-serif; height: 45px;
+      }
+      .form-group-pro input:focus, .form-group-pro select:focus { border-color: #3b82f6; background: #ffffff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+      .input-disabled { background: #f1f5f9 !important; color: #94a3b8 !important; cursor: not-allowed; border-color: #e2e8f0 !important; font-weight: 700 !important;}
+
+      .tipo-cliente-box { display: flex; justify-content: space-around; background: #f8fafc; padding: 0 14px; border-radius: 10px; border: 2px solid #e2e8f0; align-items: center; height: 45px; box-sizing: border-box;}
+      .tipo-cliente-box label { font-size: 0.85rem; font-weight: 600; color: #1e293b; text-transform: none; margin: 0; cursor: pointer; display: flex; align-items: center; gap: 6px;}
+
+      .acoes-form { display: flex; justify-content: flex-end; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px;}
+      .btn-salvar { 
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; 
+          padding: 14px 30px; border-radius: 12px; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; 
+          transition: 0.2s; display: inline-flex; justify-content: center; align-items: center; gap: 8px;
+          box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+      }
+      .btn-salvar:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
+
+      .table-header-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 15px;}
+      .search-pro { position: relative; flex-grow: 1; max-width: 500px; }
+      .search-pro i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 1.1rem; }
+      .search-pro input { width: 100%; padding: 12px 16px 12px 45px; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 0.95rem; outline: none; transition: 0.2s; background: #f8fafc; color: #1e293b; font-weight: 500; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+      .search-pro input:focus { border-color: #3b82f6; background: #ffffff; box-shadow: 0 4px 15px rgba(59,130,246,0.1); }
+      .filter-select { padding: 12px 16px; border-radius: 12px; border: 2px solid #e2e8f0; font-size: 0.95rem; font-weight: 600; color: #475569; outline: none; background: #fff; cursor: pointer; transition: 0.2s;}
+      
+      .table-responsive { overflow-x: auto; margin-top: 5px; border-radius: 12px; border: 1px solid #e2e8f0;}
+      table { width: 100%; border-collapse: collapse; }
+      th, td { padding: 16px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+      th { background: #f8fafc; font-weight: 700; color: #64748b; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; border-bottom: 2px solid #e2e8f0;}
+      td { color: #1e293b; font-weight: 600; vertical-align: middle;}
+      tr:hover { background: #f8fafc; }
+
+      .badge-tipo { display: inline-flex; background: rgba(59,130,246,0.1); color: #3b82f6; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;}
+
+      .btn-ver { background: #eff6ff; color: #3b82f6; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;}
+      .btn-ver:hover { background: #3b82f6; color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(59,130,246,0.3);}
+      
+      .exportar-btn { background: #64748b; color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; margin-top: 15px;}
+      .exportar-btn:hover { background: #475569; transform: translateY(-2px);}
+
+      .alert-box { padding: 16px 20px; border-radius: 12px; font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
+      .alert-success { background: #dcfce7; color: #166534; border-left: 5px solid #10b981; }
+      .alert-error { background: #fee2e2; color: #b91c1c; border-left: 5px solid #ef4444; }
+
+      .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.75); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(5px); padding: 1rem;}
+      .modal-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+      .modal-box { background: #fff; width: 100%; max-width: 650px; border-radius: 1.5rem; padding: 2rem; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); animation: scaleIn 0.3s ease; }
+      @keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+      .btn-close-modal { position: absolute; top: 20px; right: 20px; background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; color: #64748b; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;}
+      .btn-close-modal:hover { background: #fee2e2; color: #ef4444; }
+
+      .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px;}
+      .modal-item { background: #f8fafc; padding: 14px 16px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 4px; }
+      .modal-item.full { grid-column: span 2; }
+      .modal-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; }
+      .modal-value { font-size: 1rem; font-weight: 600; color: #1e293b; word-break: break-word;}
+
+      [data-theme="dark"] body { background: #050a15 !important; }
+      [data-theme="dark"] .card-pro { background-color: #0f172a; border-color: #1e293b; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+      [data-theme="dark"] .card-header-pro { border-color: #1e293b; }
+      [data-theme="dark"] .card-header-pro h2, [data-theme="dark"] td, [data-theme="dark"] .modal-value, [data-theme="dark"] .modal-header h3 { color: #f8fafc; }
+      [data-theme="dark"] .acoes-form { border-color: #1e293b; }
+      
+      [data-theme="dark"] .form-group-pro input, [data-theme="dark"] .form-group-pro select, [data-theme="dark"] .search-pro input, [data-theme="dark"] .filter-select { background-color: #1e293b !important; border-color: #334155 !important; color: #f8fafc !important; font-weight: 600; }
+      [data-theme="dark"] .form-group-pro input:focus, [data-theme="dark"] .form-group-pro select:focus, [data-theme="dark"] .search-pro input:focus, [data-theme="dark"] .filter-select:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4); }
+      [data-theme="dark"] .input-disabled { background-color: #0b1120 !important; color: #64748b !important; border-color: #1e293b !important; }
+      
+      [data-theme="dark"] .tipo-cliente-box { background: #1e293b; border-color: #334155; }
+      [data-theme="dark"] .tipo-cliente-box label { color: #cbd5e1; }
+      
+      [data-theme="dark"] .table-responsive { border-color: #1e293b; }
+      [data-theme="dark"] th { background-color: #0b1120; color: #cbd5e1; border-color: #1e293b; }
+      [data-theme="dark"] td { border-color: #1e293b; }
+      [data-theme="dark"] tr:hover { background-color: #1e293b; }
+      
+      [data-theme="dark"] .btn-ver { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+      [data-theme="dark"] .btn-ver:hover { background: #3b82f6; color: white; }
+      
+      [data-theme="dark"] .modal-box { background: #0f172a; border: 1px solid #1e293b; }
+      [data-theme="dark"] .modal-header { border-color: #1e293b; }
+      [data-theme="dark"] .modal-item { background: #0b1120; border-color: #1e293b; }
+      [data-theme="dark"] .btn-close-modal { background: #1e293b; color: #94a3b8; }
+      [data-theme="dark"] .btn-close-modal:hover { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+      @media (max-width: 1024px) {
+          .form-grid-pro { grid-template-columns: 1fr 1fr; }
+          .span-4 { grid-column: span 2; }
+      }
+      @media (max-width: 600px) {
+          .form-grid-pro { grid-template-columns: 1fr; }
+          .span-2, .span-3, .span-4, .modal-item.full { grid-column: span 1; }
+      }
+  </style>
 </head>
 <body>
+<iframe id="printFrame" style="display:none;"></iframe>
 
-    <div class="menu-trigger">
-        <i class="fas fa-bars"></i>
-    </div>
+    <div class="menu-trigger"><i class="fas fa-bars"></i></div>
 
     <div class="side-menu">
         <div class="menu-header">
-            <div class="user-avatar"><i class="fas fa-user-circle"></i></div>
-            <h3>Olá, {{ 'Administrador' if session.get('cargo') == 'admin' else 'Funcionário' }}</h3>
-            <p><i class="fas fa-envelope"></i> {{ session.get('usuario_logado') }}</p>
+            <div class="user-avatar" style="background: none;">
+                {% set primeira_letra = session.get('usuario_logado', 'User') | first | upper %}
+                <img class="user-avatar-img" 
+                    src="{{ url_for('static', filename='uploads/' + session.get('foto_perfil', 'default_avatar.png')) }}" 
+                    style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.3); background-color: #1e293b;" 
+                    onerror="this.onerror=null; this.src='//ui-avatars.com/api/?name={{ primeira_letra }}&background=3b82f6&color=fff&size=80';">
+            </div>
+            <h3 style="margin-top: 10px; margin-bottom: 5px;">
+                Olá, {{ 'Administrador' if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' else 'Funcionário' }}
+            </h3>
+            <p style="margin: 0 0 8px 0;"><i class="fas fa-envelope"></i> {{ session.get('usuario_logado') }}</p>
+            <div style="font-size: 0.75rem; background: rgba(255,255,255,0.15); padding: 3px 10px; border-radius: 6px; display: inline-block; font-weight: 600;">
+                <i class="fas fa-building"></i> {{ config_global.empresa_nome | default('TechManager', true) }}
+            </div>
         </div>
         
         <div class="menu-items">
-            <a class="menu-item" href="{{ url_for('menu') }}">
-                <i class="fas fa-home"></i><span>Início</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('cadastro') }}">
+            <a class="menu-item" href="{{ url_for('menu') }}"><i class="fas fa-home"></i><span>Início</span></a>
+            <a class="menu-item" href="{{ url_for('cadastro') }}" style="background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; color: #3b82f6;">
                 <i class="fas fa-address-card"></i><span>Cadastro de Clientes</span>
             </a>
-            
-            {% if session.get('cargo') == 'admin' %}
-            <a class="menu-item" href="{{ url_for('cadastro_funcionario') }}">
-                <i class="fas fa-users"></i><span>Cadastro de Funcionários</span>
-            </a>
+            {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
+            <a class="menu-item" href="{{ url_for('cadastro_funcionario') }}"><i class="fas fa-users"></i><span>Cadastro de Funcionários</span></a>
             {% endif %}
-            
-            <a class="menu-item" href="{{ url_for('cadastro_produtos') }}">
-                <i class="fas fa-box"></i><span>Cadastro de Produtos</span>
-            </a>
-
-            <a class="menu-item" href="{{ url_for('conserto') }}">
-                <i class="fas fa-wrench"></i><span>Conserto</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('vendas') }}">
-                <i class="fas fa-cash-register"></i><span>Vendas</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('extrato') }}">
-                <i class="fas fa-file-invoice"></i><span>Extrato</span>
-            </a>
-
-            <a class="menu-item" href="{{ url_for('orcamento') }}">
-                <i class="fas fa-calculator"></i><span>Orçamento</span>
-            </a>
-            
+            <a class="menu-item" href="{{ url_for('cadastro_produtos') }}"><i class="fas fa-box"></i><span>Cadastro de Produtos</span></a>
+            <a class="menu-item" href="{{ url_for('conserto') }}"><i class="fas fa-wrench"></i><span>Gestão de Serviços</span></a>
+            <a class="menu-item" href="{{ url_for('vendas') }}"><i class="fas fa-cash-register"></i><span>Vendas</span></a>
+            {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
+            <a class="menu-item" href="{{ url_for('extrato') }}"><i class="fas fa-file-invoice"></i><span>Extrato</span></a>
+            {% endif %}
             <div class="menu-divider"></div>
-            
-            <a class="menu-item" href="{{ url_for('configuracao') }}">
-                <i class="fas fa-cog"></i><span>Configuração</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('suporte') }}">
-                <i class="fas fa-headset"></i><span>Suporte</span>
-            </a>
-
-            <a class="menu-item" href="#" onclick="toggleTheme(event)">
-                <i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span>
-            </a>
-            
-            <a class="menu-item" href="{{ url_for('logout') }}" onclick="return confirm('Tem certeza que deseja sair?')">
-                <i class="fas fa-sign-out-alt"></i><span>Sair</span>
-            </a>
+            {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
+            <a class="menu-item" href="{{ url_for('configuracao') }}"><i class="fas fa-cog"></i><span>Configuração</span></a>
+            {% endif %}
+            <a class="menu-item" href="#" onclick="toggleTheme(event)"><i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span></a>
+            <a class="menu-item" href="{{ url_for('logout') }}" onclick="return confirm('Tem certeza que deseja sair?')"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
          </div>
     </div>
 
-<div class="container">
-  <div class="novo-cliente">
-    <h2>Novo Cliente</h2>
-
-    {% if erro %}
-      <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 15px;">
-        {{ erro }}
-      </div>
-    {% endif %}
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      {% if category == 'erro' %}
-        <div style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-          <i class="fas fa-exclamation-circle"></i> {{ message }}
-        </div>
-      {% else %}
-        <div style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-          <i class="fas fa-check-circle"></i> {{ message }}
-        </div>
-      {% endif %}
-    {% endfor %}
-  {% endif %}
-{% endwith %}
-    
-    <form action="{{ url_for('cadastro') }}" method="POST">
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Código / ID</label>
-          <input type="text" id="id-cliente" readonly class="input-disabled" title="Gerado automaticamente pelo sistema">
+    <div class="main-content">
+        
+        <div class="card-pro" style="background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%); color: white; padding: 1.5rem 2.5rem; margin-bottom: 0;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <i class="fas fa-address-card" style="font-size: 2.2rem; color: rgba(255,255,255,0.9);"></i>
+                <div>
+                    <h1 style="font-size: 1.6rem; font-weight: 700; margin: 0; text-transform: uppercase;">Gestão de Clientes</h1>
+                    <span style="opacity: 0.8; font-size: 0.9rem; font-weight: 500;">Controle de carteira, dados e informações de contato</span>
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-          <label>Nome Completo</label>
-          <input type="text" id="nome" name="nome" placeholder="Ex: João Silva Santos" required>
+        {% if erro %}
+            <div class="alert-box alert-error"><i class="fas fa-exclamation-triangle"></i> {{ erro }}</div>
+        {% endif %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% if category == 'erro' %}
+                        <div class="alert-box alert-error"><i class="fas fa-exclamation-triangle"></i> {{ message }}</div>
+                    {% else %}
+                        <div class="alert-box alert-success"><i class="fas fa-check-circle"></i> {{ message }}</div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="card-pro">
+            <div class="card-header-pro">
+                <h2><i class="fas fa-user-plus"></i> Novo Cliente</h2>
+            </div>
+
+            <form action="{{ url_for('cadastro') }}" method="POST" id="formCliente">
+                
+                <div class="form-grid-pro">
+                    <div class="form-group-pro">
+                        <label>Código / ID</label>
+                        <input type="text" id="id-cliente" readonly class="input-disabled" title="Gerado automaticamente">
+                    </div>
+                    <div class="form-group-pro">
+                        <label>Tipo de Cliente</label>
+                        <div class="tipo-cliente-box">
+                            <label><input type="radio" name="tipo" value="Física" onclick="mudarTipoDocumento('cpf')" checked> Física</label>
+                            <label><input type="radio" name="tipo" value="Jurídica" onclick="mudarTipoDocumento('cnpj')"> Jurídica</label>
+                        </div>
+                    </div>
+                    <div class="form-group-pro span-2">
+                        <label id="labelDocumento">CPF</label>
+                        <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" oninput="aplicarMascaraDocumento(this)" maxlength="14" required>
+                    </div>
+
+                    <div class="form-group-pro span-2">
+                        <label>Nome Completo / Razão Social</label>
+                        <input type="text" id="nome" name="nome" placeholder="Ex: Tech Solutions Lda ou João Silva" required maxlength="100">
+                    </div>
+                    <div class="form-group-pro span-2">
+                        <label>E-mail Corporativo / Pessoal</label>
+                        <input type="email" id="email" name="email" placeholder="cliente@exemplo.com" maxlength="100">
+                    </div>
+
+                    <div class="form-group-pro">
+                        <label>Celular / WhatsApp</label>
+                        <input type="tel" id="celular" name="celular" placeholder="(00) 00000-0000" oninput="aplicarMascaraTelefone(this)" maxlength="15">
+                    </div>
+                    <div class="form-group-pro">
+                        <label>Telefone Fixo</label>
+                        <input type="tel" id="telefone" name="telefone" placeholder="(00) 0000-0000" oninput="aplicarMascaraTelefone(this)" maxlength="15">
+                    </div>
+                    <div class="form-group-pro">
+                        <label>CEP</label>
+                        <input type="text" id="cep" name="cep" placeholder="00000-000" oninput="aplicarMascaraCEP(this)" maxlength="9">
+                    </div>
+                    <div class="form-group-pro">
+                        <label>Estado (UF)</label>
+                        <input type="text" id="estado" name="estado" placeholder="Ex: SP" maxlength="2" style="text-transform: uppercase;">
+                    </div>
+
+                    <div class="form-group-pro span-2">
+                        <label>Endereço Completo</label>
+                        <input type="text" id="endereco" name="endereco" placeholder="Rua, Número, Bairro" maxlength="150">
+                    </div>
+                    <div class="form-group-pro span-2">
+                        <label>Cidade</label>
+                        <input type="text" id="cidade" name="cidade" placeholder="Ex: São Paulo" maxlength="50">
+                    </div>
+                </div>
+
+                <div class="acoes-form">
+                    <button type="submit" class="btn-salvar">
+                        <i class="fas fa-save"></i> Salvar e Cadastrar Cliente
+                    </button>
+                </div>
+            </form>
         </div>
 
-        <div class="form-group">
-          <label>CPF / CNPJ</label>
-          <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required>
+        <div class="card-pro">
+            <div class="card-header-pro">
+                <h2><i class="fas fa-users"></i> Clientes Cadastrados</h2>
+                
+                <button class="exportar-btn" onclick="exportarClientes()">
+                    <i class="fas fa-file-csv"></i> Exportar (CSV)
+                </button>
+            </div>
+
+            <div class="table-header-controls">
+                <select id="filtroTipo" class="filter-select" onchange="filtrarClientes()">
+                    <option value="todos">🔍 Todos os Campos</option>
+                    <option value="id">📌 ID</option>
+                    <option value="nome">👤 Nome</option>
+                    <option value="cpf">📄 CPF / CNPJ</option>
+                    <option value="telefone">📞 Telefone</option>
+                </select>
+                <div class="search-pro">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search" placeholder="Digite para buscar..." oninput="filtrarClientes()">
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table id="tabelaClientes">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>CPF/CNPJ</th>
+                            <th>Tipo</th>
+                            <th style="text-align: center;">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="email" name="email" placeholder="cliente@exemplo.com">
-        </div>
-
-        <div class="form-group">
-          <label>Telefone</label>
-          <input type="tel" id="telefone" name="telefone" placeholder="(81) 99999-9999">
-        </div>
-
-        <div class="form-group">
-          <label>Celular / WhatsApp</label>
-          <input type="tel" id="celular" name="celular" placeholder="(81) 98888-8888">
-        </div>
-
-        <div class="form-group">
-          <label>Endereço</label>
-          <input type="text" id="endereco" name="endereco" placeholder="Rua, número, bairro">
-        </div>
-
-        <div class="form-group">
-          <label>Cidade</label>
-          <input type="text" id="cidade" name="cidade" value="Caruaru">
-        </div>
-
-        <div class="form-group">
-          <label>Estado</label>
-          <input type="text" id="estado" name="estado" value="PE" style="width: 100px;">
-        </div>
-
-        <div class="form-group">
-          <label>CEP</label>
-          <input type="text" id="cep" name="cep" value="55000-000">
-        </div>
-
-        <div class="form-group">
-          <label>Tipo de Cliente</label>
-          <div class="tipo-cliente">
-            <label class="radio-group">
-              <input type="radio" name="tipo" value="Física" checked> Pessoa Física
-            </label>
-            <label class="radio-group">
-              <input type="radio" name="tipo" value="Jurídica"> Pessoa Jurídica
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <button type="submit" class="btn-cadastrar">Cadastrar Cliente</button>
-    </form>
-  </div>
-
-  <div class="clientes-cadastrados">
-    <div class="clientes-header">
-      <h3>👥 Clientes Cadastrados</h3>
-      <input type="text" id="search" class="search-input" placeholder="🔍 Buscar por ID, nome, CPF..." onkeyup="filtrarClientes()">
     </div>
 
-    <table id="tabelaClientes">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nome</th>
-          <th>CPF/CNPJ</th>
-          <th>Telefone</th>
-          <th>Tipo</th>
-          <th>Data de Cadastro</th>
-          <th>Ações</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-    <button class="exportar" onclick="exportarClientes()">⬇ Exportar Clientes</button>
-  </div>
-
-</div>
-
-<script id="dados-clientes" type="application/json">
-  {{ clientes | default([]) | tojson }}
-</script> 
-
-<script>
-  const dadosElement = document.getElementById('dados-clientes').textContent;
-  let clientes = JSON.parse(dadosElement);
-// Array de clientes vindo diretamente do Flask / MySQL
-
-// Função para obter o próximo ID aproximado para exibição visual
-function obterProximoId() {
-  if (clientes.length === 0) return 1;
-  const ids = clientes.map(c => parseInt(c.id) || 0);
-  return Math.max(...ids, 0) + 1;
-}
-
-// Função auxiliar para formatar o ID (Ex: 1 vira "0001")
-function formatarId(id) {
-  return String(id).padStart(4, '0');
-}
-
-// Atualiza o valor visível do ID no formulário
-function atualizarIdInput() {
-  document.getElementById('id-cliente').value = `#${formatarId(obterProximoId())}`;
-}
-
-// Função para renderizar a tabela com os dados vindos do banco
-function renderizarTabela(filteredClientes = clientes) {
-  const tbody = document.querySelector('#tabelaClientes tbody');
-  tbody.innerHTML = '';
-
-  filteredClientes.forEach((cliente) => {
-    const realIndex = clientes.findIndex(c => c.id === cliente.id);
-    
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><strong>#${formatarId(cliente.id)}</strong></td> 
-      <td>${cliente.nome}</td>
-      <td>${cliente.cpf}</td>
-      <td>${cliente.celular || cliente.telefone || ''}</td>
-      <td>${cliente.tipo}</td>
-      <td>${cliente.dataCadastro || cliente.data_cadastro || ''}</td>
-      <td><button class="btn-ver" onclick="verCliente(${realIndex})">Ver</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-// Filtrar clientes (busca local na tabela)
-function filtrarClientes() {
-  const termo = document.getElementById('search').value.toLowerCase().trim();
-  if (!termo) {
-    renderizarTabela();
-    return;
-  }
-
-  const filtrados = clientes.filter(cliente => 
-    String(cliente.id).includes(termo) ||
-    formatarId(cliente.id).includes(termo) ||
-    (cliente.nome && cliente.nome.toLowerCase().includes(termo)) ||
-    (cliente.cpf && cliente.cpf.toLowerCase().includes(termo)) ||
-    (cliente.dataCadastro && cliente.dataCadastro.includes(termo))
-  );
-
-  renderizarTabela(filtrados);
-}
-
-// Ver cliente detalhado
-function verCliente(index) {
-  const cliente = clientes[index];
-  if (!cliente) return;
-  alert(`ID: #${formatarId(cliente.id)}\nNome: ${cliente.nome}\nCPF/CNPJ: ${cliente.cpf}\nTipo: ${cliente.tipo}\nData: ${cliente.data_cadastro || 'N/I'}\nTelefone: ${cliente.celular || cliente.telefone || 'Não informado'}\nEmail: ${cliente.email || 'Não informado'}`);
-}
-
-// Exportar para CSV
-function exportarClientes() {
-  if (clientes.length === 0) {
-    alert('Não há clientes para exportar.');
-    return;
-  }
-
-  let csv = 'ID,Nome,CPF/CNPJ,Tipo,Data de Cadastro,Telefone,Celular,Email\n';
-  clientes.forEach(c => {
-    csv += `"${formatarId(c.id)}","${c.nome || ''}","${c.cpf || ''}","${c.tipo || ''}","${c.data_cadastro || ''}","${c.telefone || ''}","${c.celular || ''}","${c.email || ''}"\n`;
-  });
-
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = 'clientes.csv';
-  link.click();
-}
-
-// Inicializa a tabela e a exibição do ID ao carregar a página
-atualizarIdInput();
-renderizarTabela();
-
-// ==================== SISTEMA DE TEMA ESCURO ====================
-        function toggleTheme(event) {
-            if(event) event.preventDefault();
+    <div id="modalCliente" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 style="margin: 0;"><i class="fas fa-user-circle" style="color: #3b82f6;"></i> Detalhes do Cliente</h3>
+                <button class="btn-close-modal" onclick="fecharModal()"><i class="fas fa-times"></i></button>
+            </div>
             
-            const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
-            const icon = document.getElementById('theme-icon');
-            const text = document.getElementById('theme-text');
+            <div class="modal-grid" id="modalBody">
+                </div>
+        </div>
+    </div>
 
-            if (currentTheme === 'dark') {
-                body.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'light');
-                if(icon) icon.className = 'fas fa-moon';
-                if(text) text.textContent = 'Tema Escuro';
+    <script id="dados-clientes" type="application/json">
+        {{ clientes | default([]) | tojson }}
+    </script> 
+
+    <script>
+        // ==================== SEGURANÇA E BLINDAGEM UNIVERSAL ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputsProtegidos = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea');
+            
+            inputsProtegidos.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    let valorAtual = e.target.value;
+                    if (valorAtual.includes('<') || valorAtual.includes('>')) {
+                        e.target.value = valorAtual.replace(/[<>]/g, '');
+                    }
+                });
+            });
+        });
+
+        // ==================== MÁSCARAS E VALIDAÇÕES ====================
+        let tipoDocAtual = 'cpf';
+
+        function mudarTipoDocumento(tipo) {
+            tipoDocAtual = tipo;
+            const inputDoc = document.getElementById('cpf');
+            const labelDoc = document.getElementById('labelDocumento');
+            
+            inputDoc.value = ''; 
+            if (tipo === 'cpf') {
+                labelDoc.textContent = 'CPF'; inputDoc.placeholder = '000.000.000-00'; inputDoc.maxLength = 14;
             } else {
-                body.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-                if(icon) icon.className = 'fas fa-sun';
-                if(text) text.textContent = 'Tema Claro';
+                labelDoc.textContent = 'CNPJ'; inputDoc.placeholder = '00.000.000/0001-00'; inputDoc.maxLength = 18;
             }
         }
 
-        // Aplica o tema imediatamente ao carregar a página
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.setAttribute('data-theme', 'dark');
-                const icon = document.getElementById('theme-icon');
-                const text = document.getElementById('theme-text');
-                if (icon && text) {
-                    icon.className = 'fas fa-sun';
-                    text.textContent = 'Tema Claro';
-                }
+        function aplicarMascaraDocumento(input) {
+            let v = input.value.replace(/\D/g, ''); 
+            if (tipoDocAtual === 'cpf') {
+                if (v.length > 11) v = v.slice(0, 11);
+                v = v.replace(/(\d{3})(\d)/, '$1.$2'); v = v.replace(/(\d{3})(\d)/, '$1.$2'); v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            } else {
+                if (v.length > 14) v = v.slice(0, 14);
+                v = v.replace(/^(\d{2})(\d)/, '$1.$2'); v = v.replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3'); v = v.replace(/\.(\d{3})(\d)/, '.$1/$2'); v = v.replace(/(\d{4})(\d)/, '$1-$2');
+            }
+            input.value = v;
+        }
+
+        function aplicarMascaraTelefone(input) {
+            let v = input.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.slice(0, 11);
+            if (v.length > 10) { v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3'); } 
+            else if (v.length > 5) { v = v.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3'); } 
+            else if (v.length > 2) { v = v.replace(/^(\d{2})(\d{0,5})/, '($1) $2'); }
+            input.value = v;
+        }
+
+        function aplicarMascaraCEP(input) {
+             let v = input.value.replace(/\D/g, '');
+             if (v.length > 8) v = v.slice(0, 8);
+             v = v.replace(/^(\d{5})(\d)/, '$1-$2');
+             input.value = v;
+        }
+
+        document.getElementById('formCliente').addEventListener('submit', function(e) {
+            const docInput = document.getElementById('cpf').value.replace(/\D/g, '');
+            if (tipoDocAtual === 'cpf' && docInput.length !== 11) {
+                e.preventDefault(); alert('❌ Por favor, digite um CPF válido com 11 números.');
+            } else if (tipoDocAtual === 'cnpj' && docInput.length !== 14) {
+                e.preventDefault(); alert('❌ Por favor, digite um CNPJ válido com 14 números.');
             }
         });
-</script>
+
+        // ==================== LÓGICA DE TABELA E BUSCA ====================
+        const dadosElement = document.getElementById('dados-clientes').textContent;
+        let clientes = JSON.parse(dadosElement);
+
+        function obterProximoId() {
+          if (clientes.length === 0) return 1;
+          const ids = clientes.map(c => parseInt(c.id) || 0);
+          return Math.max(...ids, 0) + 1;
+        }
+
+        function formatarId(id) { return String(id).padStart(4, '0'); }
+        function atualizarIdInput() { document.getElementById('id-cliente').value = `#${formatarId(obterProximoId())}`; }
+
+        function renderizarTabela(filteredClientes = clientes) {
+          const tbody = document.querySelector('#tabelaClientes tbody');
+          tbody.innerHTML = '';
+
+          if (filteredClientes.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #94a3b8; padding: 30px;"><i class="fas fa-search" style="font-size: 2rem; margin-bottom: 10px; opacity:0.5; display:block;"></i>Nenhum cliente encontrado.</td></tr>`;
+              return;
+          }
+
+          filteredClientes.forEach((cliente) => {
+            const realIndex = clientes.findIndex(c => c.id === cliente.id);
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td><strong style="color: #3b82f6;">#${formatarId(cliente.id)}</strong></td> 
+              <td>${cliente.nome}</td>
+              <td><span style="font-family: monospace; background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 6px;">${cliente.cpf}</span></td>
+              <td><span class="badge-tipo">${cliente.tipo}</span></td>
+              <td style="text-align: center;"><button class="btn-ver" onclick="verCliente(${realIndex})"><i class="fas fa-eye"></i> Detalhes</button></td>
+            `;
+            tbody.appendChild(tr);
+          });
+        }
+
+        function filtrarClientes() {
+          const termo = document.getElementById('search').value.toLowerCase().trim();
+          const tipoFiltro = document.getElementById('filtroTipo').value;
+
+          if (!termo) { renderizarTabela(clientes); return; }
+
+          const filtrados = clientes.filter(cliente => {
+            const idStr = String(cliente.id); const idFormatado = formatarId(cliente.id);
+            const nome = cliente.nome ? cliente.nome.toLowerCase() : '';
+            const cpf = cliente.cpf ? cliente.cpf.toLowerCase() : '';
+            const telefone = (cliente.telefone || cliente.celular || '').toLowerCase();
+
+            if (tipoFiltro === 'id') return idStr.includes(termo) || idFormatado.includes(termo);
+            if (tipoFiltro === 'nome') return nome.includes(termo);
+            if (tipoFiltro === 'cpf') return cpf.includes(termo);
+            if (tipoFiltro === 'telefone') return telefone.includes(termo);
+
+            return idStr.includes(termo) || idFormatado.includes(termo) || nome.includes(termo) || cpf.includes(termo) || telefone.includes(termo);
+          });
+          renderizarTabela(filtrados);
+        }
+
+        // ==================== MODAL SOFISTICADO ====================
+        function verCliente(index) {
+          const cliente = clientes[index];
+          if (!cliente) return;
+          const modalBody = document.getElementById('modalBody');
+          
+          modalBody.innerHTML = `
+            <div class="modal-item"><span class="modal-label">Código / ID</span><span class="modal-value" style="color: #3b82f6;">#${formatarId(cliente.id)}</span></div>
+            <div class="modal-item"><span class="modal-label">Tipo de Cliente</span><span class="modal-value">${cliente.tipo || 'N/I'}</span></div>
+            <div class="modal-item full"><span class="modal-label">Nome Completo / Razão Social</span><span class="modal-value">${cliente.nome || 'N/I'}</span></div>
+            <div class="modal-item"><span class="modal-label">CPF / CNPJ</span><span class="modal-value">${cliente.cpf || 'N/I'}</span></div>
+            <div class="modal-item"><span class="modal-label">Data de Registro</span><span class="modal-value">${cliente.data_cadastro || cliente.dataCadastro || 'N/I'}</span></div>
+            <div class="modal-item"><span class="modal-label">Telefone Fixo</span><span class="modal-value">${cliente.telefone || 'Não informado'}</span></div>
+            <div class="modal-item"><span class="modal-label">Celular / WhatsApp</span><span class="modal-value">${cliente.celular || 'Não informado'}</span></div>
+            <div class="modal-item full"><span class="modal-label">E-mail</span><span class="modal-value">${cliente.email || 'Não informado'}</span></div>
+            <div class="modal-item full"><span class="modal-label">Endereço Completo</span><span class="modal-value">${cliente.endereco || 'Não informado'}</span></div>
+            <div class="modal-item"><span class="modal-label">Cidade / Estado</span><span class="modal-value">${cliente.cidade || 'Não informado'} - ${cliente.estado || 'N/I'}</span></div>
+            <div class="modal-item"><span class="modal-label">CEP</span><span class="modal-value">${cliente.cep || 'N/I'}</span></div>
+          `;
+          document.getElementById('modalCliente').classList.add('active');
+        }
+
+        function fecharModal() {
+          document.getElementById('modalCliente').classList.remove('active');
+        }
+        document.getElementById('modalCliente').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modalCliente')) fecharModal();
+        });
+
+        // ==================== EXPORTAÇÃO ====================
+        function exportarClientes() {
+          if (clientes.length === 0) { alert('Não há clientes para exportar.'); return; }
+          let csv = 'ID,Nome,CPF/CNPJ,Tipo,Data de Cadastro,Telefone,Celular,Email\n';
+          clientes.forEach(c => { csv += `"${formatarId(c.id)}","${c.nome || ''}","${c.cpf || ''}","${c.tipo || ''}","${c.data_cadastro || c.dataCadastro || ''}","${c.telefone || ''}","${c.celular || ''}","${c.email || ''}"\n`; });
+          const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' });
+          const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'clientes_techmanager.csv'; link.click();
+        }
+
+        atualizarIdInput();
+        renderizarTabela();
+
+        // ==================== TEMA ESCURO ====================
+        function toggleTheme(event) {
+            if(event) event.preventDefault();
+            const body = document.documentElement;
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme'); localStorage.setItem('theme', 'light');
+                const ic = document.getElementById('theme-icon'); if(ic) ic.className = 'fas fa-moon'; 
+                const tt = document.getElementById('theme-text'); if(tt) tt.textContent = 'Tema Escuro';
+            } else {
+                body.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark');
+                const ic = document.getElementById('theme-icon'); if(ic) ic.className = 'fas fa-sun'; 
+                const tt = document.getElementById('theme-text'); if(tt) tt.textContent = 'Tema Claro';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                const ic = document.getElementById('theme-icon'); if(ic) ic.className = 'fas fa-sun'; 
+                const tt = document.getElementById('theme-text'); if(tt) tt.textContent = 'Tema Claro';
+            }
+        });
+    </script>
 </body>
 </html>

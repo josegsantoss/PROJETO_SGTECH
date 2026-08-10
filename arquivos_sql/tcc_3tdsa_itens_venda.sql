@@ -23,7 +23,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-266';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-449';
 
 --
 -- Table structure for table `itens_venda`
@@ -44,7 +44,7 @@ CREATE TABLE `itens_venda` (
   KEY `id_produto` (`id_produto`),
   CONSTRAINT `fk_itens_produto` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id_produto`),
   CONSTRAINT `fk_itens_venda` FOREIGN KEY (`id_venda`) REFERENCES `vendas` (`id_venda`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -53,7 +53,7 @@ CREATE TABLE `itens_venda` (
 
 LOCK TABLES `itens_venda` WRITE;
 /*!40000 ALTER TABLE `itens_venda` DISABLE KEYS */;
-INSERT INTO `itens_venda` VALUES (1,1,2,3,10000.00,30000.00),(2,2,2,1,10000.00,10000.00),(3,3,2,1,10000.00,10000.00);
+INSERT INTO `itens_venda` VALUES (1,1,1,1,140.00,140.00),(2,2,1,2,140.00,280.00),(3,3,1,1,140.00,140.00),(4,4,1,1,140.00,140.00),(5,5,1,3,140.00,420.00),(6,6,1,1,140.00,140.00),(7,7,1,1,140.00,140.00);
 /*!40000 ALTER TABLE `itens_venda` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
@@ -67,4 +67,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-02  0:22:28
+-- Dump completed on 2026-08-06 11:21:49

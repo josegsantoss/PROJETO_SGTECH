@@ -283,7 +283,8 @@
             gap: 12px;
             max-height: 480px;
             overflow-y: auto;
-            padding-right: 8px;
+            /* Adicione margem interna (padding) para a badge não ser cortada nas bordas */
+            padding: 12px 12px 8px 12px; 
         }
 
         .produtos-grid::-webkit-scrollbar {
@@ -309,6 +310,8 @@
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            /* IMPORTANTE: Garante que nada vaza para fora das bordas do cartão */
+            overflow: hidden; 
         }
 
         .produto-card:hover {
@@ -350,19 +353,20 @@
 
         .produto-card .qtd-badge {
             position: absolute;
-            top: -8px;
-            right: -8px;
+            top: 10px;   /* Fica dentro do cartão, sem encostar nas bordas externas */
+            right: 10px; /* Fica dentro do cartão, perfeitamente alinhada à direita */
             background: #1e4f8a;
             color: white;
             border-radius: 50%;
-            width: 26px;
-            height: 26px;
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 11px;
             font-weight: 700;
-            box-shadow: 0 2px 8px rgba(30, 79, 138, 0.4);
+            box-shadow: 0 2px 6px rgba(30, 79, 138, 0.3);
+            z-index: 10;
         }
 
         /* ===== CARRINHO ===== */

@@ -23,7 +23,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-266';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-449';
 
 --
 -- Table structure for table `cliente`
@@ -34,11 +34,11 @@ DROP TABLE IF EXISTS `cliente`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `cliente` (
   `nome_cliente` varchar(100) NOT NULL,
-  `telefone` varchar(15) NOT NULL,
-  `cpf` varchar(11) DEFAULT NULL,
+  `telefone` varchar(30) DEFAULT NULL,
+  `cpf` varchar(25) DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
   `id_cliente` int NOT NULL AUTO_INCREMENT,
-  `celular` varchar(13) DEFAULT NULL,
+  `celular` varchar(30) DEFAULT NULL,
   `cnpj` varchar(15) DEFAULT NULL,
   `cep` varchar(9) DEFAULT NULL,
   `endereco` varchar(255) DEFAULT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE `cliente` (
   PRIMARY KEY (`id_cliente`),
   UNIQUE KEY `cpf` (`cpf`),
   UNIQUE KEY `cnpj_UNIQUE` (`cnpj`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -58,7 +58,7 @@ CREATE TABLE `cliente` (
 
 LOCK TABLES `cliente` WRITE;
 /*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES ('Acapulco','81967676767','67767767767','pilintrabolsonaro@gmail.com',1,'81976767676',NULL,'55000-000','VIla do Chaves','Caruaru','PE','Física','2026-08-01 23:54:59'),('Omar Apollo','81967676767','67767767700','adm@gmail.com',2,'81976767000',NULL,'55000-777','Rua Evergreen','Caruaru','PE','Física','2026-08-01 23:58:16'),('Armas e Rosas','81900000000',NULL,'rock@gmail.com',9,'81900000000','01001001022','55000-000','Rua Sweet Child O\'Mine','Caruaru','PE','Jurídica','2026-08-02 00:21:01'),('Francisco Oceano','81956565656','56565676789','tdsatcc@gmail.com',12,'81976879087',NULL,'55000-000','Rua Wisean','Caruaru','AL','Física','2026-08-02 00:23:12'),('Seu Barriga','45978787878','77777777788','adm@gmail.com',13,'81965432314',NULL,'55000-000','VIla do Chaves','Caruaru','RJ','Física','2026-08-02 00:24:46');
+INSERT INTO `cliente` VALUES ('Francisco Oceano','(97) 68768-7687','677.677.677-00','abubacar@gmail.com',1,'(97) 68768-7687',NULL,'87687-687','Rua Wiseman','ALAGOAS','AL','Física','2026-08-06 13:27:19');
 /*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
@@ -72,4 +72,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-02  0:22:28
+-- Dump completed on 2026-08-06 11:21:49

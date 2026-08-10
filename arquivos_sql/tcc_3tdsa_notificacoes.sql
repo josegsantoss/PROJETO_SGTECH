@@ -23,31 +23,32 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-266';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-449';
 
 --
--- Table structure for table `estoque`
+-- Table structure for table `notificacoes`
 --
 
-DROP TABLE IF EXISTS `estoque`;
+DROP TABLE IF EXISTS `notificacoes`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `estoque` (
-  `id_estoque` int NOT NULL AUTO_INCREMENT,
-  `id_produto` int NOT NULL,
-  PRIMARY KEY (`id_estoque`),
-  KEY `id_produto` (`id_produto`),
-  CONSTRAINT `estoque_ibfk_1` FOREIGN KEY (`id_produto`) REFERENCES `produto` (`id_produto`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `notificacoes` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `mensagem` varchar(255) NOT NULL,
+  `data_criacao` datetime NOT NULL,
+  `lida` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `estoque`
+-- Dumping data for table `notificacoes`
 --
 
-LOCK TABLES `estoque` WRITE;
-/*!40000 ALTER TABLE `estoque` DISABLE KEYS */;
-/*!40000 ALTER TABLE `estoque` ENABLE KEYS */;
+LOCK TABLES `notificacoes` WRITE;
+/*!40000 ALTER TABLE `notificacoes` DISABLE KEYS */;
+INSERT INTO `notificacoes` VALUES (1,'? Novo equipamento recebido: Iphone 3 (SN65765765) - Cliente: Ned','2026-08-05 23:02:18',0),(2,'? Novo orçamento gerado: #TECH-932634 (R$ 1000) - Cliente: Ned','2026-08-05 23:02:42',0),(3,'? Serviço Concluído: Equipamento () está PRONTO!','2026-08-05 23:03:08',0),(4,'? Serviço Concluído: Equipamento () está PRONTO!','2026-08-05 23:04:59',0),(5,'? Serviço Concluído: Equipamento () está PRONTO!','2026-08-05 23:09:07',0),(6,'? Serviço Concluído: Equipamento () está PRONTO!','2026-08-05 23:21:08',0),(7,'? Novo equipamento recebido: S24 Plus (SN12345678000) - Cliente: Gustavo','2026-08-06 09:20:07',0),(8,'? Novo orçamento gerado: #TECH-519694 (R$ 1000) - Cliente: Gustavo','2026-08-06 09:20:25',0),(9,'? Serviço Concluído: Equipamento () está PRONTO!','2026-08-06 09:21:00',0),(10,'? Nova venda realizada! Valor: R$ 140.00 (Dinheiro) - Cliente: Augusto','2026-08-06 11:11:14',0),(11,'? Nova venda realizada! Valor: R$ 140.00 (Dinheiro) - Cliente: Pilintra','2026-08-06 11:20:14',0);
+/*!40000 ALTER TABLE `notificacoes` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -60,4 +61,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-02  0:22:29
+-- Dump completed on 2026-08-06 11:21:49

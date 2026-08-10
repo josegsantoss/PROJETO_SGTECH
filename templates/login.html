@@ -3,55 +3,217 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+  <title>Login · TechManager</title>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    // Aplica o tema escuro imediatamente antes de renderizar para evitar flash claro
+    if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  </script>
+
+  <style>
+    /* ==================== ESTILOS BASE E FUNDO ==================== */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    [data-theme="dark"] body {
+      background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+    }
+
+    /* ==================== BOTÃO DE TEMA ==================== */
+    .theme-toggle-btn {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    .theme-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    /* ==================== CAIXA DE LOGIN ==================== */
+    .login-box {
+      background: #ffffff;
+      width: 100%;
+      max-width: 420px;
+      padding: 45px 35px;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      box-sizing: border-box;
+      text-align: center;
+      transition: 0.3s;
+      margin: 20px;
+    }
+
+    [data-theme="dark"] .login-box {
+      background: #1e293b;
+      border: 1px solid #334155;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .logo-container { margin-bottom: 25px; }
+    .logo-container svg { width: 140px; height: auto; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+
+    h1 { margin: 0 0 35px 0; font-size: 1.8rem; font-weight: 800; color: #1e293b; letter-spacing: -0.5px;}
+    [data-theme="dark"] h1 { color: #f8fafc; }
+
+    /* ==================== CAMPOS DE FORMULÁRIO ==================== */
+    .form-group { text-align: left; margin-bottom: 24px; }
+    
+    .form-group label {
+      display: block; font-size: 0.8rem; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+    }
+    [data-theme="dark"] .form-group label { color: #94a3b8; }
+    
+    .input-wrapper { position: relative; }
+    .input-wrapper i {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      color: #94a3b8; font-size: 1.1rem;
+    }
+    
+    .form-group input { 
+      width: 100%; padding: 15px 15px 15px 45px; border: 2px solid #e2e8f0;
+      border-radius: 12px; font-size: 1rem; color: #1e293b; outline: none;
+      transition: all 0.2s ease; background: #f8fafc; box-sizing: border-box;
+      font-family: 'Inter', sans-serif; font-weight: 500;
+    }
+    .form-group input:focus {
+      border-color: #3b82f6; background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    }
+    
+    [data-theme="dark"] .form-group input { background: #0f172a; border-color: #334155; color: #f8fafc; }
+    [data-theme="dark"] .form-group input:focus { border-color: #3b82f6; background: #0f172a; }
+
+    /* Mostrar Senha */
+    .mostrar-senha-wrapper { display: flex; align-items: center; justify-content: flex-end; margin-top: 12px; }
+    .checkbox-container {
+      display: flex; align-items: center; gap: 8px; cursor: pointer;
+      font-size: 0.85rem; color: #64748b; font-weight: 600; user-select: none;
+    }
+    .checkbox-container input { cursor: pointer; accent-color: #3b82f6; width: 16px; height: 16px; margin: 0;}
+    [data-theme="dark"] .checkbox-container { color: #94a3b8; }
+
+    /* ==================== BOTÃO PRINCIPAL ==================== */
+    #btnEntrar { 
+      width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 1.1rem;
+      font-weight: 700; color: white; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35); margin-top: 10px;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    #btnEntrar:hover {
+      transform: translateY(-3px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5); filter: brightness(1.1);
+    }
+
+    /* ==================== MENSAGEM DE ERRO ==================== */
+    .erro-msg {
+      background: #fee2e2; color: #b91c1c; padding: 14px; border-radius: 12px;
+      font-size: 0.9rem; font-weight: 600; margin-top: 24px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      border-left: 4px solid #ef4444; animation: shake 0.4s ease;
+    }
+    [data-theme="dark"] .erro-msg { background: rgba(239, 68, 68, 0.1); color: #f87171; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+  </style>
 </head>
 <body>
+
+  <script>
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.setAttribute('data-theme', 'dark');
+    }
+  </script>
+
+  <button type="button" class="theme-toggle-btn" onclick="toggleTheme(event)" title="Alternar tema">
+    <i class="fas fa-moon" id="themeIcon"></i>
+  </button>
+
   <div class="login-box">
     <div class="logo-container">
-      <svg width="500" height="420" viewBox="0 0 500 420" xmlns="http://www.w3.org/2000/svg">
+      <svg viewBox="0 0 500 420" xmlns="http://www.w3.org/2000/svg">
         <polygon points="250,60 340,108 250,156 160,108" fill="#185FA5"/>
         <line x1="250" y1="60" x2="250" y2="34" stroke="#0C447C" stroke-width="3" stroke-linecap="round"/>
         <circle cx="250" cy="31" r="5" fill="#378ADD"/>
         <polygon points="160,108 250,156 250,318 160,270" fill="#0C447C"/>
         <polygon points="340,108 250,156 250,318 340,270" fill="#378ADD"/>
-        <polygon points="176.2,129.6  190.3,137.1  190.3,148.1  176.2,140.6" fill="#85B7EB" opacity="0.6"/>
-        <polygon points="176.2,155.5  190.3,163.0  190.3,174.0  176.2,166.5" fill="#85B7EB" opacity="0.6"/>
-        <polygon points="176.2,181.4  190.3,188.9  190.3,199.9  176.2,192.4" fill="#85B7EB" opacity="0.6"/>
-        <polygon points="176.2,207.3  190.3,214.8  190.3,225.8  176.2,218.3" fill="#85B7EB" opacity="0.6"/>
-        <polygon points="176.2,233.2  190.3,240.7  190.3,251.7  176.2,244.2" fill="#85B7EB" opacity="0.55"/>
-        <polygon points="200.5,142.6  214.6,150.1  214.6,161.1  200.5,153.6" fill="#85B7EB" opacity="0.6"/>
-        <polygon points="200.5,168.5  214.6,176.0  214.6,187.0  200.5,179.5" fill="#85B7EB" opacity="0.6"/>
-        <polygon points="200.5,194.4  214.6,201.9  214.6,212.9  200.5,205.4" fill="#85B7EB" opacity="0.6"/>
-        <polygon points="200.5,220.3  214.6,227.8  214.6,238.8  200.5,231.3" fill="#85B7EB" opacity="0.6"/>
-        <polygon points="200.5,246.2  214.6,253.7  214.6,264.7  200.5,257.2" fill="#85B7EB" opacity="0.55"/>
-        <polygon points="323.8,129.6  309.7,137.1  309.7,148.1  323.8,140.6" fill="#0C447C" opacity="0.45"/>
-        <polygon points="323.8,155.5  309.7,163.0  309.7,174.0  323.8,166.5" fill="#0C447C" opacity="0.45"/>
-        <polygon points="323.8,181.4  309.7,188.9  309.7,199.9  323.8,192.4" fill="#0C447C" opacity="0.45"/>
-        <polygon points="323.8,207.3  309.7,214.8  309.7,225.8  323.8,218.3" fill="#0C447C" opacity="0.45"/>
-        <polygon points="323.8,233.2  309.7,240.7  309.7,251.7  323.8,244.2" fill="#0C447C" opacity="0.4"/>
-        <polygon points="299.5,142.6  285.4,150.1  285.4,161.1  299.5,153.6" fill="#0C447C" opacity="0.45"/>
-        <polygon points="299.5,168.5  285.4,176.0  285.4,187.0  299.5,179.5" fill="#0C447C" opacity="0.45"/>
-        <polygon points="299.5,194.4  285.4,201.9  285.4,212.9  299.5,205.4" fill="#0C447C" opacity="0.45"/>
-        <polygon points="299.5,220.3  285.4,227.8  285.4,238.8  299.5,231.3" fill="#0C447C" opacity="0.45"/>
-        <polygon points="299.5,246.2  285.4,253.7  285.4,264.7  299.5,257.2" fill="#0C447C" opacity="0.4"/>
+        <polygon points="176.2,129.6 190.3,137.1 190.3,148.1 176.2,140.6" fill="#85B7EB" opacity="0.6"/>
+        <polygon points="176.2,155.5 190.3,163.0 190.3,174.0 176.2,166.5" fill="#85B7EB" opacity="0.6"/>
+        <polygon points="176.2,181.4 190.3,188.9 190.3,199.9 176.2,192.4" fill="#85B7EB" opacity="0.6"/>
+        <polygon points="176.2,207.3 190.3,214.8 190.3,225.8 176.2,218.3" fill="#85B7EB" opacity="0.6"/>
+        <polygon points="176.2,233.2 190.3,240.7 190.3,251.7 176.2,244.2" fill="#85B7EB" opacity="0.55"/>
+        <polygon points="200.5,142.6 214.6,150.1 214.6,161.1 200.5,153.6" fill="#85B7EB" opacity="0.6"/>
+        <polygon points="200.5,168.5 214.6,176.0 214.6,187.0 200.5,179.5" fill="#85B7EB" opacity="0.6"/>
+        <polygon points="200.5,194.4 214.6,201.9 214.6,212.9 200.5,205.4" fill="#85B7EB" opacity="0.6"/>
+        <polygon points="200.5,220.3 214.6,227.8 214.6,238.8 200.5,231.3" fill="#85B7EB" opacity="0.6"/>
+        <polygon points="200.5,246.2 214.6,253.7 214.6,264.7 200.5,257.2" fill="#85B7EB" opacity="0.55"/>
+        <polygon points="323.8,129.6 309.7,137.1 309.7,148.1 323.8,140.6" fill="#0C447C" opacity="0.45"/>
+        <polygon points="323.8,155.5 309.7,163.0 309.7,174.0 323.8,166.5" fill="#0C447C" opacity="0.45"/>
+        <polygon points="323.8,181.4 309.7,188.9 309.7,199.9 323.8,192.4" fill="#0C447C" opacity="0.45"/>
+        <polygon points="323.8,207.3 309.7,214.8 309.7,225.8 323.8,218.3" fill="#0C447C" opacity="0.45"/>
+        <polygon points="323.8,233.2 309.7,240.7 309.7,251.7 323.8,244.2" fill="#0C447C" opacity="0.4"/>
+        <polygon points="299.5,142.6 285.4,150.1 285.4,161.1 299.5,153.6" fill="#0C447C" opacity="0.45"/>
+        <polygon points="299.5,168.5 285.4,176.0 285.4,187.0 299.5,179.5" fill="#0C447C" opacity="0.45"/>
+        <polygon points="299.5,194.4 285.4,201.9 285.4,212.9 299.5,205.4" fill="#0C447C" opacity="0.45"/>
+        <polygon points="299.5,220.3 285.4,227.8 285.4,238.8 299.5,231.3" fill="#0C447C" opacity="0.45"/>
+        <polygon points="299.5,246.2 285.4,253.7 285.4,264.7 299.5,257.2" fill="#0C447C" opacity="0.4"/>
         <ellipse cx="250" cy="323" rx="90" ry="8" fill="#0C447C" opacity="0.08"/>
-        <text x="250" y="362" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="bold" fill="#185FA5" letter-spacing="10">SGE</text>
+        <text x="250" y="362" text-anchor="middle" font-family="'Inter', sans-serif" font-size="42" font-weight="bold" fill="#185FA5" letter-spacing="10">SGE</text>
         <line x1="148" y1="372" x2="352" y2="372" stroke="#378ADD" stroke-width="1.5" opacity="0.6"/>
       </svg>
     </div>
 
-    <h1>Bem-vindo</h1>
+    <h1>Acessar o Sistema</h1>
 
     <form id="loginForm" method="POST" action="/">
+      
       <div class="form-group">
-        <label for="email">E-mail</label>
-        <input type="email" id="email" name="email" placeholder="seu@email.com" autocomplete="email" required>
+        <label for="email">Endereço de E-mail</label>
+        <div class="input-wrapper">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="email" name="email" placeholder="seu@email.com" autocomplete="email" required>
+        </div>
       </div>
 
       <div class="form-group">
-        <label for="senha">Senha</label>
-        <input type="password" id="senha" name="senha" placeholder="••••••••" autocomplete="current-password" required>
+        <label for="senha">Palavra-passe</label>
+        <div class="input-wrapper">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="senha" name="senha" placeholder="••••••••" autocomplete="current-password" required>
+        </div>
         
         <div class="mostrar-senha-wrapper">
           <label class="checkbox-container">
@@ -61,43 +223,84 @@
         </div>
       </div>
 
-      <button type="button" id="btnEntrar">Entrar</button>
+      <button type="button" id="btnEntrar">
+        Entrar <i class="fas fa-arrow-right"></i>
+      </button>
+
     </form>
 
     {% if erro %}
-      <p style="color: red; text-align: center; margin-top: 15px;">{{ erro }}</p>
+      <div class="erro-msg">
+        <i class="fas fa-exclamation-triangle"></i> {{ erro }}
+      </div>
     {% endif %}
   </div>
 
   <script>
     const loginForm = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
     const senhaInput = document.getElementById('senha');
     const mostrarSenhaCheckbox = document.getElementById('mostrarSenhaCheckbox');
     const btnEntrar = document.getElementById('btnEntrar');
 
-    // 1. Alternar visibilidade da senha
+    // ==================== SEGURANÇA CONTRA SCRIPTS (XSS) ====================
+    [emailInput, senhaInput].forEach(input => {
+      input.addEventListener('input', function(e) {
+        // Bloqueia tentativas de inserção de tags HTML ou scripts
+        this.value = this.value.replace(/[<>]/g, '');
+      });
+    });
+
+    // ==================== FUNCIONALIDADES ====================
+    // Sincroniza o ícone corretamente ao carregar a página
+    document.addEventListener('DOMContentLoaded', () => {
+      const themeIcon = document.getElementById('themeIcon');
+      if (localStorage.getItem('theme') === 'dark') {
+        if (themeIcon) themeIcon.className = 'fas fa-sun';
+      } else {
+        if (themeIcon) themeIcon.className = 'fas fa-moon';
+      }
+    });
+
+    // Alternar visibilidade da senha
     mostrarSenhaCheckbox.addEventListener('change', function() {
       senhaInput.type = this.checked ? 'text' : 'password';
     });
 
-    // 2. Fazer o botão "button" enviar o formulário para o Flask
+    // Enviar formulário ao clicar
     btnEntrar.addEventListener('click', function() {
-      // reportValidity() faz o navegador exibir o aviso nativo se o email ou senha estiverem vazios
       if (loginForm.reportValidity()) {
-        // Se tudo estiver preenchido, envia o formulário para a rota '/' do Flask
         loginForm.submit();
       }
     });
 
-    // 3. BÔNUS: Permitir logar apertando a tecla "Enter" no teclado
+    // Permitir logar apertando "Enter"
     senhaInput.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
-        e.preventDefault(); // Evita o comportamento padrão
-        btnEntrar.click();  // Simula um clique no botão Entrar
+        e.preventDefault();
+        btnEntrar.click();
       }
     });
+
+    // Alternância de Tema Escuro/Claro
+    function toggleTheme(event) {
+      if (event) event.preventDefault();
+      const body = document.documentElement; // Usa documentElement para consistência
+      const currentTheme = body.getAttribute('data-theme');
+      const themeIcon = document.getElementById('themeIcon');
+
+      if (currentTheme === 'dark') {
+        body.removeAttribute('data-theme');
+        document.body.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+        if (themeIcon) themeIcon.className = 'fas fa-moon';
+      } else {
+        body.setAttribute('data-theme', 'dark');
+        document.body.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        if (themeIcon) themeIcon.className = 'fas fa-sun';
+      }
+    }
   </script>
-</body>
-</html>
 </body>
 </html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Funcionário · TechManager</title>
+    
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
+    
+    <style>
+        body { background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%); min-height: 100vh; padding: 2rem 1rem; position: relative; margin: 0; font-family: 'Inter', sans-serif; display: flex;}
+        .main-content { margin-left: 70px; padding: 0 1.5rem; width: 100%; transition: all 0.3s ease; box-sizing: border-box; max-width: 1480px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;}
+        .card-pro { background: #ffffff; border-radius: 1.5rem; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08); border: 1px solid #f0f2f6; transition: 0.3s; display: flex; flex-direction: column;}
+        .card-header-pro { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .card-header-pro h2 { font-size: 1.2rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin: 0; }
+        .card-header-pro h2 i { color: #3b82f6; background: #eff6ff; padding: 8px; border-radius: 10px; }
+        
+        .content-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 24px; align-items: start; }
+        .form-grid-pro { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group-pro { display: flex; flex-direction: column; gap: 6px; }
+        .span-2 { grid-column: span 2; }
+        
+        .form-group-pro label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;}
+        .form-group-pro input, .form-group-pro select { 
+            width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 0.95rem; 
+            background: #f8fafc; color: #1e293b; font-weight: 500; outline: none; box-sizing: border-box; 
+            transition: 0.2s; font-family: 'Inter', sans-serif;
+        }
+        .form-group-pro input:focus, .form-group-pro select:focus { border-color: #3b82f6; background: #ffffff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+        
+        .btn-salvar { 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; width: 100%; 
+            padding: 14px; border-radius: 12px; font-weight: 700; font-size: 1rem; border: none; cursor: pointer; 
+            transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 25px; 
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .btn-salvar:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4); }
+
+        .table-responsive { overflow-x: auto; margin-top: 5px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px 16px; text-align: left; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+        th { background: #f8fafc; font-weight: 700; color: #64748b; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; border-bottom: 2px solid #e2e8f0;}
+        td { color: #1e293b; font-weight: 600; vertical-align: middle;}
+        tr:hover { background: #f8fafc; }
+
+        .badge { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;}
+        .badge-admin { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5;}
+        .badge-user { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd;}
+        
+        .badge-2fa-on { background: #dcfce7; color: #10b981; font-size: 0.75rem; padding: 4px 10px; border-radius: 8px; font-weight: 700; border: 1px solid #6ee7b7;}
+        .badge-2fa-off { background: #f1f5f9; color: #64748b; font-size: 0.75rem; padding: 4px 10px; border-radius: 8px; font-weight: 600; border: 1px solid #cbd5e1;}
+
+        .acoes-td { display: flex; gap: 8px; align-items: center; }
+        .btn-action { border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; display: inline-flex; align-items: center; justify-content: center;}
+        .edit-btn { background: #eff6ff; color: #3b82f6; }
+        .edit-btn:hover { background: #3b82f6; color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(59,130,246,0.3);}
+        .delete-btn { background: #fee2e2; color: #ef4444; }
+        .delete-btn:hover { background: #ef4444; color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(239,68,68,0.3);}
+
+        .alert-box { padding: 16px 20px; border-radius: 12px; font-weight: 600; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
+        .alert-success { background: #dcfce7; color: #166534; border-left: 5px solid #10b981; }
+        .alert-error { background: #fee2e2; color: #b91c1c; border-left: 5px solid #ef4444; }
+
+        /* ==================== TEMA ESCURO ==================== */
+        [data-theme="dark"] body { background: #050a15 !important; }
+        [data-theme="dark"] .card-pro { background-color: #0f172a; border-color: #1e293b; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        [data-theme="dark"] .card-header-pro { border-color: #1e293b; }
+        [data-theme="dark"] .card-header-pro h2, [data-theme="dark"] td { color: #f8fafc; }
+        [data-theme="dark"] .form-group-pro input, [data-theme="dark"] .form-group-pro select { background-color: #1e293b; border-color: #334155; color: #f8fafc; }
+        [data-theme="dark"] .form-group-pro input:focus, [data-theme="dark"] .form-group-pro select:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); }
+        [data-theme="dark"] th { background-color: #0b1120; color: #94a3b8; border-color: #1e293b; }
+        [data-theme="dark"] td { border-color: #1e293b; }
+        [data-theme="dark"] tr:hover { background-color: #1e293b; }
+        
+        [data-theme="dark"] .badge-admin { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3); }
+        [data-theme="dark"] .badge-user { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3); }
+        [data-theme="dark"] .badge-2fa-on { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border-color: rgba(16, 185, 129, 0.3); }
+        [data-theme="dark"] .badge-2fa-off { background: rgba(148, 163, 184, 0.1); color: #94a3b8; border-color: rgba(148, 163, 184, 0.2); }
+        
+        [data-theme="dark"] .edit-btn { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        [data-theme="dark"] .edit-btn:hover { background: #3b82f6; color: white; }
+        [data-theme="dark"] .delete-btn { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+        [data-theme="dark"] .delete-btn:hover { background: #ef4444; color: white; }
+
+        @media (max-width: 1100px) {
+            .content-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .form-grid-pro { grid-template-columns: 1fr; }
+            .span-2 { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-trigger"><i class="fas fa-bars"></i></div>
+    <div class="side-menu">
+        <div class="menu-header">
+            <div class="user-avatar" style="background: none;">
+                {% set primeira_letra = session.get('usuario_logado', 'User') | first | upper %}
+                <img class="user-avatar-img" 
+                    src="{{ url_for('static', filename='uploads/' + session.get('foto_perfil', 'default_avatar.png')) }}" 
+                    style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.3); background-color: #1e293b;" 
+                    onerror="this.onerror=null; this.src='//ui-avatars.com/api/?name={{ primeira_letra }}&background=3b82f6&color=fff&size=80';">
+            </div>
+            <h3 style="margin-top: 10px; margin-bottom: 5px;">
+                Olá, {{ 'Administrador' if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' else 'Funcionário' }}
+            </h3>
+            <p style="margin: 0 0 8px 0;"><i class="fas fa-envelope"></i> {{ session.get('usuario_logado') }}</p>
+            <div style="font-size: 0.75rem; background: rgba(255,255,255,0.15); padding: 3px 10px; border-radius: 6px; display: inline-block; font-weight: 600;">
+                <i class="fas fa-building"></i> {{ config_global.empresa_nome | default('TechManager', true) }}
+            </div>
+        </div>
+        
+        <div class="menu-items">
+            <a class="menu-item" href="{{ url_for('menu') }}"><i class="fas fa-home"></i><span>Início</span></a>
+            <a class="menu-item" href="{{ url_for('cadastro') }}"><i class="fas fa-address-card"></i><span>Cadastro de Clientes</span></a>
+            {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
+            <a class="menu-item" href="{{ url_for('cadastro_funcionario') }}" style="background: rgba(59, 130, 246, 0.1); border-left: 3px solid #3b82f6; color: #3b82f6;">
+                <i class="fas fa-users"></i><span>Cadastro de Funcionários</span>
+            </a>
+            {% endif %}
+            <a class="menu-item" href="{{ url_for('cadastro_produtos') }}"><i class="fas fa-box"></i><span>Cadastro de Produtos</span></a>
+            <a class="menu-item" href="{{ url_for('conserto') }}"><i class="fas fa-wrench"></i><span>Gestão de Serviços</span></a>
+            <a class="menu-item" href="{{ url_for('vendas') }}"><i class="fas fa-cash-register"></i><span>Vendas</span></a>
+            {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
+            <a class="menu-item" href="{{ url_for('extrato') }}"><i class="fas fa-file-invoice"></i><span>Extrato</span></a>
+            {% endif %}
+            <div class="menu-divider"></div>
+            <a class="menu-item" href="{{ url_for('configuracao') }}"><i class="fas fa-cog"></i><span>Configuração</span></a>
+            <a class="menu-item" href="#" onclick="toggleTheme(event)"><i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span></a>
+            <a class="menu-item" href="{{ url_for('logout') }}" onclick="return confirm('Tem certeza que deseja sair?')"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
+         </div>
+    </div>
+
+    <div class="main-content">
+        
+        <div class="card-pro" style="background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%); color: white; padding: 1.5rem 2.5rem;">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <i class="fas fa-user-tie" style="font-size: 2.2rem; color: rgba(255,255,255,0.9);"></i>
+                <div>
+                    <h1 style="font-size: 1.6rem; font-weight: 700; margin: 0; text-transform: uppercase;">Recursos Humanos</h1>
+                    <span style="opacity: 0.8; font-size: 0.9rem; font-weight: 500;">Gestão e controle de acesso da equipe</span>
+                </div>
+            </div>
+        </div>
+
+        {% if erro %}
+            <div class="alert-box alert-error"><i class="fas fa-exclamation-triangle"></i> {{ erro }}</div>
+        {% endif %}
+        {% if sucesso %}
+            <div class="alert-box alert-success"><i class="fas fa-check-circle"></i> {{ sucesso }}</div>
+        {% endif %}
+
+        <div class="content-grid">
+            
+            <div class="card-pro">
+                <div class="card-header-pro">
+                    <h2><i class="fas fa-user-plus"></i> Novo Colaborador</h2>
+                </div>
+
+                <form action="{{ url_for('cadastro_funcionario') }}" method="POST">
+                    <div class="form-grid-pro">
+                        <div class="form-group-pro span-2">
+                            <label><i class="fas fa-envelope"></i> E-mail Corporativo (Login)</label>
+                            <input type="email" name="email" id="inputEmail" placeholder="usuario@empresa.com" required maxlength="100">
+                        </div>
+
+                        <div class="form-group-pro">
+                            <label><i class="fas fa-briefcase"></i> Nível de Acesso</label>
+                            <select name="cargo" id="inputCargo" required>
+                                <option value="Funcionário">Funcionário (Acesso Limitado)</option>
+                                <option value="Administrador">Administrador (Acesso Total)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group-pro">
+                            <label><i class="fas fa-building"></i> Departamento</label>
+                            <input type="text" name="departamento" id="inputDepartamento" class="safe-text" placeholder="Ex: Vendas, TI" maxlength="50">
+                        </div>
+
+                        <div class="form-group-pro">
+                            <label><i class="fas fa-phone-alt"></i> Telefone</label>
+                            <input type="text" name="telefone" id="inputTelefone" class="safe-tel" placeholder="(00) 00000-0000" maxlength="20">
+                        </div>
+
+                        <div class="form-group-pro">
+                            <label><i class="fas fa-money-bill-wave"></i> Salário Base (R$)</label>
+                            <input type="number" name="salario" id="inputSalario" step="0.01" min="0" max="999999" placeholder="0.00">
+                        </div>
+
+                        <div class="form-group-pro">
+                            <label><i class="fas fa-shield-alt"></i> Segurança 2FA</label>
+                            <select name="two_factor_ativo" id="input2FA" required>
+                                <option value="0">Desativado</option>
+                                <option value="1">Ativado (Envio de Código)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group-pro">
+                            <label><i class="fas fa-lock"></i> Senha de Acesso</label>
+                            <input type="password" name="senha" placeholder="Obrigatório p/ salvar" required minlength="4" maxlength="30">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-salvar" id="btnAcaoForm">
+                        <i class="fas fa-save"></i> Registrar Funcionário
+                    </button>
+                </form>
+            </div>
+
+            <div class="card-pro">
+                <div class="card-header-pro">
+                    <h2><i class="fas fa-users"></i> Equipa Ativa</h2>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Colaborador</th>
+                                <th>Nível / Cargo</th>
+                                <th style="text-align: center;">2FA</th>
+                                <th style="text-align: center;">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if funcionarios %}
+                                {% for func in funcionarios %}
+                                <tr>
+                                    <td>
+                                        <strong style="color: #3b82f6;">{{ func.email }}</strong><br>
+                                        <span style="font-size: 0.75rem; color: #64748b;">{{ func.departamento or 'Sem departamento' }}</span>
+                                    </td>
+                                    
+                                    <td>
+                                        <span class="badge {{ 'badge-admin' if func.cargo == 'Administrador' else 'badge-user' }}">
+                                            <i class="fas {{ 'fa-crown' if func.cargo == 'Administrador' else 'fa-user' }}"></i> {{ func.cargo }}
+                                        </span>
+                                    </td>
+                                    
+                                    <td style="text-align: center;">
+                                        {% if func.two_factor_ativo == 1 %}
+                                            <span class="badge-2fa-on" title="Autenticação em Dois Fatores Ativada"><i class="fas fa-shield-alt"></i> Ativo</span>
+                                        {% else %}
+                                            <span class="badge-2fa-off" title="Autenticação em Dois Fatores Desativada"><i class="fas fa-shield-alt" style="opacity: 0.5;"></i> Não</span>
+                                        {% endif %}
+                                    </td>
+                                    
+                                    <td style="text-align: center;">
+                                        {% if func.email != session.get('usuario_logado') %}
+                                            <div class="acoes-td" style="justify-content: center;">
+                                                <button type="button" class="btn-action edit-btn" 
+                                                        onclick="editarFuncionario('{{ func.email }}', '{{ func.cargo }}', '{{ func.departamento }}', '{{ func.telefone }}', '{{ func.two_factor_ativo or 0 }}')" 
+                                                        title="Editar Funcionário">
+                                                    <i class="fas fa-pen"></i>
+                                                </button>
+                                                
+                                                <form action="{{ url_for('excluir_funcionario', email=func.email) }}" method="POST" style="margin: 0; padding: 0;">
+                                                    <button type="submit" class="btn-action delete-btn" 
+                                                            onclick="return confirm('Tem a certeza absoluta que deseja excluir o funcionário {{ func.email }}?')" 
+                                                            title="Remover Acesso">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        {% else %}
+                                            <span style="color: #64748b; font-size: 0.75rem; font-weight: 800; background: #f1f5f9; padding: 6px 10px; border-radius: 8px;">VOCÊ</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: #94a3b8; padding: 30px;">
+                                        <i class="fas fa-user-slash" style="font-size: 2.5rem; opacity: 0.5; margin-bottom: 10px; display: block;"></i>
+                                        Nenhum funcionário cadastrado.
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // ==================== BLINDAGEM GLOBAL ANTI-XSS ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            // Seleciona absolutamente todos os campos de texto, email, tel e textareas do formulário
+            const inputsProtegidos = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea');
+            
+            inputsProtegidos.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    let valorAtual = e.target.value;
+                    
+                    // Se o utilizador tentar colar ou digitar tags HTML perigosas (< ou >), remove na hora
+                    if (valorAtual.includes('<') || valorAtual.includes('>')) {
+                        e.target.value = valorAtual.replace(/[<>]/g, '');
+                    }
+                });
+            });
+        });
+
+        function editarFuncionario(email, cargo, departamento, telefone, two_factor) {
+            document.getElementById('inputEmail').value = email;
+            document.getElementById('inputCargo').value = cargo;
+            document.getElementById('inputDepartamento').value = departamento !== 'None' ? departamento : '';
+            document.getElementById('inputTelefone').value = telefone !== 'None' ? telefone : '';
+            document.getElementById('input2FA').value = two_factor;
+            
+            document.getElementById('inputEmail').focus();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            const btn = document.getElementById('btnAcaoForm');
+            btn.innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar Dados';
+            
+            alert("Modo de Edição ativado!\nATENÇÃO: Preencha a senha novamente para poder confirmar as alterações do funcionário.");
+        }
+
+        function toggleTheme(event) {
+            if(event) event.preventDefault();
+            const body = document.documentElement;
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('theme-icon').className = 'fas fa-moon';
+                document.getElementById('theme-text').textContent = 'Tema Escuro';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('theme-icon').className = 'fas fa-sun';
+                document.getElementById('theme-text').textContent = 'Tema Claro';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                const icon = document.getElementById('theme-icon');
+                const text = document.getElementById('theme-text');
+                if (icon) icon.className = 'fas fa-sun';
+                if (text) text.textContent = 'Tema Claro';
+            }
+        });
+
+        document.querySelector('.menu-trigger').addEventListener('click', () => {
+            const menu = document.querySelector('.side-menu');
+            menu.style.left = menu.style.left === '0px' ? '-300px' : '0px';
+        });
+    </script>
+</body>
+</html>
