@@ -3,20 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login · TechManager</title>
+  <title>Login</title>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <script>
-    // Aplica o tema escuro imediatamente antes de renderizar para evitar flash claro
     if (localStorage.getItem('theme') === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
     }
   </script>
 
   <style>
-    /* ==================== ESTILOS BASE E FUNDO ==================== */
     body {
       margin: 0;
       padding: 0;
@@ -33,7 +31,6 @@
       background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
     }
 
-    /* ==================== BOTÃO DE TEMA ==================== */
     .theme-toggle-btn {
       position: absolute;
       top: 30px;
@@ -58,7 +55,6 @@
       transform: scale(1.1);
     }
 
-    /* ==================== CAIXA DE LOGIN ==================== */
     .login-box {
       background: #ffffff;
       width: 100%;
@@ -84,7 +80,6 @@
     h1 { margin: 0 0 35px 0; font-size: 1.8rem; font-weight: 800; color: #1e293b; letter-spacing: -0.5px;}
     [data-theme="dark"] h1 { color: #f8fafc; }
 
-    /* ==================== CAMPOS DE FORMULÁRIO ==================== */
     .form-group { text-align: left; margin-bottom: 24px; }
     
     .form-group label {
@@ -113,7 +108,6 @@
     [data-theme="dark"] .form-group input { background: #0f172a; border-color: #334155; color: #f8fafc; }
     [data-theme="dark"] .form-group input:focus { border-color: #3b82f6; background: #0f172a; }
 
-    /* Mostrar Senha */
     .mostrar-senha-wrapper { display: flex; align-items: center; justify-content: flex-end; margin-top: 12px; }
     .checkbox-container {
       display: flex; align-items: center; gap: 8px; cursor: pointer;
@@ -122,7 +116,6 @@
     .checkbox-container input { cursor: pointer; accent-color: #3b82f6; width: 16px; height: 16px; margin: 0;}
     [data-theme="dark"] .checkbox-container { color: #94a3b8; }
 
-    /* ==================== BOTÃO PRINCIPAL ==================== */
     #btnEntrar { 
       width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 1.1rem;
       font-weight: 700; color: white; background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
@@ -134,7 +127,6 @@
       transform: translateY(-3px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5); filter: brightness(1.1);
     }
 
-    /* ==================== MENSAGEM DE ERRO ==================== */
     .erro-msg {
       background: #fee2e2; color: #b91c1c; padding: 14px; border-radius: 12px;
       font-size: 0.9rem; font-weight: 600; margin-top: 24px;
@@ -243,16 +235,12 @@
     const mostrarSenhaCheckbox = document.getElementById('mostrarSenhaCheckbox');
     const btnEntrar = document.getElementById('btnEntrar');
 
-    // ==================== SEGURANÇA CONTRA SCRIPTS (XSS) ====================
     [emailInput, senhaInput].forEach(input => {
       input.addEventListener('input', function(e) {
-        // Bloqueia tentativas de inserção de tags HTML ou scripts
         this.value = this.value.replace(/[<>]/g, '');
       });
     });
 
-    // ==================== FUNCIONALIDADES ====================
-    // Sincroniza o ícone corretamente ao carregar a página
     document.addEventListener('DOMContentLoaded', () => {
       const themeIcon = document.getElementById('themeIcon');
       if (localStorage.getItem('theme') === 'dark') {
@@ -262,19 +250,16 @@
       }
     });
 
-    // Alternar visibilidade da senha
     mostrarSenhaCheckbox.addEventListener('change', function() {
       senhaInput.type = this.checked ? 'text' : 'password';
     });
 
-    // Enviar formulário ao clicar
     btnEntrar.addEventListener('click', function() {
       if (loginForm.reportValidity()) {
         loginForm.submit();
       }
     });
 
-    // Permitir logar apertando "Enter"
     senhaInput.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -282,10 +267,9 @@
       }
     });
 
-    // Alternância de Tema Escuro/Claro
     function toggleTheme(event) {
       if (event) event.preventDefault();
-      const body = document.documentElement; // Usa documentElement para consistência
+      const body = document.documentElement;
       const currentTheme = body.getAttribute('data-theme');
       const themeIcon = document.getElementById('themeIcon');
 

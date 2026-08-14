@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro de Clientes · TechManager</title>
+  <title>Cadastro de Clientes</title>
   
   <script>
       if (localStorage.getItem('theme') === 'dark') {
@@ -16,6 +16,39 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
   
   <style>
+
+
+                    html, body {
+        /* Impede o efeito "elástico" da página pular ao chegar no limite */
+        overscroll-behavior: none; 
+        
+        /* Pinta o fundo absoluto do navegador para combinar com o seu tema escuro/azul */
+        background-color: #050a15; 
+    }
+        /* ==================== MODAL DE LOGOUT ==================== */
+        .logout-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(6px); padding: 1rem; opacity: 0; transition: opacity 0.3s ease; }
+        .logout-modal-overlay.active { display: flex; opacity: 1; animation: fadeIn 0.3s ease; }
+        .logout-modal-box { background: var(--card-bg, #ffffff); width: 100%; max-width: 400px; border-radius: 1.5rem; padding: 2.5rem 2rem; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 1px solid var(--card-border, #e2e8f0); text-align: center; transform: translateY(20px); transition: transform 0.3s ease;}
+        .logout-modal-overlay.active .logout-modal-box { transform: translateY(0); }
+        .logout-icon { width: 64px; height: 64px; background: rgba(239, 68, 68, 0.15); color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.5rem auto; border: 1px solid rgba(239, 68, 68, 0.3);}
+        .logout-modal-box h3 { margin: 0 0 10px 0; color: var(--text-main, #1e293b); font-size: 1.4rem; font-weight: 800; }
+        .logout-modal-box p { margin: 0 0 25px 0; color: var(--text-muted, #64748b); font-size: 0.95rem; line-height: 1.5; }
+        .logout-actions { display: flex; gap: 12px; justify-content: center; }
+        .btn-cancel-logout { flex: 1; padding: 12px; border-radius: 10px; background: var(--input-bg, #f1f5f9); color: var(--text-main, #475569); font-weight: 700; border: 1px solid var(--card-border, #cbd5e1); cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
+        .btn-cancel-logout:hover { background: var(--card-border, #e2e8f0); color: #1e293b;}
+        .btn-confirm-logout { flex: 1; padding: 12px; border-radius: 10px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; font-size: 0.95rem; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);}
+        .btn-confirm-logout:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4); }
+
+        [data-theme="dark"] .logout-modal-box { background: #0f172a; border-color: #1e293b; }
+        [data-theme="dark"] .logout-modal-box h3 { color: #f8fafc; }
+        [data-theme="dark"] .logout-modal-box p { color: #94a3b8; }
+        [data-theme="dark"] .btn-cancel-logout { background: #1e293b; color: #cbd5e1; border-color: #334155; }
+        [data-theme="dark"] .btn-cancel-logout:hover { background: #334155; color: #f8fafc; }
+        .alert-box { padding: 14px 20px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; display: flex; gap: 10px; align-items: center; }
+        .alert-error { background-color: rgba(239, 68, 68, 0.2); color: #fca5a5; border-left: 4px solid #ef4444; }
+        .alert-success { background-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; border-left: 4px solid #10b981; }
+
+
       body { background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%); min-height: 100vh; padding: 2rem 1rem; position: relative; margin: 0; font-family: 'Inter', sans-serif; display: flex;}
       
       .main-content { margin-left: 70px; padding: 0 1.5rem; width: 100%; transition: all 0.3s ease; box-sizing: border-box; max-width: 1480px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;}
@@ -68,8 +101,11 @@
 
       .badge-tipo { display: inline-flex; background: rgba(59,130,246,0.1); color: #3b82f6; padding: 4px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;}
 
-      .btn-ver { background: #eff6ff; color: #3b82f6; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;}
-      .btn-ver:hover { background: #3b82f6; color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(59,130,246,0.3);}
+      .btn-action { border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; transition: 0.2s; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+      .btn-ver { background: #eff6ff; color: #3b82f6; }
+      .btn-ver:hover { background: #3b82f6; color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(59,130,246,0.3); }
+      .edit-btn { background: #eff6ff; color: #3b82f6; }
+      .edit-btn:hover { background: #3b82f6; color: white; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(59,130,246,0.3); }
       
       .exportar-btn { background: #64748b; color: white; border: none; padding: 12px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 8px; margin-top: 15px;}
       .exportar-btn:hover { background: #475569; transform: translateY(-2px);}
@@ -112,6 +148,8 @@
       
       [data-theme="dark"] .btn-ver { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
       [data-theme="dark"] .btn-ver:hover { background: #3b82f6; color: white; }
+      [data-theme="dark"] .edit-btn { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+      [data-theme="dark"] .edit-btn:hover { background: #3b82f6; color: white; }
       
       [data-theme="dark"] .modal-box { background: #0f172a; border: 1px solid #1e293b; }
       [data-theme="dark"] .modal-header { border-color: #1e293b; }
@@ -171,7 +209,7 @@
             <a class="menu-item" href="{{ url_for('configuracao') }}"><i class="fas fa-cog"></i><span>Configuração</span></a>
             {% endif %}
             <a class="menu-item" href="#" onclick="toggleTheme(event)"><i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span></a>
-            <a class="menu-item" href="{{ url_for('logout') }}" onclick="return confirm('Tem certeza que deseja sair?')"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
+            <a class="menu-item" href="#" onclick="abrirLogoutModal(event)"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
          </div>
     </div>
 
@@ -204,11 +242,13 @@
 
         <div class="card-pro">
             <div class="card-header-pro">
-                <h2><i class="fas fa-user-plus"></i> Novo Cliente</h2>
+                <h2><i class="fas fa-user-plus"></i> Dados do Cliente</h2>
             </div>
 
             <form action="{{ url_for('cadastro') }}" method="POST" id="formCliente">
                 
+                <input type="hidden" name="id_cliente" id="inputIdCliente">
+
                 <div class="form-grid-pro">
                     <div class="form-group-pro">
                         <label>Código / ID</label>
@@ -262,8 +302,11 @@
                     </div>
                 </div>
 
-                <div class="acoes-form">
-                    <button type="submit" class="btn-salvar">
+                <div class="acoes-form" style="gap: 10px;">
+                    <button type="button" id="btnCancelarEdicao" class="exportar-btn" style="display: none; background: #64748b; margin-top: 0;" onclick="cancelarEdicao()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn-salvar" id="btnSalvarCliente">
                         <i class="fas fa-save"></i> Salvar e Cadastrar Cliente
                     </button>
                 </div>
@@ -328,7 +371,6 @@
     </script> 
 
     <script>
-        // ==================== SEGURANÇA E BLINDAGEM UNIVERSAL ====================
         document.addEventListener('DOMContentLoaded', () => {
             const inputsProtegidos = document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea');
             
@@ -342,7 +384,6 @@
             });
         });
 
-        // ==================== MÁSCARAS E VALIDAÇÕES ====================
         let tipoDocAtual = 'cpf';
 
         function mudarTipoDocumento(tipo) {
@@ -395,7 +436,6 @@
             }
         });
 
-        // ==================== LÓGICA DE TABELA E BUSCA ====================
         const dadosElement = document.getElementById('dados-clientes').textContent;
         let clientes = JSON.parse(dadosElement);
 
@@ -425,11 +465,72 @@
               <td>${cliente.nome}</td>
               <td><span style="font-family: monospace; background: rgba(0,0,0,0.05); padding: 4px 8px; border-radius: 6px;">${cliente.cpf}</span></td>
               <td><span class="badge-tipo">${cliente.tipo}</span></td>
-              <td style="text-align: center;"><button class="btn-ver" onclick="verCliente(${realIndex})"><i class="fas fa-eye"></i> Detalhes</button></td>
+              <td style="text-align: center;">
+                  <div style="display: flex; gap: 8px; justify-content: center;">
+                      <button type="button" class="btn-action btn-ver" onclick="verCliente(${realIndex})"><i class="fas fa-eye"></i> Detalhes</button>
+                      <button type="button" class="btn-action edit-btn" onclick="editarCliente(${realIndex})"><i class="fas fa-pen"></i> Editar</button>
+                  </div>
+              </td>
             `;
             tbody.appendChild(tr);
           });
         }
+
+        // ==================== LÓGICA DE EDIÇÃO ====================
+        function editarCliente(index) {
+            const c = clientes[index];
+            if (!c) return;
+
+            // Preenche o ID Oculto para o Backend saber que é uma edição
+            document.getElementById('inputIdCliente').value = c.id;
+            document.getElementById('id-cliente').value = `#${formatarId(c.id)}`;
+
+            // Tipo de Documento
+            if (c.tipo === 'Jurídica') {
+                document.querySelector('input[name="tipo"][value="Jurídica"]').checked = true;
+                mudarTipoDocumento('cnpj');
+            } else {
+                document.querySelector('input[name="tipo"][value="Física"]').checked = true;
+                mudarTipoDocumento('cpf');
+            }
+
+            // Preenche os campos de dados
+            document.getElementById('cpf').value = c.cpf || '';
+            document.getElementById('nome').value = c.nome || '';
+            document.getElementById('email').value = c.email || '';
+            document.getElementById('celular').value = c.celular || '';
+            document.getElementById('telefone').value = c.telefone || '';
+            document.getElementById('cep').value = c.cep || '';
+            document.getElementById('estado').value = c.estado || '';
+            document.getElementById('endereco').value = c.endereco || '';
+            document.getElementById('cidade').value = c.cidade || '';
+
+            // Muda o botão para "Atualizar"
+            const btnSalvar = document.getElementById('btnSalvarCliente');
+            btnSalvar.innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar Dados do Cliente';
+            
+            // Exibe o botão cancelar
+            document.getElementById('btnCancelarEdicao').style.display = 'inline-flex';
+            
+            // Rola para o formulário no topo
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function cancelarEdicao() {
+            // Limpa os campos
+            document.getElementById('formCliente').reset();
+            document.getElementById('inputIdCliente').value = '';
+            
+            // Restaura o visual original de cadastro novo
+            atualizarIdInput();
+            document.querySelector('input[name="tipo"][value="Física"]').checked = true;
+            mudarTipoDocumento('cpf');
+            
+            const btnSalvar = document.getElementById('btnSalvarCliente');
+            btnSalvar.innerHTML = '<i class="fas fa-save"></i> Salvar e Cadastrar Cliente';
+            document.getElementById('btnCancelarEdicao').style.display = 'none';
+        }
+
 
         function filtrarClientes() {
           const termo = document.getElementById('search').value.toLowerCase().trim();
@@ -453,7 +554,6 @@
           renderizarTabela(filtrados);
         }
 
-        // ==================== MODAL SOFISTICADO ====================
         function verCliente(index) {
           const cliente = clientes[index];
           if (!cliente) return;
@@ -494,7 +594,6 @@
         atualizarIdInput();
         renderizarTabela();
 
-        // ==================== TEMA ESCURO ====================
         function toggleTheme(event) {
             if(event) event.preventDefault();
             const body = document.documentElement;
@@ -516,6 +615,31 @@
                 const tt = document.getElementById('theme-text'); if(tt) tt.textContent = 'Tema Claro';
             }
         });
+    </script>
+
+    <div class="logout-modal-overlay" id="logoutModal" onclick="if(event.target === this) fecharLogoutModal();">
+        <div class="logout-modal-box">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h3>Encerrar Sessão</h3>
+            <p>Tem certeza que deseja sair?</p>
+            <div class="logout-actions">
+                <button type="button" class="btn-cancel-logout" onclick="fecharLogoutModal()">Cancelar</button>
+                <a href="{{ url_for('logout') }}" class="btn-confirm-logout">Sim, Sair</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function abrirLogoutModal(event) {
+            if(event) event.preventDefault();
+            document.getElementById('logoutModal').classList.add('active');
+        }
+
+        function fecharLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+        }
     </script>
 </body>
 </html>

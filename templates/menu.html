@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Página Inicial · TechManager</title>
+    <title>Página Inicial</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
@@ -13,17 +13,43 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
-        // Tema síncrono para evitar flash de cor
         if (localStorage.getItem('theme') === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
         }
     </script>
 
     <style>
+        html, body {
+    /* Impede o efeito "elástico" da página pular ao chegar no limite */
+    overscroll-behavior: none; 
+    
+    /* Pinta o fundo absoluto do navegador para combinar com o seu tema escuro/azul */
+    background-color: #050a15; 
+}
+        /* ==================== MODAL DE LOGOUT ==================== */
+        .logout-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(6px); padding: 1rem; opacity: 0; transition: opacity 0.3s ease; }
+        .logout-modal-overlay.active { display: flex; opacity: 1; animation: fadeIn 0.3s ease; }
+        .logout-modal-box { background: var(--card-bg, #ffffff); width: 100%; max-width: 400px; border-radius: 1.5rem; padding: 2.5rem 2rem; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 1px solid var(--card-border, #e2e8f0); text-align: center; transform: translateY(20px); transition: transform 0.3s ease;}
+        .logout-modal-overlay.active .logout-modal-box { transform: translateY(0); }
+        .logout-icon { width: 64px; height: 64px; background: rgba(239, 68, 68, 0.15); color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.5rem auto; border: 1px solid rgba(239, 68, 68, 0.3);}
+        .logout-modal-box h3 { margin: 0 0 10px 0; color: var(--text-main, #1e293b); font-size: 1.4rem; font-weight: 800; }
+        .logout-modal-box p { margin: 0 0 25px 0; color: var(--text-muted, #64748b); font-size: 0.95rem; line-height: 1.5; }
+        .logout-actions { display: flex; gap: 12px; justify-content: center; }
+        .btn-cancel-logout { flex: 1; padding: 12px; border-radius: 10px; background: var(--input-bg, #f1f5f9); color: var(--text-main, #475569); font-weight: 700; border: 1px solid var(--card-border, #cbd5e1); cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
+        .btn-cancel-logout:hover { background: var(--card-border, #e2e8f0); color: #1e293b;}
+        .btn-confirm-logout { flex: 1; padding: 12px; border-radius: 10px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; font-size: 0.95rem; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);}
+        .btn-confirm-logout:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4); }
+
+        [data-theme="dark"] .logout-modal-box { background: #0f172a; border-color: #1e293b; }
+        [data-theme="dark"] .logout-modal-box h3 { color: #f8fafc; }
+        [data-theme="dark"] .logout-modal-box p { color: #94a3b8; }
+        [data-theme="dark"] .btn-cancel-logout { background: #1e293b; color: #cbd5e1; border-color: #334155; }
+        [data-theme="dark"] .btn-cancel-logout:hover { background: #334155; color: #f8fafc; }
+
         body { background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%); min-height: 100vh; padding: 2rem 1rem; position: relative; margin: 0; font-family: 'Inter', sans-serif; display: flex;}
         .dashboard { margin-left: 70px; padding: 0 1.5rem; width: 100%; transition: all 0.3s ease; box-sizing: border-box; max-width: 1480px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;}
         
-        /* ==================== TOPO DIVIDIDO (SALDO + NOTIFICAÇÕES) ==================== */
+
         .top-grid {
             display: grid;
             grid-template-columns: 2fr 1.2fr;
@@ -31,7 +57,6 @@
             align-items: stretch;
         }
 
-        /* CARD BANCÁRIO (ESQUERDA) */
         .balance-header-card {
             background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%);
             border-radius: 1.5rem;
@@ -73,7 +98,6 @@
         .status-badge { color: #34d399; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 6px; justify-content: flex-end; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;}
         .datetime-info { font-size: 0.9rem; color: #cbd5e1; font-weight: 500; }
 
-        /* BLOCO DE NOTIFICAÇÕES (DIREITA) */
         .notif-panel {
             background: #ffffff;
             border-radius: 1.5rem;
@@ -83,7 +107,7 @@
             flex-direction: column;
             overflow: hidden;
             height: 100%;
-            max-height: 280px; /* Alinhado com a altura do saldo */
+            max-height: 280px;
             transition: 0.3s;
         }
         
@@ -131,9 +155,6 @@
         .notif-orcamento { background: rgba(6, 182, 212, 0.2); color: #06b6d4; }
         .notif-default { background: rgba(100, 116, 139, 0.2); color: #64748b; }
 
-
-
-        /* ==================== MÉTRICAS (GRID 4 CARTÕES) ==================== */
         .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
         .metric-card { background: white; border-radius: 1.5rem; padding: 24px; border: 1px solid #f0f2f6; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); transition: 0.3s; position: relative; overflow: hidden;}
         .metric-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1); border-color: #cbd5e1; }
@@ -149,7 +170,6 @@
         .metric-value { font-size: 1.8rem; font-weight: 800; color: #1e293b; letter-spacing: -0.5px; }
         .metric-label { font-size: 0.85rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
 
-        /* ==================== LAYOUT INFERIOR (2 COLUNAS) ==================== */
         .bottom-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 24px; }
         
         .card-pro { background: #ffffff; border-radius: 1.5rem; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid #f0f2f6; display: flex; flex-direction: column;}
@@ -157,13 +177,11 @@
         .card-header-pro h2 { font-size: 1.2rem; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin: 0; }
         .card-header-pro h2 i { color: #3b82f6; background: #eff6ff; padding: 8px; border-radius: 10px; }
 
-        /* FINANÇAS RÁPIDAS */
         .financas-rapidas { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
         .fin-item { background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 5px; }
         .fin-item strong { color: #1e293b; font-size: 1.1rem; }
         .fin-item span { color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 6px; }
 
-        /* PROGRESSO DA META */
         .meta-container { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 1.2rem; padding: 24px; display: flex; flex-direction: column; align-items: center; }
         .meta-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .meta-title { font-size: 1rem; font-weight: 700; color: #1e293b; }
@@ -182,10 +200,8 @@
         .btn-meta { background: #3b82f6; color: white; border: none; border-radius: 10px; padding: 0 20px; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .btn-meta:hover { background: #2563eb; transform: translateY(-2px); }
 
-        /* GRÁFICO (Chart.js Container) */
         .chart-container-wrapper { position: relative; height: 320px; width: 100%; flex-grow: 1; }
 
-        /* ==================== TEMA ESCURO ==================== */
         [data-theme="dark"] body { background: linear-gradient(135deg, #0f172a 0%, #020617 100%) !important; }
         [data-theme="dark"] .metric-card, [data-theme="dark"] .card-pro, [data-theme="dark"] .notif-panel { background: #1e293b; border-color: #334155; }
         [data-theme="dark"] .metric-value, [data-theme="dark"] .card-header-pro h2, [data-theme="dark"] .fin-item strong, [data-theme="dark"] .meta-title, [data-theme="dark"] .progress-percent { color: #f8fafc; }
@@ -251,7 +267,7 @@
             <a class="menu-item" href="{{ url_for('configuracao') }}"><i class="fas fa-cog"></i><span>Configuração</span></a>
             {% endif %}
             <a class="menu-item" href="#" onclick="toggleTheme(event)"><i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span></a>
-            <a class="menu-item" href="{{ url_for('logout') }}" onclick="return confirm('Tem certeza que deseja sair?')"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
+            <a class="menu-item" href="#" onclick="abrirLogoutModal(event)"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
          </div>
     </div>
 
@@ -429,7 +445,6 @@
                 <div class="card-header-pro">
                     <h2><i class="fas fa-chart-line"></i> Evolução Diária de Receita (7 Dias)</h2>
                 </div>
-                <!-- O GRÁFICO INTUITIVO COM CHART.JS VAI AQUI -->
                 <div class="chart-container-wrapper">
                     <canvas id="receitaChart"></canvas>
                 </div>
@@ -446,7 +461,6 @@
     </script>
 
     <script>
-        // ==================== OLHO MÁGICO (PRIVACIDADE DE SALDOS) ====================
         function applyPrivacyMode(isPrivate) {
             const icon = document.getElementById('privacyEye');
             const values = document.querySelectorAll('.privacy-value');
@@ -456,7 +470,6 @@
             } else {
                 if(icon) icon.className = 'fas fa-eye';
                 values.forEach(el => {
-                    // Restaura o valor original que está protegido no atributo data-value
                     el.innerText = el.getAttribute('data-value');
                 });
             }
@@ -469,7 +482,6 @@
             applyPrivacyMode(isPrivate);
         }
 
-        // ==================== CÁLCULO DA META MENSAL ====================
         let receitaAtual = Number("{{ saldo_numerico | default(0, true) }}");
         let metaMensal = Number(localStorage.getItem('metaMensalPersonalizada')) || 30000;
         
@@ -510,7 +522,6 @@
             atualizarProgresso();
         }
 
-        // ==================== NOVO GRÁFICO INTUITIVO COM CHART.JS ====================
         function initReceitaChart() {
             const ctx = document.getElementById('receitaChart');
             if (!ctx) return;
@@ -542,7 +553,7 @@
                         pointRadius: 5,
                         pointHoverRadius: 7,
                         fill: true,
-                        tension: 0.4 // Suaviza a linha (curvas)
+                        tension: 0.4 
                     }]
                 },
                 options: {
@@ -596,9 +607,7 @@
             });
         }
 
-        // ==================== INICIALIZAÇÃO ====================
         document.addEventListener('DOMContentLoaded', () => {
-            // Relógio e Data Topo
             setInterval(() => {
                 const agora = new Date();
                 document.getElementById('data-atual-topo').textContent = agora.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -608,15 +617,10 @@
             if (atualizarMetaBtn) atualizarMetaBtn.addEventListener('click', atualizarMetas);
             atualizarProgresso();
             
-            // Inicializa o novo gráfico
             initReceitaChart();
             
-            
-            
-            // Aplica estado inicial da Privacidade
             applyPrivacyMode(localStorage.getItem('privacyMode') === 'true');
 
-            // Sincroniza Ícone Tema
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
                 document.body.setAttribute('data-theme', 'dark');
@@ -626,7 +630,6 @@
             }
         });
 
-        // Alternância de Tema
         function toggleTheme(event) {
             if(event) event.preventDefault();
             const body = document.body;
@@ -645,8 +648,39 @@
                 if(icon) icon.className = 'fas fa-sun';
                 if(text) text.textContent = 'Tema Claro';
             }
-            // Recarrega a página para atualizar as cores do gráfico
+
             setTimeout(() => { window.location.reload(); }, 100);
+        }
+    </script>
+
+
+
+
+
+
+
+    <div class="logout-modal-overlay" id="logoutModal" onclick="if(event.target === this) fecharLogoutModal();">
+        <div class="logout-modal-box">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h3>Encerrar Sessão</h3>
+            <p>Tem certeza que deseja sair?</p>
+            <div class="logout-actions">
+                <button type="button" class="btn-cancel-logout" onclick="fecharLogoutModal()">Cancelar</button>
+                <a href="{{ url_for('logout') }}" class="btn-confirm-logout">Sim, Sair</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function abrirLogoutModal(event) {
+            if(event) event.preventDefault();
+            document.getElementById('logoutModal').classList.add('active');
+        }
+
+        function fecharLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
         }
     </script>
 </body>

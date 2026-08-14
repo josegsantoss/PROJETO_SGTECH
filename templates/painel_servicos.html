@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestão de Serviços</title>
     
     <script>
-        // Força tema escuro por padrão
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
     </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,32 +16,81 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
     
     <style>
-        /* ==================== ALERTAS FLASH ==================== */
-        .alert-box { padding: 14px 20px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; display: flex; gap: 10px; align-items: center; }
-        .alert-error { background-color: rgba(239, 68, 68, 0.2); color: #fca5a5; border-left: 4px solid #ef4444; }
-        .alert-success { background-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; border-left: 4px solid #10b981; }
-        
-        /* ==================== TEMA ESCURO NATIVO & LAYOUT PREMIUM ==================== */
+        /* ==================== VARIÁVEIS DE TEMA (CLARO/ESCURO) ==================== */
         :root {
-            --bg-primary: #0a0f1d; --bg-secondary: #111827; --card-bg: #1e293b; --card-border: #334155;
-            --accent-blue: #3b82f6; --accent-blue-hover: #2563eb; --accent-green: #10b981; --accent-green-hover: #059669;
-            --accent-amber: #f59e0b; --accent-purple: #8b5cf6; --accent-red: #ef4444;
-            --text-main: #f8fafc; --text-muted: #94a3b8; --input-bg: #0f172a; --input-border: #334155;
+            --bg-primary: #f8fafc; 
+            --bg-secondary: #f1f5f9; 
+            --card-bg: #ffffff; 
+            --card-border: #e2e8f0;
+            --accent-blue: #3b82f6; 
+            --accent-green: #10b981; 
+            --text-main: #1e293b; 
+            --text-muted: #64748b; 
+            --input-bg: #f8fafc; 
+            --input-border: #cbd5e1;
+            --table-th-bg: #f8fafc;
+            --hover-bg: #f1f5f9;
+            --body-bg: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%);
+            --btn-neutral-bg: #f1f5f9;
+            --btn-neutral-hover: #e2e8f0;
+            --btn-neutral-text: #475569;
+            --modal-overlay: rgba(15, 23, 42, 0.5);
         }
 
-        body { background: linear-gradient(135deg, #090d16 0%, #0f172a 100%) !important; min-height: 100vh; padding: 2rem 1rem; margin: 0; font-family: 'Inter', sans-serif; color: var(--text-main); display: flex; }
-        .main-content { margin-left: 70px; padding: 0 1.5rem; width: 100%; transition: all 0.3s ease; box-sizing: border-box; max-width: 1600px; margin: 0 auto; }
+        [data-theme="dark"] {
+            --bg-primary: #0a0f1d; 
+            --bg-secondary: #111827; 
+            --card-bg: #1e293b; 
+            --card-border: #334155;
+            --text-main: #f8fafc; 
+            --text-muted: #94a3b8; 
+            --input-bg: #0f172a; 
+            --input-border: #334155;
+            --table-th-bg: #0b1120;
+            --hover-bg: #1e293b;
+            --body-bg: #050a15;
+            --btn-neutral-bg: #334155;
+            --btn-neutral-hover: #475569;
+            --btn-neutral-text: #f8fafc;
+            --modal-overlay: rgba(15, 23, 42, 0.85);
+        }
 
-        /* ========= HEADER DA PÁGINA ========= */
-        .page-header-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid var(--card-border); border-radius: 1.25rem; padding: 1.5rem 2rem; margin-top: 20px; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: space-between; }
+        /* CORREÇÃO DO LAYOUT: Ocupa toda a tela, tira margin e padding que bugavam o design */
+        html, body {
+            overscroll-behavior: none; 
+            background: var(--body-bg) !important; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Inter', sans-serif; 
+            color: var(--text-main); 
+        }
+        
+        .main-content { 
+            margin-left: 70px; 
+            padding: 2rem; 
+            width: calc(100% - 70px); 
+            transition: all 0.3s ease; 
+            box-sizing: border-box; 
+        }
+
+        /* ==================== ALERTAS FLASH ==================== */
+        .alert-box { padding: 14px 20px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; display: flex; gap: 10px; align-items: center; }
+        .alert-error { background-color: rgba(239, 68, 68, 0.2); color: #ef4444; border-left: 4px solid #ef4444; }
+        .alert-success { background-color: rgba(16, 185, 129, 0.2); color: #10b981; border-left: 4px solid #10b981; }
+        [data-theme="dark"] .alert-error { color: #fca5a5; }
+        [data-theme="dark"] .alert-success { color: #6ee7b7; }
+
+        /* ==================== ESTRUTURA DOS CARDS ==================== */
+        .page-header-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 1.25rem; padding: 1.5rem 2rem; margin-top: 0; margin-bottom: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: space-between; }
+        [data-theme="dark"] .page-header-card { box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         .header-title-box { display: flex; align-items: center; gap: 16px; }
         .header-icon-badge { width: 52px; height: 52px; border-radius: 14px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center; color: var(--accent-blue); font-size: 1.5rem; }
-        .header-text h1 { font-size: 1.5rem; font-weight: 800; margin: 0; letter-spacing: -0.5px; color: #ffffff; text-transform: uppercase; }
+        .header-text h1 { font-size: 1.5rem; font-weight: 800; margin: 0; letter-spacing: -0.5px; color: var(--text-main); text-transform: uppercase; }
         .header-text span { color: var(--text-muted); font-size: 0.875rem; font-weight: 500; }
 
-        /* ========= NAVEGAÇÃO POR ABAS ========= */
-        .tabs-header { display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 2px solid var(--card-border); padding-bottom: 2px; overflow-x: auto; }
-        .tab-btn { padding: 14px 24px; border: none; background: transparent; font-size: 1rem; font-weight: 700; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s ease; display: flex; align-items: center; gap: 10px; white-space: nowrap; border-radius: 8px 8px 0 0; }
+        .tabs-header { display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 2px solid var(--card-border); padding-bottom: 2px; overflow-x: auto; }
+        .tab-btn { padding: 14px 20px; border: none; background: transparent; font-size: 0.95rem; font-weight: 700; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; white-space: nowrap; border-radius: 8px 8px 0 0; }
         .tab-btn:hover { color: var(--accent-blue); background: rgba(59, 130, 246, 0.05); }
         .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(59, 130, 246, 0.1); }
         .tab-content { display: none; animation: fadeIn 0.35s ease-in-out; }
@@ -49,14 +98,14 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ========= CARDS & ESTRUTURA DE COLUNAS ========= */
-        .card-pro { background: var(--card-bg); border-radius: 1.25rem; padding: 1.75rem; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25); border: 1px solid var(--card-border); margin-bottom: 24px; }
+        .card-pro { background: var(--card-bg); border-radius: 1.25rem; padding: 1.75rem; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); border: 1px solid var(--card-border); margin-bottom: 24px; }
+        [data-theme="dark"] .card-pro { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25); }
         .card-header-pro { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 1rem; margin-bottom: 1.5rem; }
         .card-header-pro h2 { font-size: 1.15rem; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 10px; margin: 0; }
         .card-header-pro h2 i { color: var(--accent-blue); background: rgba(59, 130, 246, 0.15); padding: 8px; border-radius: 10px; }
         .layout-colunas { display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; align-items: start; }
 
-        /* ========= FORMULÁRIOS & CAMPOS ========= */
+        /* ==================== FORMULÁRIOS ==================== */
         .form-section-title { font-size: 0.8rem; font-weight: 800; color: var(--accent-blue); text-transform: uppercase; letter-spacing: 0.8px; margin: 18px 0 12px 0; display: flex; align-items: center; gap: 8px; border-bottom: 1px dashed var(--card-border); padding-bottom: 6px; }
         .form-grid-pro { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: start; }
         .form-group-pro { display: flex; flex-direction: column; gap: 6px; }
@@ -65,75 +114,125 @@
         .form-group-pro input, .form-group-pro select, .form-group-pro textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--input-border); border-radius: 10px; font-size: 0.95rem; background: var(--input-bg); color: var(--text-main); font-weight: 500; outline: none; box-sizing: border-box; transition: all 0.2s ease; font-family: 'Inter', sans-serif; }
         .form-group-pro input, .form-group-pro select { height: 46px; }
         .form-group-pro textarea { resize: vertical; min-height: 90px; }
-        .form-group-pro input:focus, .form-group-pro select:focus, .form-group-pro textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); background: #131d31; }
-        .input-disabled { background: #0b1120 !important; color: #64748b !important; cursor: not-allowed; border-color: var(--card-border) !important; font-weight: 700 !important; }
+        .form-group-pro input:focus, .form-group-pro select:focus, .form-group-pro textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+        .input-disabled { background: var(--bg-secondary) !important; color: var(--text-muted) !important; cursor: not-allowed; border-color: var(--card-border) !important; font-weight: 700 !important; }
 
         .vincular-os-box { background: rgba(59, 130, 246, 0.08); border: 2px dashed rgba(59, 130, 246, 0.3); padding: 18px; border-radius: 12px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
-        .vincular-os-box label { color: #93c5fd; font-weight: 800; font-size: 0.85rem; text-transform: uppercase; }
+        .vincular-os-box label { color: var(--accent-blue); font-weight: 800; font-size: 0.85rem; text-transform: uppercase; }
 
-        /* ========= BOTÕES DE AÇÃO ========= */
+        .input-with-button { display: flex; gap: 8px; width: 100%; }
+        .input-with-button input { flex-grow: 1; }
+        .input-with-button .btn-acao { padding: 0 18px; height: 46px; border-radius: 10px; background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); border: 1px solid rgba(59, 130, 246, 0.3); margin: 0; display: flex; align-items: center; justify-content: center; transition: 0.2s; cursor: pointer; }
+        .input-with-button .btn-acao:hover { background: var(--accent-blue); color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
+
+        /* ==================== BOTÕES ==================== */
         .acoes-form { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; border-top: 1px solid var(--card-border); padding-top: 20px; }
-        .btn-acao { padding: 12px 22px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .btn-acao { padding: 12px 22px; border-radius: 10px; font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
         .btn-salvar { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
         .btn-salvar:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3); }
-        .btn-limpar { background: #334155; color: var(--text-main); }
-        .btn-limpar:hover { background: #475569; transform: translateY(-2px); }
+        .btn-limpar { background: var(--btn-neutral-bg); color: var(--btn-neutral-text); border: 1px solid var(--card-border); }
+        .btn-limpar:hover { background: var(--btn-neutral-hover); transform: translateY(-2px); }
         .btn-pdf { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); color: white; }
         .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3); }
 
-        /* ========= TABELAS & LISTAS ========= */
+        /* ==================== TABELAS & LISTAS ==================== */
         .table-header-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 15px; }
         .search-pro { position: relative; width: 100%; }
         .search-pro i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1rem; }
         .search-pro input { width: 100%; padding: 12px 16px 12px 44px; border-radius: 10px; border: 1px solid var(--input-border); font-size: 0.9rem; outline: none; transition: 0.2s; background: var(--input-bg); color: var(--text-main); font-weight: 500; box-sizing: border-box; font-family: 'Inter', sans-serif; height: 44px; }
-        .search-pro input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        .search-pro input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); background: var(--card-bg); }
         .table-responsive { overflow-x: auto; border-radius: 10px; border: 1px solid var(--card-border); }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--card-border); font-size: 0.875rem; }
-        th { background: #0f172a; font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 0.725rem; letter-spacing: 0.6px; border-bottom: 2px solid var(--card-border); }
+        th { background: var(--table-th-bg); font-weight: 700; color: var(--text-muted); text-transform: uppercase; font-size: 0.725rem; letter-spacing: 0.6px; border-bottom: 2px solid var(--card-border); }
         td { color: var(--text-main); font-weight: 600; vertical-align: middle; }
-        tr:hover { background: rgba(255, 255, 255, 0.03); }
+        tr:hover { background: var(--hover-bg); }
 
-        /* ========= BADGES & STATUS ========= */
         .status-badge { display: inline-flex; padding: 5px 10px; border-radius: 6px; font-size: 0.725rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; align-items: center; gap: 6px; }
-        .status-pendente { background: rgba(245, 158, 11, 0.15); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
-        .status-aprovado { background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .status-reprovado { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .status-finalizado { background: rgba(139, 92, 246, 0.15); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.3); }
-        .status-recebido { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.3); }
+        .status-pendente { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .status-aprovado { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .status-reprovado { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .status-finalizado { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
+        .status-recebido { background: rgba(148, 163, 184, 0.15); color: #64748b; border: 1px solid rgba(148, 163, 184, 0.3); }
 
-        /* ========= KANBAN & CARDS DE GESTÃO ========= */
         .filtros-status { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
-        .filtro-btn { background: #0f172a; border: 1px solid var(--card-border); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; }
-        .filtro-btn:hover { background: #1e293b; color: var(--text-main); }
+        .filtro-btn { background: var(--input-bg); border: 1px solid var(--card-border); padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); cursor: pointer; transition: all 0.2s ease; }
+        .filtro-btn:hover { background: var(--card-bg); color: var(--text-main); }
         .filtro-btn.active { background: var(--accent-blue); color: white; border-color: var(--accent-blue); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
         
-        .os-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; max-height: 520px; overflow-y: auto; padding-right: 4px; }
+        .os-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; max-height: 600px; overflow-y: auto; padding-right: 4px; }
         .os-cards-grid::-webkit-scrollbar { width: 6px; }
         .os-cards-grid::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 10px; }
 
-        .os-card { background: #0f172a; border: 1px solid var(--card-border); border-radius: 14px; padding: 16px; transition: all 0.25s ease; display: flex; flex-direction: column; gap: 10px; cursor: pointer; }
-        .os-card:hover, .os-card.selected { border-color: var(--accent-blue); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.2); transform: translateY(-2px); }
+        .os-card { background: var(--input-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 16px; transition: all 0.25s ease; display: flex; flex-direction: column; gap: 10px; cursor: pointer; }
+        .os-card:hover, .os-card.selected { border-color: var(--accent-blue); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.15); transform: translateY(-2px); }
         .os-card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--card-border); padding-bottom: 8px; }
         .os-card-id { font-weight: 800; color: var(--accent-blue); font-size: 1rem; }
         .os-card-body { font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 5px; }
         .os-card-body strong { color: var(--text-main); }
-        .os-card-laudo { background: #1e293b; padding: 10px; border-radius: 8px; font-size: 0.8rem; color: #cbd5e1; font-style: italic; border-left: 3px solid var(--accent-blue); margin-top: 4px; }
+        .os-card-laudo { background: var(--bg-secondary); padding: 10px; border-radius: 8px; font-size: 0.8rem; color: var(--text-muted); font-style: italic; border-left: 3px solid var(--accent-blue); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 
-        /* Botão de Imprimir específico */
-        .btn-imprimir-cupom {
-            background: #334155; color: white; width: 100%; margin-top: 10px; padding: 10px; 
-            font-size: 0.85rem; font-weight: 700; border: none; border-radius: 8px; 
-            cursor: pointer; position: relative; z-index: 10; transition: 0.2s;
-        }
-        .btn-imprimir-cupom:hover { background: #475569; transform: scale(1.02); }
+        .btn-imprimir-cupom { background: var(--btn-neutral-bg); color: var(--btn-neutral-text); width: 100%; margin-top: 10px; padding: 10px; font-size: 0.85rem; font-weight: 700; border: 1px solid var(--card-border); border-radius: 8px; cursor: pointer; position: relative; z-index: 10; transition: 0.2s; }
+        .btn-imprimir-cupom:hover { background: var(--btn-neutral-hover); transform: scale(1.02); }
 
-        /* PAGINAÇÃO */
-        .page-btn { background: #0f172a; border: 1px solid var(--card-border); color: var(--text-muted); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.8rem; transition: all 0.2s; }
+        .page-btn { background: var(--input-bg); border: 1px solid var(--card-border); color: var(--text-muted); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.8rem; transition: all 0.2s; }
         .page-btn.active, .page-btn:hover { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
 
+        /* ==================== MODAIS DE LOGOUT E BUSCAS ==================== */
+        .logout-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(6px); padding: 1rem; opacity: 0; transition: opacity 0.3s ease; }
+        .logout-modal-overlay.active { display: flex; opacity: 1; animation: fadeIn 0.3s ease; }
+        .logout-modal-box { background: var(--card-bg); width: 100%; max-width: 400px; border-radius: 1.5rem; padding: 2.5rem 2rem; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 1px solid var(--card-border); text-align: center; transform: translateY(20px); transition: transform 0.3s ease;}
+        .logout-modal-overlay.active .logout-modal-box { transform: translateY(0); }
+        .logout-icon { width: 64px; height: 64px; background: rgba(239, 68, 68, 0.15); color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.5rem auto; border: 1px solid rgba(239, 68, 68, 0.3);}
+        .logout-modal-box h3 { margin: 0 0 10px 0; color: var(--text-main); font-size: 1.4rem; font-weight: 800; }
+        .logout-modal-box p { margin: 0 0 25px 0; color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
+        .logout-actions { display: flex; gap: 12px; justify-content: center; }
+        .btn-cancel-logout { flex: 1; padding: 12px; border-radius: 10px; background: var(--btn-neutral-bg); color: var(--text-main); font-weight: 700; border: 1px solid var(--card-border); cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
+        .btn-cancel-logout:hover { background: var(--btn-neutral-hover); }
+        .btn-confirm-logout { flex: 1; padding: 12px; border-radius: 10px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; font-size: 0.95rem; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);}
+        .btn-confirm-logout:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4); }
+
+        .search-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--modal-overlay); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(8px); padding: 1rem; }
+        .search-modal-overlay.active { display: flex; animation: fadeIn 0.2s ease; }
+        .search-modal-box { background: var(--card-bg); width: 98%; max-width: 1800px; border-radius: 1.25rem; padding: 2rem; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 1px solid var(--card-border); display: flex; flex-direction: column; height: 96vh; }
+        
+        .search-modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; }
+        .search-modal-header h3 { margin: 0; color: var(--text-main); font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        .search-modal-header h3 i { color: var(--accent-blue); }
+        .search-modal-header p { margin: 6px 0 0 0; color: var(--text-muted); font-size: 0.95rem; font-weight: 600; }
+        
+        .btn-close-modal { background: rgba(239, 68, 68, 0.1); border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 1.4rem; color: #ef4444; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
+        .btn-close-modal:hover { background: #ef4444; color: white; transform: scale(1.05); }
+        
+        .search-modal-input-group { position: relative; margin-bottom: 1.5rem; }
+        .search-modal-input-group i { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--accent-blue); font-size: 1.2rem; }
+        .search-modal-input { width: 100%; padding: 18px 20px 18px 50px; border-radius: 12px; border: 2px solid var(--card-border); background: var(--bg-primary); color: var(--text-main); font-size: 1.1rem; outline: none; transition: 0.2s; font-weight: 600; box-sizing: border-box;}
+        .search-modal-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15); }
+        
+        .search-modal-list { flex-grow: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; padding-right: 8px; align-content: flex-start; }
+        .search-modal-list::-webkit-scrollbar { width: 8px; }
+        .search-modal-list::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 10px; }
+        .search-modal-list::-webkit-scrollbar-thumb:hover { background: var(--accent-blue); }
+        
+        .search-modal-item { background: var(--bg-primary); border: 1px solid var(--card-border); padding: 18px; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; gap: 12px;}
+        .search-modal-item:hover { border-color: var(--accent-blue); background: rgba(59, 130, 246, 0.08); transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.1);}
+        [data-theme="dark"] .search-modal-item:hover { box-shadow: 0 6px 15px rgba(0,0,0,0.3); }
+        
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; border-bottom: 1px dashed var(--card-border); padding-bottom: 12px; margin-bottom: 4px; }
+        .item-title { font-weight: 800; color: var(--text-main); font-size: 1.1rem; line-height: 1.2; word-break: break-word; padding-right: 10px;}
+        .item-badge { background: rgba(59, 130, 246, 0.15); color: var(--accent-blue); padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 800; border: 1px solid rgba(59, 130, 246, 0.3); flex-shrink: 0; text-align: center; white-space: nowrap;}
+        
+        .item-grid-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; width: 100%; }
+        .item-grid-info span { font-size: 0.85rem; color: var(--text-muted); display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; word-break: break-word; }
+        .item-grid-info span i { width: 16px; margin-top: 3px; text-align: center; color: var(--accent-blue); opacity: 0.8; flex-shrink: 0; }
+        .item-grid-full { grid-column: 1 / -1; }
+        
+        .search-trigger-btn { width: 100%; max-width: 600px; padding: 14px 20px; border-radius: 10px; border: 1px solid var(--accent-blue); background: var(--input-bg); color: var(--text-muted); font-weight: 600; outline: none; text-align: left; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; font-size: 1rem; }
+        .search-trigger-btn:hover { background: rgba(59, 130, 246, 0.05); color: var(--text-main); box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15); }
+        .search-trigger-btn i { color: var(--accent-blue); }
+
         @media (max-width: 1024px) { .layout-colunas { grid-template-columns: 1fr; } .form-grid-pro { grid-template-columns: 1fr 1fr; } .span-3, .span-4 { grid-column: span 2; } }
-        @media (max-width: 600px) { .form-grid-pro { grid-template-columns: 1fr; } .span-1, .span-2, .span-3, .span-4 { grid-column: span 1; } .acoes-form { flex-direction: column; } .btn-acao { width: 100%; } }
+        @media (max-width: 600px) { .form-grid-pro { grid-template-columns: 1fr; } .span-1, .span-2, .span-3, .span-4 { grid-column: span 1; } .acoes-form { flex-direction: column; } .btn-acao { width: 100%; } .item-grid-info { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
@@ -174,14 +273,21 @@
             {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
             <a class="menu-item" href="{{ url_for('configuracao') }}"><i class="fas fa-cog"></i><span>Configuração</span></a>
             {% endif %}
+            
             <a class="menu-item" href="#" onclick="toggleTheme(event)"><i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span></a>
-            <a class="menu-item" href="{{ url_for('logout') }}" onclick="return confirm('Tem certeza que deseja sair?')"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
+            <a class="menu-item" href="#" onclick="abrirLogoutModal(event)"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
          </div>
     </div>
     <iframe id="printFrame" style="display:none;"></iframe>
 
     <div class="main-content">
         
+        <datalist id="listaClientesBD">
+            {% for cli in clientes %}
+                <option value="{{ cli.nome_cliente }}">{{ cli.documento }}</option>
+            {% endfor %}
+        </datalist>
+
         <div class="page-header-card">
             <div class="header-title-box">
                 <div class="header-icon-badge">
@@ -207,19 +313,21 @@
 
         <div class="tabs-header">
             <button class="tab-btn {% if aba_ativa == 'consertos' or aba_ativa == 'equipamentos' or not aba_ativa %}active{% endif %}" onclick="switchTab('consertos')">
-                <i class="fas fa-laptop-medical"></i> 1. Cadastro de Equipamento
+                <i class="fas fa-laptop-medical"></i> 1. Novo Equipamento
             </button>
             <button class="tab-btn {% if aba_ativa == 'orcamentos' %}active{% endif %}" onclick="switchTab('orcamentos')">
-                <i class="fas fa-file-invoice-dollar"></i> 2. Emissão de Orçamento
+                <i class="fas fa-file-invoice-dollar"></i> 2. Novo Orçamento
             </button>
             <button class="tab-btn {% if aba_ativa == 'andamento' %}active{% endif %}" onclick="switchTab('andamento')">
-                <i class="fas fa-tasks"></i> 3. Gestão de Orçamentos
+                <i class="fas fa-edit"></i> 3. Editar Orçamento
+            </button>
+            <button class="tab-btn {% if aba_ativa == 'visao_geral' %}active{% endif %}" onclick="switchTab('visao_geral')">
+                <i class="fas fa-clipboard-list"></i> 4. Visão Geral (Painel)
             </button>
         </div>
 
         <div id="tab-consertos" class="tab-content {% if aba_ativa == 'consertos' or aba_ativa == 'equipamentos' or not aba_ativa %}active{% endif %}">
             <div class="layout-colunas">
-                
                 <div class="card-pro">
                     <div class="card-header-pro">
                         <h2><i class="fas fa-plus-circle"></i> Novo Equipamento</h2>
@@ -234,10 +342,17 @@
                                 <label><i class="fas fa-barcode"></i> Número de Série</label>
                                 <input type="text" name="numero_serie" id="inputSerie" required maxlength="50" placeholder="Ex: SN987654321" oninput="validarAlfanumerico(this)">
                             </div>
+                            
                             <div class="form-group-pro span-2">
                                 <label><i class="fas fa-user"></i> Nome do Cliente</label>
-                                <input type="text" name="cliente" id="inputCliente" required maxlength="100" placeholder="Ex: João da Silva" oninput="validarApenasLetras(this)">
+                                <div class="input-with-button">
+                                    <input type="text" name="cliente" id="inputCliente" required maxlength="100" placeholder="Digite o nome ou busque..." autocomplete="off">
+                                    <button type="button" class="btn-acao" onclick="abrirModalBuscaClientes('inputCliente')" title="Buscar na Base de Clientes">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
                             </div>
+
                             <div class="form-group-pro span-2">
                                 <label><i class="fas fa-microchip"></i> Modelo / Marca</label>
                                 <input type="text" name="equipamento" id="inputEquipamento" required maxlength="100" placeholder="Ex: Dell Inspiron 15" oninput="validarAlfanumericoEspacos(this)">
@@ -301,7 +416,6 @@
                         <div id="equipamentosPagination" style="display: flex; gap: 4px;"></div>
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -313,12 +427,10 @@
 
                 <div class="vincular-os-box">
                     <label><i class="fas fa-search"></i> Selecionar Equipamento Cadastrado</label>
-                    <input type="text" list="listaEquipamentosCadastrados" placeholder="Pesquise por Número de Série, Cliente ou Modelo..." onchange="preencherOrcamentoDoEquipamento(this.value)" class="form-control" style="width: 100%; max-width: 600px; padding: 12px; border-radius: 10px; border: 1px solid var(--accent-blue); background: var(--input-bg); color: var(--text-main); font-weight: 600; outline: none; text-align: center;">
-                    <datalist id="listaEquipamentosCadastrados">
-                        {% for serv in servicos %}
-                            <option value="ID: {{ serv.id }} | {{ serv.numero_serie }} - {{ serv.cliente }} ({{ serv.equipamento }})" data-cliente="{{ serv.cliente }}" data-equipamento="{{ serv.equipamento }}" data-serie="{{ serv.numero_serie }}">
-                        {% endfor %}
-                    </datalist>
+                    <button type="button" class="search-trigger-btn" onclick="abrirModalBuscaEquipamentos()">
+                        <span id="equipamentoSelecionadoTexto">Clique aqui para buscar um equipamento do acervo...</span>
+                        <i class="fas fa-search"></i>
+                    </button>
                 </div>
 
                 <form action="{{ url_for('salvar_orcamento') }}" method="POST" id="formOrcamento">
@@ -334,10 +446,17 @@
                                 <option value="Pendente" selected>Pendente</option>
                             </select>
                         </div>
+
                         <div class="form-group-pro span-2">
                             <label><i class="fas fa-user"></i> Nome do Cliente</label>
-                            <input type="text" name="cliente" id="clienteNome" placeholder="Nome do consumidor" required maxlength="100" oninput="validarApenasLetras(this)">
+                            <div class="input-with-button">
+                                <input type="text" name="cliente" id="clienteNome" required maxlength="100" placeholder="Digite o nome ou busque..." autocomplete="off">
+                                <button type="button" class="btn-acao" onclick="abrirModalBuscaClientes('clienteNome')" title="Buscar na Base de Clientes">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                         </div>
+
                         <div class="form-group-pro span-2">
                             <label><i class="fas fa-laptop"></i> Modelo / Equipamento</label>
                             <input type="text" name="equipamento" id="equipamentoNome" placeholder="Ex: Dell Inspiron 15" required maxlength="100" oninput="validarAlfanumericoEspacos(this)">
@@ -348,7 +467,7 @@
                         </div>
                     </div>
 
-                    <div class="form-grid-pro" style="margin-top: 20px; background: rgba(15, 23, 42, 0.6); padding: 20px; border-radius: 12px; border: 1px solid var(--card-border); align-items: center;">
+                    <div class="form-grid-pro" style="margin-top: 20px; background: var(--bg-secondary); padding: 20px; border-radius: 12px; border: 1px solid var(--card-border); align-items: center;">
                         <div class="form-group-pro span-1">
                             <label>Valor do Serviço (R$)</label>
                             <input type="text" name="subtotal" id="valorBase" value="0" maxlength="10" oninput="validarApenasMonetario(this); calcularTotalOrcamento()">
@@ -366,7 +485,7 @@
 
                     <div class="acoes-form">
                         <button type="button" class="btn-acao btn-limpar" onclick="limparOrcamentoForm()"><i class="fas fa-eraser"></i> Limpar Formulário</button>
-                        <button type="button" class="btn-acao btn-pdf" onclick="imprimirOrcamentoPDF()"><i class="fas fa-print"></i> Gerar PDF</button>
+                        <button type="button" class="btn-acao btn-pdf" onclick="imprimirOrcamentoPDF()"><i class="fas fa-receipt"></i> Imprimir Via (Cupom)</button>
                         <button type="submit" class="btn-acao btn-salvar"><i class="fas fa-save"></i> Criar Orçamento (Pendente)</button>
                     </div>
                 </form>
@@ -374,149 +493,227 @@
         </div>
 
         <div id="tab-andamento" class="tab-content {% if aba_ativa == 'andamento' %}active{% endif %}">
-            <div class="layout-colunas">
-                
-                <div class="card-pro">
-                    <div class="card-header-pro">
-                        <h2><i class="fas fa-sliders-h"></i> Analisar & Editar Orçamento</h2>
-                    </div>
-
-                    <form action="/atualizar_andamento" method="POST">
-                        <div class="vincular-os-box" style="border-color: var(--accent-green); background: rgba(16, 185, 129, 0.08);">
-                            <label style="color: #6ee7b7;"><i class="fas fa-search"></i> Buscar Orçamento por ID ou Selecionar</label>
-                            <input type="text" list="listaAndamento" name="id_orcamento" id="selectAndamento" class="form-control" onchange="carregarDadosDoOrcamentoSelecionado()" required placeholder="Digite o ID numérico aqui ou selecione..." style="width: 100%; max-width: 600px; padding: 12px; border-radius: 10px; font-weight: 700; outline: none; border: 1px solid var(--accent-green); background: var(--input-bg); color: var(--text-main); text-align: center;">
-                            <datalist id="listaAndamento">
-                                {% for orc in orcamentos %}
-                                    <option value="{{ orc.id }}">ID: {{ orc.id }} | {{ orc.numero_orcamento }} - {{ orc.cliente_nome }} (Status: {{ orc.status_orcamento }})</option>
-                                {% endfor %}
-                            </datalist>
-                        </div>
-                        
-                        <input type="hidden" name="numero_serie" id="andamentoSerie">
-
-                        <div class="form-section-title"><i class="fas fa-cogs"></i> Alterar Status</div>
-                        <div class="form-grid-pro">
-                            <div class="form-group-pro span-2">
-                                <label>Status do Aparelho (Físico)</label>
-                                <select name="status_os" id="andamentoStatusOS">
-                                    <option value="recebido">Recebido na Loja</option>
-                                    <option value="analise">Em Análise Técnica</option>
-                                    <option value="conserto">Em Conserto (Na Bancada)</option>
-                                    <option value="finalizado">Finalizado / Pronto</option>
-                                </select>
-                            </div>
-                            <div class="form-group-pro span-2">
-                                <label>Status Financeiro (Orçamento)</label>
-                                <select name="status_orcamento" id="andamentoStatusOrc">
-                                    <option value="Pendente">Pendente (Aguardar Cliente)</option>
-                                    <option value="Aprovado">Aprovado (Iniciar Conserto)</option>
-                                    <option value="Finalizado">Finalizado (Concluído/Pago)</option>
-                                    <option value="Reprovado">Reprovado (Recusado)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-section-title"><i class="fas fa-dollar-sign"></i> Alterar Valores</div>
-                        <div class="form-grid-pro">
-                            <div class="form-group-pro span-1">
-                                <label>Valor Bruto </label>
-                                <input type="text" name="valor" id="andamentoValor" maxlength="10" oninput="validarApenasMonetario(this); calcularTotalAndamento()">
-                            </div>
-                            <div class="form-group-pro span-1">
-                                <label>Desconto </label>
-                                <input type="text" name="desconto" id="andamentoDesconto" maxlength="10" oninput="validarApenasMonetario(this); calcularTotalAndamento()">
-                            </div>
-                            <div class="form-group-pro span-2">
-                                <label>Valor Final Atualizado </label>
-                                <input type="text" name="total" id="andamentoTotal" readonly class="input-disabled">
-                            </div>
-                        </div>
-
-                        <div class="form-section-title"><i class="fas fa-comment-dots"></i> Laudo Técnico</div>
-                        <div class="form-group-pro">
-                            <textarea name="laudo_tecnico" id="andamentoLaudo" placeholder="Descreva defeitos encontrados, peças a serem trocadas..." maxlength="500"></textarea>
-                        </div>
-
-                        <div class="acoes-form">
-                            <button type="submit" class="btn-acao btn-salvar" style="width: 100%;"><i class="fas fa-save"></i> Salvar Alterações</button>
-                        </div>
-                    </form>
+            <div class="card-pro">
+                <div class="card-header-pro">
+                    <h2><i class="fas fa-sliders-h"></i> Analisar, Editar e Emitir Laudo</h2>
                 </div>
 
-                <div class="card-pro">
-                    <div class="card-header-pro">
-                        <h2><i class="fas fa-clipboard-list"></i> Visão Geral de Orçamentos</h2>
+                <form action="/atualizar_andamento" method="POST" onsubmit="return prepararLaudo();">
+                    
+                    <div class="vincular-os-box" style="border-color: var(--accent-green); background: rgba(16, 185, 129, 0.08);">
+                        <label style="color: #6ee7b7;"><i class="fas fa-search"></i> Buscar Orçamento Existente</label>
+                        <button type="button" class="search-trigger-btn" style="border-color: var(--accent-green);" onclick="abrirModalBuscaOrcamentos()">
+                            <span id="orcamentoSelecionadoTexto" style="color: var(--text-muted);">Clique aqui para buscar na base de orçamentos...</span>
+                            <i class="fas fa-search" style="color: var(--accent-green);"></i>
+                        </button>
+                        <input type="hidden" name="id_orcamento" id="selectAndamento" required>
                     </div>
                     
-                    <div class="search-pro" style="margin-bottom: 15px;">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="buscaOrcamentoKanban" placeholder="Pesquisar orçamento..." oninput="aplicarFiltrosOrcamento()">
-                    </div>
+                    <input type="hidden" name="numero_serie" id="andamentoSerie">
 
-                    <div class="filtros-status">
-                        <button class="filtro-btn active" onclick="filtrarCards('todos', this)">Todos</button>
-                        <button class="filtro-btn" onclick="filtrarCards('Pendente', this)">Pendentes</button>
-                        <button class="filtro-btn" onclick="filtrarCards('Aprovado', this)">Aprovados</button>
-                        <button class="filtro-btn" onclick="filtrarCards('Finalizado', this)">Finalizados</button>
-                        <button class="filtro-btn" onclick="filtrarCards('Reprovado', this)">Reprovados</button>
-                    </div>
-
-                    <div class="os-cards-grid" id="osCardsContainer">
-                        {% for orc in orcamentos %}
-                        <div class="os-card" data-status="{{ orc.status_orcamento }}" data-id="{{ orc.id }}" data-numero="{{ orc.numero_orcamento }}" data-cliente="{{ orc.cliente_nome }}" id="card-orc-{{ orc.id }}" onclick="selecionarCardOrcamento('{{ orc.id }}')">
-                            
-                            <div class="os-card-header">
-                                <span class="os-card-id">{{ orc.numero_orcamento }} <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">(#{{ orc.id }})</span></span>
-                                <span class="status-badge 
-                                    {% if orc.status_orcamento == 'Pendente' %}status-pendente
-                                    {% elif orc.status_orcamento == 'Aprovado' %}status-aprovado
-                                    {% elif orc.status_orcamento == 'Finalizado' %}status-finalizado
-                                    {% elif orc.status_orcamento == 'Reprovado' %}status-reprovado
-                                    {% else %}status-recebido{% endif %}">
-                                    {{ orc.status_orcamento }}
-                                </span>
-                            </div>
-
-                            <div class="os-card-body">
-                                <div><strong>Cliente:</strong> {{ orc.cliente_nome }}</div>
-                                <div><strong>Modelo:</strong> {{ orc.equipamento }}</div>
-                                <div><strong>Série:</strong> {{ orc.numero_serie or 'N/I' }}</div>
-                                <div><strong>Total:</strong> <span style="color: var(--accent-green); font-weight: 800;">R$ {{ "%.2f"|format(orc.total_geral) }}</span></div>
-                                <div class="os-card-laudo">
-                                    <i class="fas fa-comment-alt"></i> {{ orc.observacoes | default('Sem comentários.', true) }}
-                                </div>
-                                
-                                <button type="button" class="btn-imprimir-cupom" onclick="imprimirCupomOrcamento(event, '{{ orc.id }}')">
-                                    <i class="fas fa-receipt"></i> Imprimir Via (Cupom)
-                                </button>
-                            </div>
-
+                    <div class="form-section-title"><i class="fas fa-cogs"></i> Alterar Status</div>
+                    <div class="form-grid-pro">
+                        <div class="form-group-pro span-2">
+                            <label>Status do Aparelho (Físico)</label>
+                            <select name="status_os" id="andamentoStatusOS">
+                                <option value="recebido">Recebido na Loja</option>
+                                <option value="analise">Em Análise Técnica</option>
+                                <option value="conserto">Em Conserto (Na Bancada)</option>
+                                <option value="finalizado">Finalizado / Pronto</option>
+                            </select>
                         </div>
-                        {% endfor %}
+                        <div class="form-group-pro span-2">
+                            <label>Status Financeiro (Orçamento)</label>
+                            <select name="status_orcamento" id="andamentoStatusOrc">
+                                <option value="Pendente">Pendente (Aguardar Cliente)</option>
+                                <option value="Aprovado">Aprovado (Iniciar Conserto)</option>
+                                <option value="Finalizado">Finalizado (Concluído/Pago)</option>
+                                <option value="Reprovado">Reprovado (Recusado)</option>
+                            </select>
+                        </div>
                     </div>
+
+                    <div class="form-section-title"><i class="fas fa-dollar-sign"></i> Alterar Valores</div>
+                    <div class="form-grid-pro">
+                        <div class="form-group-pro span-1">
+                            <label>Valor Bruto (R$)</label>
+                            <input type="text" name="valor" id="andamentoValor" maxlength="10" oninput="validarApenasMonetario(this); calcularTotalAndamento()">
+                        </div>
+                        <div class="form-group-pro span-1">
+                            <label>Desconto (R$)</label>
+                            <input type="text" name="desconto" id="andamentoDesconto" maxlength="10" oninput="validarApenasMonetario(this); calcularTotalAndamento()">
+                        </div>
+                        <div class="form-group-pro span-2">
+                            <label>Valor Final Atualizado (R$)</label>
+                            <input type="text" name="total" id="andamentoTotal" readonly class="input-disabled" style="color: var(--accent-green) !important; font-weight: 800 !important;">
+                        </div>
+                    </div>
+
+                    <div class="form-section-title"><i class="fas fa-comment-dots"></i> Detalhamento e Laudo Técnico</div>
+                    <div class="form-grid-pro">
+                        <div class="form-group-pro span-2">
+                            <label>1. Relato do Cliente</label>
+                            <textarea id="laudo_relato" placeholder="O que o cliente informou ao deixar o aparelho..." maxlength="1000" style="min-height: 90px;"></textarea>
+                        </div>
+                        <div class="form-group-pro span-2">
+                            <label>2. Situação Inicial / Problema Relatado</label>
+                            <textarea id="laudo_inicial" placeholder="Estado em que o aparelho chegou para avaliação..." maxlength="1000" style="min-height: 90px;"></textarea>
+                        </div>
+                        <div class="form-group-pro span-2">
+                            <label>3. Problemas Encontrados (Técnico)</label>
+                            <textarea id="laudo_encontrados" placeholder="Defeitos reais identificados durante a análise técnica..." maxlength="1000" style="min-height: 90px;"></textarea>
+                        </div>
+                        <div class="form-group-pro span-2">
+                            <label>4. Serviços Executados / Resolvidos</label>
+                            <textarea id="laudo_executados" placeholder="Peças trocadas, reparos feitos e solução..." maxlength="1000" style="min-height: 90px;"></textarea>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" name="laudo_tecnico" id="andamentoLaudoHidden">
+
+                    <div class="acoes-form">
+                        <button type="button" class="btn-acao btn-pdf" onclick="imprimirOrcamentoAndamentoCupom()"><i class="fas fa-receipt"></i> Imprimir Via (Cupom)</button>
+                        <button type="button" class="btn-acao btn-pdf" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);" onclick="imprimirOrcamentoAndamentoPDF()"><i class="fas fa-print"></i> Imprimir Laudo (A4)</button>
+                        <button type="submit" class="btn-acao btn-salvar" style="width: 100%; max-width: 350px;"><i class="fas fa-save"></i> Guardar Alterações</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="tab-visao_geral" class="tab-content {% if aba_ativa == 'visao_geral' %}active{% endif %}">
+            <div class="card-pro">
+                <div class="card-header-pro">
+                    <h2><i class="fas fa-clipboard-list"></i> Visão Geral de Orçamentos</h2>
+                </div>
+                
+                <div class="search-pro" style="margin-bottom: 15px;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="buscaOrcamentoKanban" placeholder="Pesquisar orçamento por ID, Número (ORC-...) ou Cliente..." oninput="aplicarFiltrosOrcamento()">
                 </div>
 
+                <div class="filtros-status">
+                    <button class="filtro-btn active" onclick="filtrarCards('todos', this)">Todos</button>
+                    <button class="filtro-btn" onclick="filtrarCards('Pendente', this)">Pendentes</button>
+                    <button class="filtro-btn" onclick="filtrarCards('Aprovado', this)">Aprovados</button>
+                    <button class="filtro-btn" onclick="filtrarCards('Finalizado', this)">Finalizados</button>
+                    <button class="filtro-btn" onclick="filtrarCards('Reprovado', this)">Reprovados</button>
+                </div>
+
+                <div class="os-cards-grid" id="osCardsContainer">
+                    {% for orc in orcamentos %}
+                    <div class="os-card" data-status="{{ orc.status_orcamento }}" data-id="{{ orc.id }}" data-numero="{{ orc.numero_orcamento }}" data-cliente="{{ orc.cliente_nome }}" id="card-orc-{{ orc.id }}" onclick="selecionarCardOrcamento('{{ orc.id }}')">
+                        
+                        <div class="os-card-header">
+                            <span class="os-card-id">{{ orc.numero_orcamento }} <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">(#{{ orc.id }})</span></span>
+                            <span class="status-badge 
+                                {% if orc.status_orcamento == 'Pendente' %}status-pendente
+                                {% elif orc.status_orcamento == 'Aprovado' %}status-aprovado
+                                {% elif orc.status_orcamento == 'Finalizado' %}status-finalizado
+                                {% elif orc.status_orcamento == 'Reprovado' %}status-reprovado
+                                {% else %}status-recebido{% endif %}">
+                                {{ orc.status_orcamento }}
+                            </span>
+                        </div>
+
+                        <div class="os-card-body">
+                            <div><strong>Cliente:</strong> {{ orc.cliente_nome }}</div>
+                            <div><strong>Modelo:</strong> {{ orc.equipamento }}</div>
+                            <div><strong>Série:</strong> {{ orc.numero_serie or 'N/I' }}</div>
+                            <div><strong>Total:</strong> <span style="color: var(--accent-green); font-weight: 800;">R$ {{ "%.2f"|format(orc.total_geral) }}</span></div>
+                            <div class="os-card-laudo">
+                                <i class="fas fa-comment-alt"></i> {{ orc.observacoes | default('Sem comentários.', true) }}
+                            </div>
+                            
+                            <button type="button" class="btn-imprimir-cupom" onclick="imprimirCupomOrcamento(event, '{{ orc.id }}')">
+                                <i class="fas fa-receipt"></i> Imprimir Via (Cupom)
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
 
     </div>
 
+    <div class="search-modal-overlay" id="modalSearchClientes" onclick="if(event.target === this) fecharModalBuscaClientes();">
+        <div class="search-modal-box">
+            <div class="search-modal-header">
+                <div>
+                    <h3><i class="fas fa-users"></i> Base de Clientes</h3>
+                    <p id="countClienteModal">Carregando dados do servidor...</p>
+                </div>
+                <button type="button" class="btn-close-modal" onclick="fecharModalBuscaClientes()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="search-modal-input-group">
+                <i class="fas fa-search"></i>
+                <input type="text" class="search-modal-input" id="inputSearchClienteModal" placeholder="Pesquisar por Nome, CPF, CNPJ, E-mail ou Telefone..." oninput="renderListaClientesModal(this.value)">
+            </div>
+            <div class="search-modal-list" id="listaClientesModal">
+                </div>
+        </div>
+    </div>
+    
+    <div class="search-modal-overlay" id="modalSearchEquipamentos" onclick="if(event.target === this) fecharModalBuscaEquipamentos();">
+        <div class="search-modal-box">
+            <div class="search-modal-header">
+                <div>
+                    <h3><i class="fas fa-laptop-medical"></i> Acervo de Equipamentos</h3>
+                    <p id="countEquipModal">Carregando dados do servidor...</p>
+                </div>
+                <button type="button" class="btn-close-modal" onclick="fecharModalBuscaEquipamentos()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="search-modal-input-group">
+                <i class="fas fa-search"></i>
+                <input type="text" class="search-modal-input" id="inputSearchEquipModal" placeholder="Pesquisar por Cliente, CPF, Tel, Equipamento, Tipo ou Série..." oninput="renderListaEquipamentosModal(this.value)">
+            </div>
+            <div class="search-modal-list" id="listaEquipamentosModal">
+                </div>
+        </div>
+    </div>
+
+    <div class="search-modal-overlay" id="modalSearchOrcamentos" onclick="if(event.target === this) fecharModalBuscaOrcamentos();">
+        <div class="search-modal-box">
+            <div class="search-modal-header">
+                <div>
+                    <h3><i class="fas fa-file-invoice-dollar"></i> Base de Orçamentos</h3>
+                    <p id="countOrcModal">Carregando dados do servidor...</p>
+                </div>
+                <button type="button" class="btn-close-modal" onclick="fecharModalBuscaOrcamentos()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="search-modal-input-group">
+                <i class="fas fa-search"></i>
+                <input type="text" class="search-modal-input" id="inputSearchOrcModal" placeholder="Pesquisar por N° Orçamento, Cliente, CPF, Tel, Aparelho ou Valor..." oninput="renderListaOrcamentosModal(this.value)">
+            </div>
+            <div class="search-modal-list" id="listaOrcamentosModal">
+                </div>
+        </div>
+    </div>
+
+    <div class="logout-modal-overlay" id="logoutModal" onclick="if(event.target === this) fecharLogoutModal();">
+        <div class="logout-modal-box">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h3>Encerrar Sessão</h3>
+            <p>Tem a certeza que deseja sair do sistema?</p>
+            <div class="logout-actions">
+                <button type="button" class="btn-cancel-logout" onclick="fecharLogoutModal()">Cancelar</button>
+                <a href="{{ url_for('logout') }}" class="btn-confirm-logout">Sim, Sair</a>
+            </div>
+        </div>
+    </div>
+
     <div id="dados-equipamentos-seguro" style="display: none;">
         {% for serv in servicos %}
         <div class="equip-row"
-            data-id="{{ serv.id }}"
-            data-cliente="{{ serv.cliente }}"
-            data-tipo="{{ serv.tipo }}"
-            data-equipamento="{{ serv.equipamento }}"
-            data-serie="{{ serv.numero_serie }}"
-            data-prioridade="{{ serv.prioridade }}"
+            data-id="{{ serv.id }}" data-cliente="{{ serv.cliente }}" data-tipo="{{ serv.tipo }}"
+            data-equipamento="{{ serv.equipamento }}" data-serie="{{ serv.numero_serie }}" data-prioridade="{{ serv.prioridade }}"
         ></div>
         {% endfor %}
     </div>
-
-    <script id="dados-orcamentos-seguro" type="application/json">
-        {{ orcamentos | tojson | safe }}
-    </script>
+    <script id="dados-orcamentos-seguro" type="application/json">{{ orcamentos | tojson | safe }}</script>
+    <script id="dados-clientes-completos" type="application/json">{{ clientes | default([]) | tojson | safe }}</script>
 
     <script>
         function validarAlfanumericoEspacos(input) { input.value = input.value.replace(/[^a-zA-Z0-9À-ÿ\s-]/g, ''); }
@@ -532,18 +729,110 @@
             event.currentTarget.classList.add('active');
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById('tab-' + tabId).classList.add('active');
+            const url = new URL(window.location); url.searchParams.set('aba', tabId); window.history.pushState({}, '', url);
+        }
+
+        function abrirLogoutModal(event) {
+            if(event) event.preventDefault();
+            document.getElementById('logoutModal').classList.add('active');
+        }
+
+        function fecharLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+        }
+
+        let clientesDadosCompletos = [];
+
+        // Função utilitária para pegar os dados do cliente (doc e tel)
+        function getClienteExtraInfo(nomeCliente) {
+            if (!nomeCliente) return { doc: '', tel: '', cep: '', cidade: '', estado: '' };
+            const searchName = String(nomeCliente).toLowerCase();
+            const cli = clientesDadosCompletos.find(c => String(c.nome_cliente || '').toLowerCase() === searchName);
+            if (cli) {
+                return {
+                    doc: cli.documento || '',
+                    tel: cli.celular || cli.telefone || '',
+                    cep: cli.cep || '',
+                    cidade: cli.cidade || '',
+                    estado: cli.estado || ''
+                };
+            }
+            return { doc: '', tel: '', cep: '', cidade: '', estado: '' };
+        }
+
+        /* ==================== LÓGICA DO NOVO MODAL DE CLIENTES ==================== */
+        let alvoClienteAtual = '';
+
+        function abrirModalBuscaClientes(alvoId) {
+            alvoClienteAtual = alvoId;
+            document.getElementById('modalSearchClientes').classList.add('active');
+            document.getElementById('inputSearchClienteModal').value = '';
+            renderListaClientesModal('');
+            setTimeout(() => document.getElementById('inputSearchClienteModal').focus(), 100);
+        }
+
+        function fecharModalBuscaClientes() {
+            document.getElementById('modalSearchClientes').classList.remove('active');
+        }
+
+        function renderListaClientesModal(termo) {
+            const lista = document.getElementById('listaClientesModal');
+            lista.innerHTML = '';
             
-            const url = new URL(window.location);
-            url.searchParams.set('aba', tabId);
-            window.history.pushState({}, '', url);
+            const termoLower = termo.toLowerCase().trim();
+            const termoNumeros = termo.replace(/\D/g, '');
+            
+            const filtrados = clientesDadosCompletos.filter(c => {
+                const nome = String(c.nome_cliente || '').toLowerCase();
+                const doc = String(c.documento || '').replace(/\D/g, '');
+                const tel = String(c.celular || c.telefone || '').replace(/\D/g, '');
+                const email = String(c.email || '').toLowerCase();
+                
+                return nome.includes(termoLower) || 
+                       email.includes(termoLower) || 
+                       (termoNumeros !== '' && (doc.includes(termoNumeros) || tel.includes(termoNumeros)));
+            });
+
+            document.getElementById('countClienteModal').innerText = `Mostrando ${filtrados.length} cliente(s) no sistema`;
+
+            if(filtrados.length === 0) {
+                lista.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--text-muted); font-size: 1.2rem;"><i class="fas fa-user-slash" style="font-size: 3rem; margin-bottom: 15px; opacity:0.3; display:block;"></i>Nenhum cliente encontrado com este termo.</div>';
+                return;
+            }
+
+            filtrados.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'search-modal-item';
+                div.onclick = () => selecionarCliente(c);
+                
+                const doc = c.documento || 'N/I';
+                const tel = c.celular || c.telefone || 'N/I';
+                const email = c.email || 'N/I';
+                const end = c.endereco || 'N/I';
+
+                div.innerHTML = `
+                    <div class="item-header">
+                        <span class="item-title" style="margin:0;"><i class="fas fa-user" style="color:var(--text-muted); margin-right:6px;"></i> ${c.nome_cliente}</span>
+                        <button type="button" style="background: rgba(16, 185, 129, 0.15); color: #10b981; padding: 6px 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 0.75rem; font-weight: 800; cursor: pointer; display:flex; align-items:center; gap:6px;"><i class="fas fa-check"></i> Selecionar</button>
+                    </div>
+                    <div class="item-grid-info">
+                        <span><i class="fas fa-id-card"></i> Doc: ${doc}</span>
+                        <span><i class="fas fa-phone"></i> Tel: ${tel}</span>
+                        <span class="item-grid-full"><i class="fas fa-envelope"></i> E-mail: ${email}</span>
+                        <span class="item-grid-full"><i class="fas fa-map-marker-alt"></i> End.: ${end}</span>
+                    </div>
+                `;
+                lista.appendChild(div);
+            });
+        }
+
+        function selecionarCliente(c) {
+            document.getElementById(alvoClienteAtual).value = c.nome_cliente;
+            fecharModalBuscaClientes();
         }
 
         /* ----- ABA 1: EQUIPAMENTOS ----- */
-        let equipamentosDB = [];
-        let equipamentosFiltrados = [];
-        let paginaAtualEquip = 1;
-        const itensPorPaginaEquip = 5;
-
+        let equipamentosDB = []; let equipamentosFiltrados = []; let paginaAtualEquip = 1; const itensPorPaginaEquip = 5;
         function carregarDadosEquipamentos() {
             const rows = document.querySelectorAll('.equip-row');
             equipamentosDB = Array.from(rows).map(row => ({
@@ -552,123 +841,392 @@
             }));
             aplicarFiltroEquipamentos();
         }
-
         function aplicarFiltroEquipamentos() {
-            const termoEl = document.getElementById('buscaEquipamento');
-            if(!termoEl) return;
+            const termoEl = document.getElementById('buscaEquipamento'); if(!termoEl) return;
             let termo = termoEl.value.toLowerCase().replace(/[<>]/g, '').trim();
-            equipamentosFiltrados = equipamentosDB.filter(e => {
-                return String(e.id).includes(termo) || e.serie.toLowerCase().includes(termo) || e.cliente.toLowerCase().includes(termo) || e.equipamento.toLowerCase().includes(termo);
-            });
-            equipamentosFiltrados.sort((a, b) => b.id - a.id);
-            paginaAtualEquip = 1;
-            renderTabelaEquipamentos();
+            equipamentosFiltrados = equipamentosDB.filter(e => { return String(e.id).includes(termo) || e.serie.toLowerCase().includes(termo) || e.cliente.toLowerCase().includes(termo) || e.equipamento.toLowerCase().includes(termo); });
+            equipamentosFiltrados.sort((a, b) => b.id - a.id); paginaAtualEquip = 1; renderTabelaEquipamentos();
         }
-
         function renderTabelaEquipamentos() {
-            const tbody = document.getElementById('tabelaEquipamentosBody');
-            if(!tbody) return;
-            tbody.innerHTML = '';
-            
+            const tbody = document.getElementById('tabelaEquipamentosBody'); if(!tbody) return; tbody.innerHTML = '';
             if(equipamentosFiltrados.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 20px;">Nenhum equipamento cadastrado.</td></tr>';
-                document.getElementById('equipamentosSummary').innerHTML = '';
-                document.getElementById('equipamentosPagination').innerHTML = '';
-                return;
+                document.getElementById('equipamentosSummary').innerHTML = ''; document.getElementById('equipamentosPagination').innerHTML = ''; return;
             }
-
-            const startIdx = (paginaAtualEquip - 1) * itensPorPaginaEquip;
-            const itens = equipamentosFiltrados.slice(startIdx, startIdx + itensPorPaginaEquip);
-
+            const startIdx = (paginaAtualEquip - 1) * itensPorPaginaEquip; const itens = equipamentosFiltrados.slice(startIdx, startIdx + itensPorPaginaEquip);
             itens.forEach(serv => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><strong style="color: var(--accent-blue);">#${serv.id}</strong></td>
-                    <td><strong style="font-family: monospace; color: var(--text-main);">${serv.serie || 'N/I'}</strong></td>
-                    <td><strong>${serv.cliente}</strong></td>
-                    <td>${serv.equipamento}</td>
-                    <td><span class="status-badge status-recebido">${serv.tipo.toUpperCase()}</span></td>
-                    <td><button type="button" class="btn-acao edit-btn" style="padding: 4px 10px; font-size: 0.8rem; background: #334155; color: white;" onclick="editarEquipamentoForm('${serv.id}', '${serv.cliente}', '${serv.tipo}', '${serv.equipamento}', '${serv.serie}', '${serv.prioridade}')"><i class="fas fa-edit"></i> Editar</button></td>
-                `;
+                tr.innerHTML = `<td><strong style="color: var(--accent-blue);">#${serv.id}</strong></td><td><strong style="font-family: monospace; color: var(--text-main);">${serv.serie || 'N/I'}</strong></td><td><strong>${serv.cliente}</strong></td><td>${serv.equipamento}</td><td><span class="status-badge status-recebido">${serv.tipo.toUpperCase()}</span></td><td><button type="button" class="btn-acao edit-btn" style="padding: 4px 10px; font-size: 0.8rem; background: #334155; color: white;" onclick="editarEquipamentoForm('${serv.id}', '${serv.cliente}', '${serv.tipo}', '${serv.equipamento}', '${serv.serie}', '${serv.prioridade}')"><i class="fas fa-edit"></i> Editar</button></td>`;
                 tbody.appendChild(tr);
             });
             document.getElementById('equipamentosSummary').innerHTML = `Mostrando ${startIdx + 1} a ${Math.min(startIdx + itensPorPaginaEquip, equipamentosFiltrados.length)} de ${equipamentosFiltrados.length}`;
             renderBotoesPaginacaoEquip(Math.ceil(equipamentosFiltrados.length / itensPorPaginaEquip));
         }
-
         function renderBotoesPaginacaoEquip(totalPaginas) {
-            const container = document.getElementById('equipamentosPagination');
-            container.innerHTML = '';
-            if (totalPaginas <= 1) return;
+            const container = document.getElementById('equipamentosPagination'); container.innerHTML = ''; if (totalPaginas <= 1) return;
             for (let i = 1; i <= totalPaginas; i++) {
-                const btn = document.createElement('button');
-                btn.className = `page-btn ${i === paginaAtualEquip ? 'active' : ''}`;
-                btn.innerText = i;
-                btn.onclick = () => { paginaAtualEquip = i; renderTabelaEquipamentos(); };
-                container.appendChild(btn);
+                const btn = document.createElement('button'); btn.className = `page-btn ${i === paginaAtualEquip ? 'active' : ''}`; btn.innerText = i;
+                btn.onclick = () => { paginaAtualEquip = i; renderTabelaEquipamentos(); }; container.appendChild(btn);
             }
         }
-
         function editarEquipamentoForm(id, cliente, tipo, equipamento, serie, prioridade) {
-            document.getElementById('inputIdConserto').value = id;
-            document.getElementById('inputSerie').value = serie; document.getElementById('inputCliente').value = cliente;
-            document.getElementById('inputEquipamento').value = equipamento; document.getElementById('inputTipo').value = tipo;
-            document.getElementById('inputPrioridade').value = prioridade;
-            document.getElementById('btnSalvarOS').innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar Equipamento';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('inputIdConserto').value = id; document.getElementById('inputSerie').value = serie; document.getElementById('inputCliente').value = cliente;
+            document.getElementById('inputEquipamento').value = equipamento; document.getElementById('inputTipo').value = tipo; document.getElementById('inputPrioridade').value = prioridade;
+            document.getElementById('btnSalvarOS').innerHTML = '<i class="fas fa-sync-alt"></i> Atualizar Equipamento'; window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-
         function limparFormOS() {
-            document.getElementById('inputIdConserto').value = '';
-            document.getElementById('inputSerie').value = ''; document.getElementById('inputCliente').value = '';
-            document.getElementById('inputEquipamento').value = ''; document.getElementById('inputTipo').value = 'notebook';
-            document.getElementById('inputPrioridade').value = 'baixa';
+            document.getElementById('inputIdConserto').value = ''; document.getElementById('inputSerie').value = ''; document.getElementById('inputCliente').value = '';
+            document.getElementById('inputEquipamento').value = ''; document.getElementById('inputTipo').value = 'notebook'; document.getElementById('inputPrioridade').value = 'baixa';
             document.getElementById('btnSalvarOS').innerHTML = '<i class="fas fa-plus-circle"></i> Cadastrar Equipamento';
         }
 
         /* ----- ABA 2: ORÇAMENTO ----- */
-        function preencherOrcamentoDoEquipamento(valorStr) {
-            const option = Array.from(document.getElementById('listaEquipamentosCadastrados').options).find(opt => opt.value === valorStr);
-            if (option) {
-                document.getElementById('clienteNome').value = option.dataset.cliente || '';
-                document.getElementById('equipamentoNome').value = option.dataset.equipamento || '';
-                document.getElementById('numeroSerieOrcamento').value = option.dataset.serie || '';
-            }
-        }
-
         function calcularTotalOrcamento() {
-            const v = parseFloat(document.getElementById('valorBase').value) || 0;
-            const d = parseFloat(document.getElementById('descontoReais').value) || 0;
-            let total = v - d; if(total < 0) total = 0;
-            document.getElementById('totalGeralView').innerText = "R$ " + total.toFixed(2).replace('.', ',');
+            const v = parseFloat(document.getElementById('valorBase').value) || 0; const d = parseFloat(document.getElementById('descontoReais').value) || 0;
+            let total = v - d; if(total < 0) total = 0; document.getElementById('totalGeralView').innerText = "R$ " + total.toFixed(2).replace('.', ',');
             document.getElementById('hiddenTotalGeral').value = total;
         }
-
         function limparOrcamentoForm() {
-            document.getElementById('clienteNome').value = ''; document.getElementById('equipamentoNome').value = '';
-            document.getElementById('numeroSerieOrcamento').value = ''; document.getElementById('valorBase').value = 0;
-            document.getElementById('descontoReais').value = 0; calcularTotalOrcamento();
+            document.getElementById('clienteNome').value = ''; document.getElementById('equipamentoNome').value = ''; document.getElementById('numeroSerieOrcamento').value = ''; 
+            document.getElementById('valorBase').value = 0; document.getElementById('descontoReais').value = 0; calcularTotalOrcamento();
+            document.getElementById('equipamentoSelecionadoTexto').innerHTML = 'Clique aqui para buscar um equipamento do acervo...';
         }
 
+        // ==================== LÓGICA MODAIS GIGANTES DE BUSCA ====================
+        
+        // --- Modal Equipamentos (Aba 2) ---
+        function abrirModalBuscaEquipamentos() {
+            document.getElementById('modalSearchEquipamentos').classList.add('active');
+            document.getElementById('inputSearchEquipModal').value = '';
+            renderListaEquipamentosModal('');
+            setTimeout(() => document.getElementById('inputSearchEquipModal').focus(), 100);
+        }
+        function fecharModalBuscaEquipamentos() {
+            document.getElementById('modalSearchEquipamentos').classList.remove('active');
+        }
+        function renderListaEquipamentosModal(termo) {
+            const lista = document.getElementById('listaEquipamentosModal');
+            lista.innerHTML = '';
+            const termoLower = termo.toLowerCase().trim();
+            const termoNumeros = termo.replace(/\D/g, ''); 
+
+            const filtrados = equipamentosDB.filter(e => {
+                const infoCli = getClienteExtraInfo(e.cliente);
+                const docNumeros = String(infoCli.doc || '').replace(/\D/g, '');
+                const telNumeros = String(infoCli.tel || '').replace(/\D/g, '');
+
+                return String(e.id).includes(termoLower) || 
+                       String(e.serie || '').toLowerCase().includes(termoLower) || 
+                       String(e.cliente || '').toLowerCase().includes(termoLower) || 
+                       String(e.equipamento || '').toLowerCase().includes(termoLower) ||
+                       String(e.tipo || '').toLowerCase().includes(termoLower) ||
+                       (termoNumeros !== '' && (docNumeros.includes(termoNumeros) || telNumeros.includes(termoNumeros)));
+            });
+            
+            document.getElementById('countEquipModal').innerText = `Mostrando ${filtrados.length} equipamento(s) cadastrado(s)`;
+
+            if(filtrados.length === 0) {
+                lista.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--text-muted); font-size: 1.2rem;"><i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 15px; opacity:0.3; display:block;"></i>Nenhum equipamento encontrado.</div>';
+                return;
+            }
+            
+            filtrados.forEach(e => {
+                const div = document.createElement('div');
+                div.className = 'search-modal-item';
+                div.onclick = () => selecionarEquipamento(e);
+                
+                let icone = 'fa-laptop';
+                if(e.tipo === 'celular') icone = 'fa-mobile-alt';
+                else if(e.tipo === 'impressora') icone = 'fa-print';
+                else if(e.tipo === 'outros') icone = 'fa-toolbox';
+
+                let prioridadeTexto = e.prioridade ? e.prioridade.toUpperCase() : 'NORMAL';
+                let corPrioridade = 'var(--text-muted)';
+                if(e.prioridade === 'alta') corPrioridade = '#ef4444';
+                if(e.prioridade === 'media') corPrioridade = '#f59e0b';
+
+                const infoCli = getClienteExtraInfo(e.cliente);
+                const docText = infoCli.doc ? infoCli.doc : 'N/I';
+                const telText = infoCli.tel ? infoCli.tel : 'N/I';
+
+                div.innerHTML = `
+                    <div class="item-header">
+                        <span class="item-title" style="margin:0;"><i class="fas ${icone}" style="color:var(--text-muted); margin-right:6px;"></i> ${e.equipamento}</span>
+                        <div class="item-badge" style="margin:0;">#${e.id} - ${e.tipo.toUpperCase()}</div>
+                    </div>
+                    <div class="item-grid-info">
+                        <span class="item-grid-full" style="color: var(--text-main); font-weight: 700;"><i class="fas fa-user"></i> Cliente: ${e.cliente}</span>
+                        <span><i class="fas fa-id-card"></i> Doc: ${docText}</span>
+                        <span><i class="fas fa-phone"></i> Tel: ${telText}</span>
+                        <span><i class="fas fa-barcode"></i> SN: ${e.serie}</span>
+                        <span style="color:${corPrioridade}; font-weight:700;"><i class="fas fa-exclamation-triangle"></i> Prioridade: ${prioridadeTexto}</span>
+                    </div>
+                `;
+                lista.appendChild(div);
+            });
+        }
+        function selecionarEquipamento(e) {
+            document.getElementById('clienteNome').value = e.cliente || '';
+            document.getElementById('equipamentoNome').value = e.equipamento || '';
+            document.getElementById('numeroSerieOrcamento').value = e.serie || '';
+            document.getElementById('equipamentoSelecionadoTexto').innerHTML = `<strong style="color:var(--text-main)"><i class="fas fa-check-circle" style="color:var(--accent-green); margin-right:5px;"></i> ${e.equipamento}</strong> (Proprietário: ${e.cliente})`;
+            fecharModalBuscaEquipamentos();
+        }
+
+        // --- Modal Orçamentos (Aba 3) ---
+        function abrirModalBuscaOrcamentos() {
+            document.getElementById('modalSearchOrcamentos').classList.add('active');
+            document.getElementById('inputSearchOrcModal').value = '';
+            renderListaOrcamentosModal('');
+            setTimeout(() => document.getElementById('inputSearchOrcModal').focus(), 100);
+        }
+        function fecharModalBuscaOrcamentos() {
+            document.getElementById('modalSearchOrcamentos').classList.remove('active');
+        }
+        function renderListaOrcamentosModal(termo) {
+            const lista = document.getElementById('listaOrcamentosModal');
+            lista.innerHTML = '';
+            const termoLower = termo.toLowerCase().trim();
+            const termoNumeros = termo.replace(/\D/g, '');
+
+            const filtrados = orcamentosDados.filter(o => {
+                const infoCli = getClienteExtraInfo(o.cliente_nome);
+                const docNumeros = String(infoCli.doc || '').replace(/\D/g, '');
+                const telNumeros = String(infoCli.tel || '').replace(/\D/g, '');
+
+                return String(o.id).includes(termoLower) || 
+                       String(o.numero_orcamento || '').toLowerCase().includes(termoLower) || 
+                       String(o.cliente_nome || '').toLowerCase().includes(termoLower) ||
+                       String(o.equipamento || '').toLowerCase().includes(termoLower) ||
+                       (termoNumeros !== '' && (docNumeros.includes(termoNumeros) || telNumeros.includes(termoNumeros)));
+            });
+
+            document.getElementById('countOrcModal').innerText = `Mostrando ${filtrados.length} orçamento(s) no sistema`;
+
+            if(filtrados.length === 0) {
+                lista.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--text-muted); font-size: 1.2rem;"><i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 15px; opacity:0.3; display:block;"></i>Nenhum orçamento encontrado.</div>';
+                return;
+            }
+            
+            filtrados.forEach(o => {
+                const div = document.createElement('div');
+                div.className = 'search-modal-item';
+                div.onclick = () => selecionarOrcamentoModal(o);
+                
+                let corStatus = '#3b82f6';
+                if(o.status_orcamento === 'Aprovado') corStatus = '#10b981';
+                if(o.status_orcamento === 'Reprovado') corStatus = '#ef4444';
+                if(o.status_orcamento === 'Pendente') corStatus = '#f59e0b';
+                if(o.status_orcamento === 'Finalizado') corStatus = '#8b5cf6';
+                
+                const obs = o.observacoes || 'Sem laudo registrado.';
+                const laudoCurto = obs.length > 40 ? obs.substring(0, 40) + '...' : obs;
+
+                const infoCli = getClienteExtraInfo(o.cliente_nome);
+                const docText = infoCli.doc ? infoCli.doc : 'N/I';
+                const telText = infoCli.tel ? infoCli.tel : 'N/I';
+
+                div.innerHTML = `
+                    <div class="item-header">
+                        <span class="item-title" style="margin:0;"><i class="fas fa-file-invoice-dollar" style="color:var(--text-muted); margin-right:6px;"></i> ${o.numero_orcamento}</span>
+                        <div class="item-badge" style="margin:0; background: ${corStatus}20; color: ${corStatus}; border-color: ${corStatus};">${o.status_orcamento}</div>
+                    </div>
+                    <div class="item-grid-info">
+                        <span class="item-grid-full" style="color: var(--text-main); font-weight: 700;"><i class="fas fa-user"></i> Cliente: ${o.cliente_nome}</span>
+                        <span><i class="fas fa-id-card"></i> Doc: ${docText}</span>
+                        <span><i class="fas fa-phone"></i> Tel: ${telText}</span>
+                        <span class="item-grid-full"><i class="fas fa-laptop"></i> Aparelho: ${o.equipamento}</span>
+                        <span class="item-grid-full"><i class="fas fa-comment-dots"></i> Laudo: ${laudoCurto}</span>
+                        <span><i class="fas fa-calendar-alt"></i> Emissão: ${o.data_fmt || 'N/I'}</span>
+                        <span style="color:var(--accent-green); font-weight:800; font-size: 0.95rem;"><i class="fas fa-dollar-sign"></i> R$ ${parseFloat(o.total_geral || 0).toFixed(2).replace('.',',')}</span>
+                    </div>
+                `;
+                lista.appendChild(div);
+            });
+        }
+        function selecionarOrcamentoModal(o) {
+            document.getElementById('selectAndamento').value = o.id;
+            document.getElementById('orcamentoSelecionadoTexto').innerHTML = `<strong style="color:var(--text-main)"><i class="fas fa-check-circle" style="color:var(--accent-green); margin-right:5px;"></i> ${o.numero_orcamento}</strong> - Cliente: ${o.cliente_nome}`;
+            carregarDadosDoOrcamentoSelecionado();
+            fecharModalBuscaOrcamentos();
+        }
+
+        // ==================== MOTOR DE IMPRESSÃO TÉRMICA (CUPOM BOBINA) ====================
+        function getDataHoraAtual() {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mn = String(now.getMinutes()).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const yyyy = now.getFullYear();
+            return `${hh}:${mn} ${dd}/${mm}/${yyyy}`;
+        }
+
+        function gerarLayoutBobina(d) {
+            const loja = d.loja || {};
+            const orc = d.orcamento || {};
+            const cli = d.cliente || {};
+            const eqp = d.equipamento || {};
+            const fin = d.financeiro || {};
+            
+            const l_nome = String(loja.nome || 'NOME DA EMPRESA').toUpperCase();
+            const l_end = String(loja.endereco || 'ENDERECO NAO INFORMADO').toUpperCase();
+            const l_tel = loja.telefone || '';
+            const l_cnpj = loja.cnpj || '';
+
+            const o_num = String(orc.numero || '').replace(/\D/g, '').padStart(6, '0');
+            const o_data = orc.data || '';
+
+            const c_nome = String(cli.nome || 'NAO INFORMADO').toUpperCase().substring(0, 40);
+            const c_doc = cli.doc || '-';
+            const c_tel = cli.tel || '';
+            const c_cidadeUf = String(cli.cidadeUf || 'NAO INFORMADO').toUpperCase();
+            const c_cep = cli.cep || '';
+
+            const e_tipo = String(eqp.tipo || 'N/I').toUpperCase();
+            const e_mod = String(eqp.modelo || 'N/I').toUpperCase();
+            const e_serie = String(eqp.serie || 'N/I').toUpperCase();
+
+            const laudo = String(d.laudo || 'AVALIAR').toUpperCase().replace(/\n/g, '<br>');
+            const status = String(d.status || 'AGUARDANDO APROVAÇÃO');
+
+            const subtotal = fin.subtotal || '0,00';
+            const total = fin.total || '0,00';
+
+            return `
+                <html><head><style>
+                    @page { margin: 0; }
+                    body { font-family: 'Courier New', Courier, monospace; font-size: 13px; margin: 0; padding: 10px; width: 300px; color: #000; background: #fff; line-height: 1.2;}
+                    .left { text-align: left; }
+                    .right { text-align: right; }
+                    .center { text-align: center; }
+                    .line { border-bottom: 1px dashed #000; margin: 8px 0; width: 100%; display: block;}
+                    .bold { font-weight: bold; }
+                    .row { display: flex; justify-content: space-between; align-items: flex-start; }
+                </style></head><body>
+                    <div class="left">${l_nome}</div>
+                    <div class="left">${l_end}</div>
+                    <div class="row">
+                        <span>CNPJ - ${l_cnpj}</span>
+                        <span>${l_tel}</span>
+                    </div>
+                    <div class="line"></div>
+                    <div class="left">ORDEM DE SERVICO ${o_num}</div>
+                    <div class="left">Entrada: ${o_data}</div>
+                    <div class="line"></div>
+                    <div class="left">${c_nome}</div>
+                    <div class="row">
+                        <span>CNPJ: ${c_doc}</span>
+                        <span>${c_tel}<br>Cep: ${c_cep}</span>
+                    </div>
+                    <div class="line"></div>
+                    <div class="left">Equipamento: ${e_tipo}</div>
+                    <div class="left">Nome Modelo: ${e_mod}</div>
+                    <div class="left">Nome Marca.: N/I</div>
+                    <div class="left">Acessorios.: AVALIAR</div>
+                    <div class="left">N de Serie: ${e_serie}</div>
+                    <div class="left">Problema Informado:</div>
+                    <div class="left">${laudo}</div>
+                    <div class="line"></div>
+                    <div class="right">R$</div>
+                    <div class="row"><span>VALOR SERVICOS R$</span><span>${subtotal}</span></div>
+                    <div class="row bold"><span>VALOR TOTAL &nbsp;&nbsp;&nbsp;R$</span><span>${total}</span></div>
+                    <div class="line"></div>
+                    <div class="left">Situacao: ${status}</div>
+                    <br><br>
+                    <div class="left" style="font-size: 11px;">OBRIGADO PELA PREFERENCIA VOLTE SEMPRE<br>QUE DEUS ABENCOE VC</div>
+                </body></html>`;
+        }
+
+        function abrirJanelaImpressao(conteudo) {
+            const win = window.open('', '', 'width=350,height=600');
+            win.document.write(conteudo);
+            win.document.close();
+            setTimeout(() => { win.print(); win.close(); }, 500);
+        }
+
+        // ================= IMPRESSÃO: ABA 2 (NOVO ORÇAMENTO) =================
         function imprimirOrcamentoPDF() {
-            const cliente = document.getElementById('clienteNome').value.trim();
+            const clienteNome = document.getElementById('clienteNome').value.trim();
             const equip = document.getElementById('equipamentoNome').value.trim();
             const serie = document.getElementById('numeroSerieOrcamento').value.trim();
-            if (!cliente || !equip) { alert('❌ Preencha cliente e equipamento antes de imprimir!'); return; }
-            const win = window.open('', '', 'width=480,height=650');
-            win.document.write(`<html><head><style>body { font-family: 'Courier New', monospace; padding: 20px; font-size: 14px; } .center { text-align: center; font-weight: bold; font-size: 18px;} .line { border-bottom: 1px dashed #000; margin: 10px 0; } .row { display: flex; justify-content: space-between; margin: 6px 0;}</style></head><body>
-                <div class="center">ORDEM DE ORÇAMENTO</div><div class="line"></div>
-                <div class="row"><span>CLIENTE:</span><span>${cliente.toUpperCase()}</span></div>
-                <div class="row"><span>EQUIPAMENTO:</span><span>${equip.toUpperCase()}</span></div>
-                <div class="row"><span>SÉRIE:</span><span>${serie.toUpperCase()}</span></div><div class="line"></div>
-                <div class="row" style="font-weight:bold; font-size:18px;"><span>TOTAL:</span><span>${document.getElementById('totalGeralView').innerText}</span></div><div class="line"></div>
-                <div style="text-align:center; margin-top:40px;">Assinatura do Cliente</div></body></html>`);
-            win.document.close(); setTimeout(() => { win.print(); }, 500);
+            if (!clienteNome || !equip) { alert('❌ Preencha o nome do cliente e do equipamento antes de gerar a via!'); return; }
+
+            const cli = getClienteExtraInfo(clienteNome);
+            const eqpInfo = equipamentosDB.find(e => e.serie === serie) || {};
+
+            const subtotal = parseFloat(document.getElementById('valorBase').value || 0).toFixed(2).replace('.', ',');
+            const total = document.getElementById('totalGeralView').innerText.replace('R$ ', '').trim();
+            const dataAtual = getDataHoraAtual();
+
+            const infoLoja = {
+                nome: "{{ config_global.empresa_nome | default('NOME DA LOJA', true) }}",
+                endereco: "{{ config_global.empresa_endereco | default('ENDEREÇO NÃO INFORMADO', true) }}",
+                telefone: "{{ config_global.empresa_telefone | default('(00) 00000-0000', true) }}",
+                cnpj: "{{ config_global.empresa_cnpj | default('00.000.000/0000-00', true) }}"
+            };
+
+            const conteudoCupom = gerarLayoutBobina({
+                loja: infoLoja,
+                orcamento: { numero: "000000", data: dataAtual },
+                cliente: { nome: clienteNome, doc: cli.doc || '-', tel: cli.tel || '-', cidadeUf: cli.cidade ? `${cli.cidade} - ${cli.estado || ''}` : 'N/I', cep: cli.cep || 'N/I' },
+                equipamento: { tipo: eqpInfo.tipo || 'N/I', modelo: equip, serie: serie || 'N/I' },
+                laudo: "A AVALIAR / ORÇAMENTO NOVO",
+                financeiro: { subtotal: subtotal, total: total },
+                status: "Pendente"
+            });
+
+            abrirJanelaImpressao(conteudoCupom);
         }
 
-        /* ----- ABA 3: GESTÃO & CUPOM ----- */
-        let orcamentosDados = [];
-        let statusOrcamentoAtivo = 'todos';
+        // ================= IMPRESSÃO: ABA 3 (EDIÇÃO / LAUDO) =================
+        function imprimirOrcamentoAndamentoCupom() {
+            const idSelecionado = document.getElementById('selectAndamento').value;
+            if (!idSelecionado) { alert("Selecione ou busque um orçamento primeiro para poder imprimir a via!"); return; }
+            imprimirCupomOrcamento(null, idSelecionado);
+        }
+
+        // ================= IMPRESSÃO: ABA 4 (VISÃO GERAL CARDS) =================
+        function imprimirCupomOrcamento(e, id) {
+            // Evita que ao clicar no botão o modal do card abra
+            if (e) { e.preventDefault(); e.stopPropagation(); }
+
+            const orc = orcamentosDados.find(o => String(o.id) === String(id));
+            if(!orc) { alert("Erro: Orçamento não encontrado no sistema."); return; }
+
+            const clienteNome = String(orc.cliente_nome || 'NAO INFORMADO');
+            const cli = getClienteExtraInfo(clienteNome);
+
+            const eqpInfo = equipamentosDB.find(eq => String(eq.serie) === String(orc.numero_serie)) || {};
+
+            const infoLoja = {
+                nome: "{{ config_global.empresa_nome | default('NOME DA LOJA', true) }}",
+                endereco: "{{ config_global.empresa_endereco | default('ENDEREÇO NÃO INFORMADO', true) }}",
+                telefone: "{{ config_global.empresa_telefone | default('(00) 00000-0000', true) }}",
+                cnpj: "{{ config_global.empresa_cnpj | default('00.000.000/0000-00', true) }}"
+            };
+
+            let dataFmt = orc.data_fmt || getDataHoraAtual().split(' ')[1];
+            if (dataFmt.length === 10) dataFmt = "00:00 " + dataFmt;
+
+            const subtotal = parseFloat(orc.subtotal || 0).toFixed(2).replace('.', ',');
+            const total = parseFloat(orc.total_geral || 0).toFixed(2).replace('.', ',');
+            
+            const conteudoCupom = gerarLayoutBobina({
+                loja: infoLoja,
+                orcamento: { numero: orc.numero_orcamento, data: dataFmt },
+                cliente: { nome: clienteNome, doc: cli.doc || '-', tel: cli.tel || '-', cidadeUf: cli.cidade ? `${cli.cidade} - ${cli.estado || ''}` : 'N/I', cep: cli.cep || 'N/I' },
+                equipamento: { tipo: eqpInfo.tipo || 'N/I', modelo: orc.equipamento || 'N/I', serie: orc.numero_serie || 'N/I' },
+                laudo: orc.observacoes || 'AVALIAR',
+                financeiro: { subtotal: subtotal, total: total },
+                status: orc.status_orcamento || "Pendente"
+            });
+
+            abrirJanelaImpressao(conteudoCupom);
+        }
+
+        /* ----- ABA 3 e 4: GESTÃO & LAUDO DETALHADO ----- */
+        let orcamentosDados = []; let statusOrcamentoAtivo = 'todos';
         
         function inicializarAndamento() {
             try { orcamentosDados = JSON.parse(document.getElementById('dados-orcamentos-seguro').textContent); } 
@@ -677,11 +1235,6 @@
 
         function carregarDadosDoOrcamentoSelecionado() {
             let idSelecionado = document.getElementById('selectAndamento').value;
-            if (idSelecionado.includes('ID:')) {
-                idSelecionado = idSelecionado.split('|')[0].replace('ID:', '').trim();
-                document.getElementById('selectAndamento').value = idSelecionado;
-            }
-
             const orc = orcamentosDados.find(o => String(o.id) === String(idSelecionado));
             document.querySelectorAll('.os-card').forEach(c => c.classList.remove('selected'));
 
@@ -695,12 +1248,38 @@
                 document.getElementById('andamentoValor').value = orc.subtotal || 0;
                 document.getElementById('andamentoDesconto').value = orc.desconto_reais || 0;
                 document.getElementById('andamentoTotal').value = orc.total_geral || 0;
-                document.getElementById('andamentoLaudo').value = orc.observacoes || '';
+                
+                let obs = orc.observacoes || '';
+                document.getElementById('laudo_relato').value = '';
+                document.getElementById('laudo_inicial').value = '';
+                document.getElementById('laudo_encontrados').value = '';
+                document.getElementById('laudo_executados').value = '';
+
+                if (!obs.includes("RELATO DO CLIENTE:") && !obs.includes("SITUAÇÃO INICIAL:") && !obs.includes("PROBLEMAS ENCONTRADOS:") && !obs.includes("SERVIÇOS EXECUTADOS:")) {
+                    if(obs !== 'Gerado via Painel de Serviços') { document.getElementById('laudo_encontrados').value = obs; }
+                } else {
+                    let rMatch = obs.match(/RELATO DO CLIENTE:\n([\s\S]*?)(?=\n\nSITUAÇÃO INICIAL:|\n\nPROBLEMAS ENCONTRADOS:|\n\nSERVIÇOS EXECUTADOS:|$)/);
+                    let iMatch = obs.match(/SITUAÇÃO INICIAL:\n([\s\S]*?)(?=\n\nPROBLEMAS ENCONTRADOS:|\n\nSERVIÇOS EXECUTADOS:|$)/);
+                    let pMatch = obs.match(/PROBLEMAS ENCONTRADOS:\n([\s\S]*?)(?=\n\nSERVIÇOS EXECUTADOS:|$)/);
+                    let sMatch = obs.match(/SERVIÇOS EXECUTADOS:\n([\s\S]*?)$/);
+
+                    if (rMatch) document.getElementById('laudo_relato').value = rMatch[1].trim();
+                    if (iMatch) document.getElementById('laudo_inicial').value = iMatch[1].trim();
+                    if (pMatch) document.getElementById('laudo_encontrados').value = pMatch[1].trim();
+                    if (sMatch) document.getElementById('laudo_executados').value = sMatch[1].trim();
+                }
             }
         }
 
         function selecionarCardOrcamento(id) {
             document.getElementById('selectAndamento').value = id;
+            
+            const orc = orcamentosDados.find(o => String(o.id) === String(id));
+            if(orc) {
+                document.getElementById('orcamentoSelecionadoTexto').innerHTML = `<strong style="color:var(--text-main)"><i class="fas fa-check-circle" style="color:var(--accent-green); margin-right:5px;"></i> ${orc.numero_orcamento}</strong> - Cliente: ${orc.cliente_nome}`;
+            }
+
+            switchTab('andamento'); 
             carregarDadosDoOrcamentoSelecionado();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -711,11 +1290,26 @@
             document.getElementById('andamentoTotal').value = (v - d > 0) ? (v - d).toFixed(2) : 0;
         }
 
+        function prepararLaudo() {
+            const relato = document.getElementById('laudo_relato').value.trim();
+            const inicial = document.getElementById('laudo_inicial').value.trim();
+            const encontrados = document.getElementById('laudo_encontrados').value.trim();
+            const executados = document.getElementById('laudo_executados').value.trim();
+            
+            let partes = [];
+            if (relato) partes.push("RELATO DO CLIENTE:\n" + relato);
+            if (inicial) partes.push("SITUAÇÃO INICIAL:\n" + inicial);
+            if (encontrados) partes.push("PROBLEMAS ENCONTRADOS:\n" + encontrados);
+            if (executados) partes.push("SERVIÇOS EXECUTADOS:\n" + executados);
+            
+            document.getElementById('andamentoLaudoHidden').value = partes.join("\n\n");
+            return true;
+        }
+
         function filtrarCards(status, btnElement) {
             document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
-            statusOrcamentoAtivo = status;
-            aplicarFiltrosOrcamento();
+            statusOrcamentoAtivo = status; aplicarFiltrosOrcamento();
         }
 
         function aplicarFiltrosOrcamento() {
@@ -747,64 +1341,25 @@
             } else { if (msg) msg.style.display = 'none'; }
         }
 
-        // ==================== IMPRESSÃO DO CUPOM NÃO FISCAL (CORRIGIDA) ====================
-        function imprimirCupomOrcamento(event, id) {
-            // BLOQUEIA O CLIQUE DE IR PARA O CARD DE TRÁS
-            if (event) {
-                event.preventDefault();
-                event.stopPropagation(); 
-            }
-
-            const orc = orcamentosDados.find(o => String(o.id) === String(id));
-            if(!orc) { alert("Erro: Orçamento não encontrado no sistema."); return; }
-
-            const infoLoja = {
-                nome: "{{ config_global.empresa_nome | default('NOME DA LOJA', true) }}".toUpperCase(),
-                endereco: "{{ config_global.empresa_endereco | default('ENDEREÇO NÃO INFORMADO', true) }}".toUpperCase(),
-                telefone: "{{ config_global.empresa_telefone | default('(00) 00000-0000', true) }}",
-                cnpj: "{{ config_global.empresa_cnpj | default('00.000.000/0000-00', true) }}"
-            };
-
-            const dataAtual = new Date().toLocaleString('pt-BR');
-            const subtotal = (orc.subtotal || 0).toFixed(2).replace('.', ',');
-            const total = (orc.total_geral || 0).toFixed(2).replace('.', ',');
-            const cliente = (orc.cliente_nome || 'NAO INFORMADO').toUpperCase();
-            const equipamento = (orc.equipamento || 'NAO INFORMADO').toUpperCase();
-            const serie = (orc.numero_serie || 'NAO INFORMADO').toUpperCase();
-            const laudo = (orc.observacoes || 'AVALIAR').toUpperCase();
-            const status = (orc.status_orcamento || 'AGUARDANDO APROVACAO').toUpperCase();
-
-            const conteudoCupom = `
-                <html><head><style>
-                    @page { margin: 0; }
-                    body { font-family: 'Courier New', Courier, monospace; font-size: 12px; margin: 0; padding: 10px; width: 300px; color: #000; background: #fff;}
-                    .center { text-align: center; } .left { text-align: left; }
-                    .line { border-bottom: 1px dashed #000; margin: 8px 0; }
-                    .bold { font-weight: bold; } .row { display: flex; justify-content: space-between; }
-                </style></head><body>
-                    <div class="bold left">${infoLoja.nome}</div><div class="left">${infoLoja.endereco}</div>
-                    <div class="row"><span>CNPJ - ${infoLoja.cnpj}</span></div><div class="left">Tel: ${infoLoja.telefone}</div><div class="line"></div>
-                    <div class="left">ORDEM DE SERVICO: ${orc.numero_orcamento}</div><div class="left">Entrada: ${orc.data_fmt || dataAtual}</div><div class="line"></div>
-                    <div class="bold left">CLIENTE: ${cliente}</div><div class="line"></div>
-                    <div class="left">Equipamento: ${equipamento}</div><div class="left">N de Serie: ${serie}</div>
-                    <div class="left">Problema Informado:</div><div class="left">${laudo}</div><div class="line"></div>
-                    <div class="row"><span>VALOR SERVICOS</span><span>R$ ${subtotal}</span></div>
-                    <div class="row bold"><span>VALOR TOTAL</span><span>R$ ${total}</span></div><div class="line"></div>
-                    <div class="left">Situacao: ${status}</div><div class="line"></div>
-                    <div class="center">OBRIGADO PELA PREFERENCIA VOLTE SEMPRE<br>QUE DEUS ABENCOE VC</div>
-                </body></html>`;
-
-            const win = window.open('', '', 'width=350,height=600');
-            win.document.write(conteudoCupom);
-            win.document.close();
-            setTimeout(() => { win.print(); win.close(); }, 500);
-        }
-
-        // ==================== INICIALIZAÇÕES ====================
         document.addEventListener('DOMContentLoaded', () => {
             const dataOrc = document.getElementById('dataOrcamento');
             if(dataOrc) dataOrc.value = new Date().toISOString().slice(0,10);
             carregarDadosEquipamentos(); inicializarAndamento();
+
+            const ic = document.getElementById('theme-icon');
+            const tt = document.getElementById('theme-text');
+            if (localStorage.getItem('theme') === 'dark') {
+                if(ic) ic.className = 'fas fa-sun'; 
+                if(tt) tt.textContent = 'Tema Claro';
+            } else {
+                if(ic) ic.className = 'fas fa-moon'; 
+                if(tt) tt.textContent = 'Tema Escuro';
+            }
+
+            try { 
+                const clientesJson = document.getElementById('dados-clientes-completos').textContent;
+                clientesDadosCompletos = JSON.parse(clientesJson); 
+            } catch (e) { console.error("Erro ao carregar os clientes completos:", e); }
 
             document.querySelectorAll('input, textarea').forEach(campo => {
                 campo.addEventListener('input', function(e) {
@@ -815,7 +1370,22 @@
             });
         });
 
-        function toggleTheme(event) { if(event) event.preventDefault(); }
+        function toggleTheme(event) { 
+            if(event) event.preventDefault(); 
+            const body = document.documentElement;
+            const ic = document.getElementById('theme-icon');
+            const tt = document.getElementById('theme-text');
+
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme'); localStorage.setItem('theme', 'light');
+                if(ic) ic.className = 'fas fa-moon'; 
+                if(tt) tt.textContent = 'Tema Escuro';
+            } else {
+                body.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark');
+                if(ic) ic.className = 'fas fa-sun'; 
+                if(tt) tt.textContent = 'Tema Claro';
+            }
+        }
     </script>
 </body>
 </html>

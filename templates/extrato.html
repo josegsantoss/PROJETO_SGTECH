@@ -20,6 +20,38 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
+
+                    html, body {
+        /* Impede o efeito "elástico" da página pular ao chegar no limite */
+        overscroll-behavior: none; 
+        
+        /* Pinta o fundo absoluto do navegador para combinar com o seu tema escuro/azul */
+        background-color: #050a15; 
+    }
+        /* ==================== MODAL DE LOGOUT ==================== */
+        .logout-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(6px); padding: 1rem; opacity: 0; transition: opacity 0.3s ease; }
+        .logout-modal-overlay.active { display: flex; opacity: 1; animation: fadeIn 0.3s ease; }
+        .logout-modal-box { background: var(--card-bg, #ffffff); width: 100%; max-width: 400px; border-radius: 1.5rem; padding: 2.5rem 2rem; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); border: 1px solid var(--card-border, #e2e8f0); text-align: center; transform: translateY(20px); transition: transform 0.3s ease;}
+        .logout-modal-overlay.active .logout-modal-box { transform: translateY(0); }
+        .logout-icon { width: 64px; height: 64px; background: rgba(239, 68, 68, 0.15); color: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.5rem auto; border: 1px solid rgba(239, 68, 68, 0.3);}
+        .logout-modal-box h3 { margin: 0 0 10px 0; color: var(--text-main, #1e293b); font-size: 1.4rem; font-weight: 800; }
+        .logout-modal-box p { margin: 0 0 25px 0; color: var(--text-muted, #64748b); font-size: 0.95rem; line-height: 1.5; }
+        .logout-actions { display: flex; gap: 12px; justify-content: center; }
+        .btn-cancel-logout { flex: 1; padding: 12px; border-radius: 10px; background: var(--input-bg, #f1f5f9); color: var(--text-main, #475569); font-weight: 700; border: 1px solid var(--card-border, #cbd5e1); cursor: pointer; transition: 0.2s; font-size: 0.95rem; }
+        .btn-cancel-logout:hover { background: var(--card-border, #e2e8f0); color: #1e293b;}
+        .btn-confirm-logout { flex: 1; padding: 12px; border-radius: 10px; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; font-size: 0.95rem; text-decoration: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);}
+        .btn-confirm-logout:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(239, 68, 68, 0.4); }
+
+        [data-theme="dark"] .logout-modal-box { background: #0f172a; border-color: #1e293b; }
+        [data-theme="dark"] .logout-modal-box h3 { color: #f8fafc; }
+        [data-theme="dark"] .logout-modal-box p { color: #94a3b8; }
+        [data-theme="dark"] .btn-cancel-logout { background: #1e293b; color: #cbd5e1; border-color: #334155; }
+        [data-theme="dark"] .btn-cancel-logout:hover { background: #334155; color: #f8fafc; }
+        .alert-box { padding: 14px 20px; border-radius: 10px; margin-bottom: 20px; font-weight: 600; display: flex; gap: 10px; align-items: center; }
+        .alert-error { background-color: rgba(239, 68, 68, 0.2); color: #fca5a5; border-left: 4px solid #ef4444; }
+        .alert-success { background-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; border-left: 4px solid #10b981; }
+
+
         body { background: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%); min-height: 100vh; padding: 2rem 1rem; position: relative; margin: 0; font-family: 'Inter', sans-serif; display: flex;}
         .main-content { margin-left: 70px; padding: 0 1.5rem; width: 100%; transition: all 0.3s ease; box-sizing: border-box; max-width: 1380px; margin: 0 auto;}
         
@@ -118,7 +150,7 @@
             <a class="menu-item" href="{{ url_for('configuracao') }}"><i class="fas fa-cog"></i><span>Configuração</span></a>
             {% endif %}
             <a class="menu-item" href="#" onclick="toggleTheme(event)"><i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span></a>
-            <a class="menu-item" href="{{ url_for('logout') }}" onclick="return confirm('Tem certeza que deseja sair?')"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
+            <a class="menu-item" href="#" onclick="abrirLogoutModal(event)"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
          </div>
     </div>
 
@@ -240,7 +272,6 @@
         
         let donutChart, trendChart;
 
-        // ==================== INICIALIZAÇÃO ====================
         document.addEventListener('DOMContentLoaded', () => {
             const now = new Date();
             document.getElementById('lastUpdate').textContent = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -248,14 +279,12 @@
             updateStats();
             initCharts();
             carregarDadosDaTabela();
-            
-            // Segurança na Busca
+
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 e.target.value = e.target.value.replace(/[^a-zA-Z0-9À-ÿ\s\-#.:]/g, "");
             });
         });
 
-        // ==================== CARREGAR DADOS ====================
         function carregarDadosDaTabela() {
             const rows = document.querySelectorAll('.dado-row');
             rows.forEach((row, index) => {
@@ -271,24 +300,21 @@
             applyFilters();
         }
 
-        // ==================== MOTOR DE FILTRO, ORDENAÇÃO E PAGINAÇÃO ====================
         function applyFilters() {
             const termo = document.getElementById('searchInput').value.toLowerCase().trim();
             const cat = document.getElementById('categoryFilter').value;
             const sort = document.getElementById('sortFilter').value;
 
-            // 1. Filtrar
             transacoesFiltradas = transacoesDB.filter(t => {
                 const matchBusca = t.descricao.toLowerCase().includes(termo);
                 const matchCat = (cat === 'all') || (t.categoria === cat);
                 return matchBusca && matchCat;
             });
 
-            // 2. Ordenar
             transacoesFiltradas.sort((a, b) => {
                 if (sort === 'maior') return b.valor - a.valor;
                 if (sort === 'menor') return a.valor - b.valor;
-                if (sort === 'recentes') return a.id_original - b.id_original; // Assumindo que o banco manda os recentes primeiro
+                if (sort === 'recentes') return a.id_original - b.id_original; 
                 if (sort === 'antigos') return b.id_original - a.id_original;
                 return 0;
             });
@@ -315,78 +341,64 @@
             let somaVisivel = 0;
             transacoesFiltradas.forEach(t => somaVisivel += t.valor);
 
-            // ==========================================================
-            // FUNÇÃO BLINDADA: Remove acentos e espaços invisíveis
-            // ==========================================================
             const normalizar = (texto) => {
                 if (!texto) return '';
-                // Transforma "Serviços" em "servicos" para não dar erro
                 return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
             };
 
             itensPagina.forEach(t => {
                 const catStr = normalizar(t.categoria);
                 const statusStr = normalizar(t.status);
-
-                // ==========================================================
-                // 1. CORES DAS CATEGORIAS
-                // ==========================================================
                 let catBg, catColor, catBorder;
                 
                 if (catStr.includes('venda')) {
-                    // AZUL para Vendas
+
                     catBg = 'rgba(59, 130, 246, 0.15)'; 
                     catColor = '#3b82f6';
                     catBorder = 'rgba(59, 130, 246, 0.4)';
                 } else if (catStr.includes('servico') || catStr.includes('conserto')) {
-                    // ROXO para Serviços
+
                     catBg = 'rgba(168, 85, 247, 0.15)'; 
                     catColor = '#a855f7';
                     catBorder = 'rgba(168, 85, 247, 0.4)';
                 } else if (catStr.includes('orcamento')) {
-                    // LARANJA para Orçamentos
+
                     catBg = 'rgba(245, 158, 11, 0.15)'; 
                     catColor = '#f59e0b';
                     catBorder = 'rgba(245, 158, 11, 0.4)';
                 } else {
-                    // CINZA Padrão para outros
+ 
                     catBg = 'rgba(100, 116, 139, 0.15)'; 
                     catColor = '#94a3b8';
                     catBorder = 'rgba(100, 116, 139, 0.3)';
                 }
 
-                // ==========================================================
-                // 2. CORES DOS STATUS
-                // ==========================================================
                 let statusBg, statusColor, statusBorder;
                 
                 if (statusStr === 'concluido' || statusStr === 'aprovado' || statusStr === 'finalizado') {
-                    // VERDE (Sucesso)
+
                     statusBg = 'rgba(16, 185, 129, 0.15)'; 
                     statusColor = '#10b981';
                     statusBorder = 'rgba(16, 185, 129, 0.4)';
                 } 
                 else if (statusStr === 'pendente' || statusStr === 'recebido' || statusStr.includes('andamento')) {
-                    // AMARELO (Em espera)
+
                     statusBg = 'rgba(234, 179, 8, 0.15)'; 
                     statusColor = '#eab308';
                     statusBorder = 'rgba(234, 179, 8, 0.4)';
                 } 
                 else if (statusStr === 'reprovado' || statusStr === 'cancelado') {
-                    // VERMELHO (Falha)
+
                     statusBg = 'rgba(239, 68, 68, 0.15)'; 
                     statusColor = '#ef4444';
                     statusBorder = 'rgba(239, 68, 68, 0.4)';
                 } else {
-                    // CINZA Padrão
+  
                     statusBg = 'rgba(100, 116, 139, 0.15)'; 
                     statusColor = '#94a3b8';
                     statusBorder = 'rgba(100, 116, 139, 0.3)';
                 }
 
-                // ==========================================================
-                // 3. MONTA A LINHA (Usando !important para forçar as cores)
-                // ==========================================================
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>
@@ -445,7 +457,6 @@
             container.appendChild(btnNext);
         }
 
-        // ==================== CARDS E GRÁFICOS ====================
         function updateStats() {
             const totalGeral = totalVendas + totalServicos;
             const ticketMedio = qtdTransacoes > 0 ? (totalGeral / qtdTransacoes) : 0;
@@ -470,10 +481,7 @@
         }
 
         function initCharts() {
-            // Cor adaptável para o tema (cinza claro para modo claro, branco pro escuro)
             const textColor = document.documentElement.getAttribute('data-theme') === 'dark' ? '#94a3b8' : '#64748b';
-
-            // 1. Gráfico Donut
             const ctxDonut = document.getElementById('donutChart').getContext('2d');
             donutChart = new Chart(ctxDonut, {
                 type: 'doughnut',
@@ -493,7 +501,6 @@
                 }
             });
 
-            // 2. Gráfico de Linha
             const ctxTrend = document.getElementById('trendChart').getContext('2d');
             const labelsGrafico = JSON.parse('{{ labels_dias | tojson | safe }}' || '["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Hoje"]');
             const dadosGrafico = JSON.parse('{{ valores_dias | tojson | safe }}' || '[0, 0, 0, 0, 0, 0, 0]');
@@ -522,7 +529,6 @@
             });
         }
 
-        // ==================== TEMA ESCURO (Sincronizado) ====================
         function toggleTheme(event) {
             if(event) event.preventDefault();
             const html = document.documentElement;
@@ -541,8 +547,6 @@
                 if(ic) ic.className = 'fas fa-sun'; 
                 if(tt) tt.textContent = 'Tema Claro';
             }
-            
-            // Força a recarga rápida para atualizar as cores dos gráficos do Chart.js
             setTimeout(() => { window.location.reload(); }, 100);
         }
 
@@ -559,7 +563,6 @@
             }
         });
 
-        // ==================== EXPORTAR ====================
         function exportarTabela() {
             if(transacoesFiltradas.length === 0) {
                 alert("Nenhum dado para exportar!"); return;
@@ -573,6 +576,31 @@
             link.href = URL.createObjectURL(blob);
             link.download = "extrato_financeiro.csv";
             link.click();
+        }
+    </script>
+
+    <div class="logout-modal-overlay" id="logoutModal" onclick="if(event.target === this) fecharLogoutModal();">
+        <div class="logout-modal-box">
+            <div class="logout-icon">
+                <i class="fas fa-sign-out-alt"></i>
+            </div>
+            <h3>Encerrar Sessão</h3>
+            <p>Tem certeza que deseja sair?</p>
+            <div class="logout-actions">
+                <button type="button" class="btn-cancel-logout" onclick="fecharLogoutModal()">Cancelar</button>
+                <a href="{{ url_for('logout') }}" class="btn-confirm-logout">Sim, Sair</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function abrirLogoutModal(event) {
+            if(event) event.preventDefault();
+            document.getElementById('logoutModal').classList.add('active');
+        }
+
+        function fecharLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
         }
     </script>
 </body>
