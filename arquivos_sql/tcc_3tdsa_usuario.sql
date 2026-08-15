@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `tcc_3tdsa` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `tcc_3tdsa`;
 -- MySQL dump 10.13  Distrib 8.0.46, for macos15 (arm64)
 --
 -- Host: 127.0.0.1    Database: tcc_3tdsa
@@ -23,7 +21,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '9e45e8cc-8c32-11f1-bd08-2e2d5524b624:1-967';
 
 --
 -- Table structure for table `usuario`
@@ -49,7 +47,7 @@ CREATE TABLE `usuario` (
   `foto_perfil` varchar(255) DEFAULT 'default_avatar.png',
   PRIMARY KEY (`id_usuario`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -58,7 +56,7 @@ CREATE TABLE `usuario` (
 
 LOCK TABLES `usuario` WRITE;
 /*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
-INSERT INTO `usuario` VALUES (2,'1234','tdsatcc@gmail.com','Funcionário','',0.00,'',2,1,1,0,NULL,NULL,'avatar_tdsatcc.pdf'),(4,'123','pvd110x@gmail.com','Administrador',NULL,NULL,NULL,1,1,0,0,NULL,NULL,'user_pvd110x@gmail.com_Papeis De Parede Computador.jpeg'),(7,'<script>alert(\'FALHA DE SEGURA','abc@gmail.com','Administrador','scriptalert(\'FALHA DE SEGURANÇA!\')script',786876.00,'897979879878979879',1,1,0,0,NULL,NULL,'default_avatar.png');
+INSERT INTO `usuario` VALUES (8,'1234','exemplo123@gmail.com','Administrador','TI',0.00,'819887360',1,1,0,0,NULL,NULL,'user_exemplo123@gmail.com_Design_sem_nome-removebg-preview.png');
 /*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
@@ -72,4 +70,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-08-06 11:21:49
+-- Dump completed on 2026-08-14 22:35:32
