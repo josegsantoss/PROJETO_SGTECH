@@ -246,7 +246,7 @@
             </h3>
             <p style="margin: 0 0 8px 0;"><i class="fas fa-envelope"></i> {{ session.get('usuario_logado') }}</p>
             <div style="font-size: 0.75rem; background: rgba(255,255,255,0.15); padding: 3px 10px; border-radius: 6px; display: inline-block; font-weight: 600;">
-                <i class="fas fa-building"></i> {{ config_global.empresa_nome | default('TechManager', true) }}
+                <i class="fas fa-building"></i> {{ config_global.empresa_nome | default('SGTech', true) }}
             </div>
         </div>
         
@@ -345,7 +345,7 @@
                     {% else %}
                     <div class="notif-empty">
                         <i class="far fa-bell-slash"></i>
-                        <span>Tudo tranquilo! Nenhuma notificação nova no momento.</span>
+                        <span>Nenhuma notificação nova no momento.</span>
                     </div>
                     {% endfor %}
                 </div>

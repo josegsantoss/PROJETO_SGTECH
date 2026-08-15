@@ -18,19 +18,26 @@
     <style>
         /* ==================== VARIÁVEIS DE TEMA (CLARO / ESCURO) ==================== */
         :root {
-            --bg-body: #f0f4f8;
-            --bg-card: #ffffff;
+            /* Fundo geral da página (Cor azul da sua imagem) */
+            --bg-body: #1c3b5e; 
+            
+            /* Fundo dos cartões/containers (BRANCO) */
+            --bg-card: #ffffff; 
+            
+            /* Cores de texto originais para ficarem legíveis dentro dos cartões brancos */
             --border-color: #e2e8f0;
             --text-main: #1e293b;
             --text-muted: #64748b;
             --input-bg: #f8fafc;
             --input-border: #cbd5e1;
+            
             --accent-blue: #3b82f6;
             --accent-blue-hover: #2563eb;
             --accent-blue-light: #eff6ff;
             --accent-green: #10b981;
             --accent-red: #ef4444;
             --accent-red-light: #fee2e2;
+            
             --header-gradient: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%);
             --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
@@ -90,10 +97,53 @@
         }
 
         /* ==================== ABAS (TABS) ==================== */
-        .tabs-header { display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 2px; overflow-x: auto; }
-        .tab-btn { padding: 14px 20px; border: none; background: transparent; font-size: 0.95rem; font-weight: 700; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; white-space: nowrap; border-radius: 8px 8px 0 0; }
-        .tab-btn:hover { color: var(--accent-blue); background: var(--accent-blue-light); }
-        .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: var(--accent-blue-light); }
+        /* ==================== ABAS (TABS) ==================== */
+        .tabs-header { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 24px; 
+            padding: 8px; 
+            background: var(--bg-card); 
+            border: 1px solid var(--border-color); 
+            border-radius: 16px; 
+            overflow-x: auto; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .tab-btn { 
+            padding: 12px 20px; 
+            border: 1px solid var(--border-color); 
+            background: var(--input-bg); 
+            font-size: 0.95rem; 
+            font-weight: 700; 
+            color: var(--text-main); 
+            cursor: pointer; 
+            transition: all 0.25s ease; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            white-space: nowrap; 
+            border-radius: 10px; 
+        }
+        .tab-btn i {
+            color: var(--accent-blue);
+            font-size: 1rem;
+            transition: color 0.25s ease;
+        }
+        .tab-btn:hover { 
+            background: var(--table-hover); 
+            color: var(--accent-blue); 
+            border-color: var(--accent-blue);
+            transform: translateY(-1px);
+        }
+        .tab-btn.active { 
+            color: #ffffff !important; 
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important; 
+            border-color: #3b82f6 !important;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+        }
+        .tab-btn.active i {
+            color: #ffffff !important;
+        }
         .tab-content { display: none; animation: fadeIn 0.35s ease-in-out; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
@@ -207,6 +257,7 @@
         @media (max-width: 1024px) {
             .pdv-grid { grid-template-columns: 1fr; }
         }
+
     </style>
 </head>
 <body>
@@ -227,7 +278,7 @@
             </h3>
             <p style="margin: 0 0 8px 0;"><i class="fas fa-envelope"></i> {{ session.get('usuario_logado') }}</p>
             <div style="font-size: 0.75rem; background: rgba(255,255,255,0.15); padding: 3px 10px; border-radius: 6px; display: inline-block; font-weight: 600;">
-                <i class="fas fa-building"></i> {{ config_global.empresa_nome | default('TechManager', true) }}
+                <i class="fas fa-building"></i> {{ config_global.empresa_nome | default('SGTech', true) }}
             </div>
         </div>
         

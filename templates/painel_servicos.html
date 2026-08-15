@@ -21,19 +21,19 @@
             --bg-primary: #f8fafc; 
             --bg-secondary: #f1f5f9; 
             --card-bg: #ffffff; 
-            --card-border: #e2e8f0;
+            --card-border: #cbd5e1;
             --accent-blue: #3b82f6; 
             --accent-green: #10b981; 
-            --text-main: #1e293b; 
-            --text-muted: #64748b; 
-            --input-bg: #f8fafc; 
+            --text-main: #0f172a; 
+            --text-muted: #475569; 
+            --input-bg: #f1f5f9; 
             --input-border: #cbd5e1;
             --table-th-bg: #f8fafc;
-            --hover-bg: #f1f5f9;
+            --hover-bg: #e2e8f0;
             --body-bg: linear-gradient(135deg, #1e4f8a 0%, #0c2b4f 100%);
             --btn-neutral-bg: #f1f5f9;
             --btn-neutral-hover: #e2e8f0;
-            --btn-neutral-text: #475569;
+            --btn-neutral-text: #334155;
             --modal-overlay: rgba(15, 23, 42, 0.5);
         }
 
@@ -55,7 +55,6 @@
             --modal-overlay: rgba(15, 23, 42, 0.85);
         }
 
-        /* CORREÇÃO DO LAYOUT: Ocupa toda a tela, tira margin e padding que bugavam o design */
         html, body {
             overscroll-behavior: none; 
             background: var(--body-bg) !important; 
@@ -87,12 +86,55 @@
         .header-title-box { display: flex; align-items: center; gap: 16px; }
         .header-icon-badge { width: 52px; height: 52px; border-radius: 14px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center; color: var(--accent-blue); font-size: 1.5rem; }
         .header-text h1 { font-size: 1.5rem; font-weight: 800; margin: 0; letter-spacing: -0.5px; color: var(--text-main); text-transform: uppercase; }
-        .header-text span { color: var(--text-muted); font-size: 0.875rem; font-weight: 500; }
+        .header-text span { color: var(--text-muted); font-size: 0.875rem; font-weight: 600; }
 
-        .tabs-header { display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 2px solid var(--card-border); padding-bottom: 2px; overflow-x: auto; }
-        .tab-btn { padding: 14px 20px; border: none; background: transparent; font-size: 0.95rem; font-weight: 700; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s ease; display: flex; align-items: center; gap: 8px; white-space: nowrap; border-radius: 8px 8px 0 0; }
-        .tab-btn:hover { color: var(--accent-blue); background: rgba(59, 130, 246, 0.05); }
-        .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: rgba(59, 130, 246, 0.1); }
+        /* ==================== ABAS (TABS) REFORMULADAS - ALTO CONTRASTE ==================== */
+        .tabs-header { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 24px; 
+            padding: 8px; 
+            background: var(--card-bg); 
+            border: 1px solid var(--card-border); 
+            border-radius: 16px; 
+            overflow-x: auto; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .tab-btn { 
+            padding: 12px 20px; 
+            border: 1px solid var(--card-border); 
+            background: var(--input-bg); 
+            font-size: 0.95rem; 
+            font-weight: 700; 
+            color: var(--text-main); 
+            cursor: pointer; 
+            transition: all 0.25s ease; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            white-space: nowrap; 
+            border-radius: 10px; 
+        }
+        .tab-btn i {
+            color: var(--accent-blue);
+            font-size: 1rem;
+            transition: color 0.25s ease;
+        }
+        .tab-btn:hover { 
+            background: var(--hover-bg); 
+            color: var(--accent-blue); 
+            border-color: var(--accent-blue);
+            transform: translateY(-1px);
+        }
+        .tab-btn.active { 
+            color: #ffffff !important; 
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important; 
+            border-color: #3b82f6 !important;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+        }
+        .tab-btn.active i {
+            color: #ffffff !important;
+        }
         .tab-content { display: none; animation: fadeIn 0.35s ease-in-out; }
         .tab-content.active { display: block; }
 
@@ -111,7 +153,7 @@
         .form-group-pro { display: flex; flex-direction: column; gap: 6px; }
         .span-1 { grid-column: span 1; } .span-2 { grid-column: span 2; } .span-3 { grid-column: span 3; } .span-4 { grid-column: span 4; }
         .form-group-pro label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
-        .form-group-pro input, .form-group-pro select, .form-group-pro textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--input-border); border-radius: 10px; font-size: 0.95rem; background: var(--input-bg); color: var(--text-main); font-weight: 500; outline: none; box-sizing: border-box; transition: all 0.2s ease; font-family: 'Inter', sans-serif; }
+        .form-group-pro input, .form-group-pro select, .form-group-pro textarea { width: 100%; padding: 12px 14px; border: 1px solid var(--input-border); border-radius: 10px; font-size: 0.95rem; background: var(--input-bg); color: var(--text-main); font-weight: 600; outline: none; box-sizing: border-box; transition: all 0.2s ease; font-family: 'Inter', sans-serif; }
         .form-group-pro input, .form-group-pro select { height: 46px; }
         .form-group-pro textarea { resize: vertical; min-height: 90px; }
         .form-group-pro input:focus, .form-group-pro select:focus, .form-group-pro textarea:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
@@ -139,7 +181,7 @@
         .table-header-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 15px; }
         .search-pro { position: relative; width: 100%; }
         .search-pro i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1rem; }
-        .search-pro input { width: 100%; padding: 12px 16px 12px 44px; border-radius: 10px; border: 1px solid var(--input-border); font-size: 0.9rem; outline: none; transition: 0.2s; background: var(--input-bg); color: var(--text-main); font-weight: 500; box-sizing: border-box; font-family: 'Inter', sans-serif; height: 44px; }
+        .search-pro input { width: 100%; padding: 12px 16px 12px 44px; border-radius: 10px; border: 1px solid var(--input-border); font-size: 0.9rem; outline: none; transition: 0.2s; background: var(--input-bg); color: var(--text-main); font-weight: 600; box-sizing: border-box; font-family: 'Inter', sans-serif; height: 44px; }
         .search-pro input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); background: var(--card-bg); }
         .table-responsive { overflow-x: auto; border-radius: 10px; border: 1px solid var(--card-border); }
         table { width: 100%; border-collapse: collapse; }
@@ -273,7 +315,6 @@
             {% if session.get('nivel') == 1 or session.get('nivel') == '1' or session.get('cargo') == 'Administrador' %}
             <a class="menu-item" href="{{ url_for('configuracao') }}"><i class="fas fa-cog"></i><span>Configuração</span></a>
             {% endif %}
-            
             <a class="menu-item" href="#" onclick="toggleTheme(event)"><i class="fas fa-moon" id="theme-icon"></i><span id="theme-text">Tema Escuro</span></a>
             <a class="menu-item" href="#" onclick="abrirLogoutModal(event)"><i class="fas fa-sign-out-alt"></i><span>Sair</span></a>
          </div>
@@ -501,7 +542,7 @@
                 <form action="/atualizar_andamento" method="POST" onsubmit="return prepararLaudo();">
                     
                     <div class="vincular-os-box" style="border-color: var(--accent-green); background: rgba(16, 185, 129, 0.08);">
-                        <label style="color: #6ee7b7;"><i class="fas fa-search"></i> Buscar Orçamento Existente</label>
+                        <label style="color: #10b981;"><i class="fas fa-search"></i> Buscar Orçamento Existente</label>
                         <button type="button" class="search-trigger-btn" style="border-color: var(--accent-green);" onclick="abrirModalBuscaOrcamentos()">
                             <span id="orcamentoSelecionadoTexto" style="color: var(--text-muted);">Clique aqui para buscar na base de orçamentos...</span>
                             <i class="fas fa-search" style="color: var(--accent-green);"></i>
@@ -743,7 +784,6 @@
 
         let clientesDadosCompletos = [];
 
-        // Função utilitária para pegar os dados do cliente (doc e tel)
         function getClienteExtraInfo(nomeCliente) {
             if (!nomeCliente) return { doc: '', tel: '', cep: '', cidade: '', estado: '' };
             const searchName = String(nomeCliente).toLowerCase();
@@ -856,7 +896,7 @@
             const startIdx = (paginaAtualEquip - 1) * itensPorPaginaEquip; const itens = equipamentosFiltrados.slice(startIdx, startIdx + itensPorPaginaEquip);
             itens.forEach(serv => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td><strong style="color: var(--accent-blue);">#${serv.id}</strong></td><td><strong style="font-family: monospace; color: var(--text-main);">${serv.serie || 'N/I'}</strong></td><td><strong>${serv.cliente}</strong></td><td>${serv.equipamento}</td><td><span class="status-badge status-recebido">${serv.tipo.toUpperCase()}</span></td><td><button type="button" class="btn-acao edit-btn" style="padding: 4px 10px; font-size: 0.8rem; background: #334155; color: white;" onclick="editarEquipamentoForm('${serv.id}', '${serv.cliente}', '${serv.tipo}', '${serv.equipamento}', '${serv.serie}', '${serv.prioridade}')"><i class="fas fa-edit"></i> Editar</button></td>`;
+                tr.innerHTML = `<td><strong style="color: var(--accent-blue);">#${serv.id}</strong></td><td><strong style="font-family: monospace; color: var(--text-main);">${serv.serie || 'N/I'}</strong></td><td><strong>${serv.cliente}</strong></td><td>${serv.equipamento}</td><td><span class="status-badge status-recebido">${serv.tipo.toUpperCase()}</span></td><td><button type="button" class="btn-acao edit-btn" style="padding: 4px 10px; font-size: 0.8rem; background: var(--btn-neutral-bg); color: var(--text-main);" onclick="editarEquipamentoForm('${serv.id}', '${serv.cliente}', '${serv.tipo}', '${serv.equipamento}', '${serv.serie}', '${serv.prioridade}')"><i class="fas fa-edit"></i> Editar</button></td>`;
                 tbody.appendChild(tr);
             });
             document.getElementById('equipamentosSummary').innerHTML = `Mostrando ${startIdx + 1} a ${Math.min(startIdx + itensPorPaginaEquip, equipamentosFiltrados.length)} de ${equipamentosFiltrados.length}`;
@@ -892,9 +932,7 @@
             document.getElementById('equipamentoSelecionadoTexto').innerHTML = 'Clique aqui para buscar um equipamento do acervo...';
         }
 
-        // ==================== LÓGICA MODAIS GIGANTES DE BUSCA ====================
-        
-        // --- Modal Equipamentos (Aba 2) ---
+        // ==================== LÓGICA MODAIS DE BUSCA ====================
         function abrirModalBuscaEquipamentos() {
             document.getElementById('modalSearchEquipamentos').classList.add('active');
             document.getElementById('inputSearchEquipModal').value = '';
@@ -973,7 +1011,7 @@
             fecharModalBuscaEquipamentos();
         }
 
-        // --- Modal Orçamentos (Aba 3) ---
+        // --- Modal Orçamentos ---
         function abrirModalBuscaOrcamentos() {
             document.getElementById('modalSearchOrcamentos').classList.add('active');
             document.getElementById('inputSearchOrcModal').value = '';
@@ -1051,7 +1089,7 @@
             fecharModalBuscaOrcamentos();
         }
 
-        // ==================== MOTOR DE IMPRESSÃO TÉRMICA (CUPOM BOBINA) ====================
+        // ==================== IMPRESSÃO TÉRMICA ====================
         function getDataHoraAtual() {
             const now = new Date();
             const hh = String(now.getHours()).padStart(2, '0');
@@ -1145,7 +1183,6 @@
             setTimeout(() => { win.print(); win.close(); }, 500);
         }
 
-        // ================= IMPRESSÃO: ABA 2 (NOVO ORÇAMENTO) =================
         function imprimirOrcamentoPDF() {
             const clienteNome = document.getElementById('clienteNome').value.trim();
             const equip = document.getElementById('equipamentoNome').value.trim();
@@ -1179,16 +1216,13 @@
             abrirJanelaImpressao(conteudoCupom);
         }
 
-        // ================= IMPRESSÃO: ABA 3 (EDIÇÃO / LAUDO) =================
         function imprimirOrcamentoAndamentoCupom() {
             const idSelecionado = document.getElementById('selectAndamento').value;
             if (!idSelecionado) { alert("Selecione ou busque um orçamento primeiro para poder imprimir a via!"); return; }
             imprimirCupomOrcamento(null, idSelecionado);
         }
 
-        // ================= IMPRESSÃO: ABA 4 (VISÃO GERAL CARDS) =================
         function imprimirCupomOrcamento(e, id) {
-            // Evita que ao clicar no botão o modal do card abra
             if (e) { e.preventDefault(); e.stopPropagation(); }
 
             const orc = orcamentosDados.find(o => String(o.id) === String(id));
@@ -1223,6 +1257,92 @@
             });
 
             abrirJanelaImpressao(conteudoCupom);
+        }
+
+        function imprimirOrcamentoAndamentoPDF() {
+            const idSelecionado = document.getElementById('selectAndamento').value;
+            if (!idSelecionado) { alert("Selecione ou busque um orçamento primeiro para poder imprimir o laudo!"); return; }
+            
+            const orc = orcamentosDados.find(o => String(o.id) === String(idSelecionado));
+            if(!orc) { alert("Erro: Orçamento não encontrado."); return; }
+
+            const clienteNome = orc.cliente_nome || 'Não informado';
+            const cli = clientesDadosCompletos.find(c => String(c.nome_cliente || '').toLowerCase() === clienteNome.toLowerCase()) || {};
+            const doc = cli.documento || 'Não informado';
+            const tel = cli.celular || cli.telefone || 'Não informado';
+            const email = cli.email || 'Não informado';
+            const end = cli.endereco ? `${cli.endereco}, ${cli.cidade || ''} - ${cli.estado || ''}`.replace(/,\s*-/, ' -') : 'Não informado';
+
+            const total = "R$ " + (orc.total_geral || 0).toFixed(2).replace('.', ',');
+            const equip = orc.equipamento || 'Não informado';
+            const serie = orc.numero_serie || 'Não informado';
+            
+            const relato = document.getElementById('laudo_relato').value.trim();
+            const inicial = document.getElementById('laudo_inicial').value.trim();
+            const encontrados = document.getElementById('laudo_encontrados').value.trim();
+            const executados = document.getElementById('laudo_executados').value.trim();
+            
+            let laudoHTML = "";
+            if(relato) laudoHTML += `<p><strong style="color: #1e4f8a;">Relato do Cliente:</strong><br>${relato.replace(/\n/g, '<br>')}</p>`;
+            if(inicial) laudoHTML += `<p><strong style="color: #1e4f8a;">Situação Inicial / Problema:</strong><br>${inicial.replace(/\n/g, '<br>')}</p>`;
+            if(encontrados) laudoHTML += `<p><strong style="color: #1e4f8a;">Problemas Encontrados (Técnico):</strong><br>${encontrados.replace(/\n/g, '<br>')}</p>`;
+            if(executados) laudoHTML += `<p><strong style="color: #1e4f8a;">Serviços Executados / Solução:</strong><br>${executados.replace(/\n/g, '<br>')}</p>`;
+
+            if(laudoHTML === "") laudoHTML = "<p>Sem laudo ou avaliação detalhada registrada.</p>";
+
+            const dataAtual = new Date().toLocaleDateString('pt-BR');
+            const dataValidade = new Date(); dataValidade.setDate(dataValidade.getDate() + 15);
+
+            const infoLoja = {
+                nome: "{{ config_global.empresa_nome | default('NOME DA LOJA', true) }}",
+                endereco: "{{ config_global.empresa_endereco | default('Endereço não cadastrado nas configurações', true) }}",
+                telefone: "{{ config_global.empresa_telefone | default('(00) 0000-0000', true) }}",
+                cnpj: "{{ config_global.empresa_cnpj | default('00.000.000/0001-00', true) }}"
+            };
+
+            const win = window.open('', '', 'width=850,height=950');
+            win.document.write(`
+                <html><head><title>Laudo Técnico e Orçamento</title><style>
+                    body { font-family: 'Arial', sans-serif; padding: 40px; font-size: 14px; color: #333; line-height: 1.5; }
+                    .header { text-align: center; margin-bottom: 40px; border-bottom: 2px solid #1e4f8a; padding-bottom: 20px; }
+                    .header h1 { margin: 0; color: #1e4f8a; font-size: 24px; text-transform: uppercase; }
+                    .header p { margin: 5px 0 0 0; color: #555; }
+                    .title-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+                    .title-row h2 { color: #1e4f8a; margin: 0; font-size: 20px; }
+                    .section { margin-bottom: 25px; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+                    .section-title { font-weight: bold; background: #f8fafc; padding: 10px 15px; border-bottom: 1px solid #e2e8f0; color: #1e4f8a; text-transform: uppercase; font-size: 13px; }
+                    .section-content { padding: 15px; }
+                    .row { display: flex; justify-content: space-between; margin-bottom: 8px; border-bottom: 1px dashed #f1f5f9; padding-bottom: 6px; }
+                    .row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+                    .bold { font-weight: bold; color: #1e293b; }
+                    .total-box { text-align: right; font-size: 22px; font-weight: bold; color: #10b981; margin-top: 20px; padding: 20px; border: 2px solid #10b981; border-radius: 8px; background: #ecfdf5;}
+                    .footer { text-align: center; margin-top: 50px; color: #94a3b8; font-size: 12px; }
+                    .signature-area { display: flex; justify-content: space-around; margin-top: 60px; }
+                    .signature-box { text-align: center; width: 40%; }
+                    .signature-line { border-top: 1px solid #1e293b; margin-bottom: 10px; }
+                </style></head><body>
+                    <div class="header"><h1>${infoLoja.nome}</h1><p>CNPJ: ${infoLoja.cnpj} | Contato: ${infoLoja.telefone}</p><p>${infoLoja.endereco}</p></div>
+                    <div class="title-row"><h2>LAUDO TÉCNICO E ORÇAMENTO (Nº ${orc.numero_orcamento})</h2><div style="text-align: right; color: #64748b;"><p style="margin:0;">Emissão: <strong>${dataAtual}</strong></p><p style="margin:0;">Válido até: <strong>${dataValidade.toLocaleDateString('pt-BR')}</strong></p></div></div>
+                    <div class="section"><div class="section-title">DADOS DO CLIENTE</div><div class="section-content">
+                            <div class="row"><span class="bold">Nome/Razão Social:</span> <span>${clienteNome.toUpperCase()}</span></div>
+                            <div class="row"><span class="bold">CPF/CNPJ:</span> <span>${doc}</span></div>
+                            <div class="row"><span class="bold">Telefone/Celular:</span> <span>${tel}</span></div>
+                            <div class="row"><span class="bold">E-mail:</span> <span>${email}</span></div>
+                            <div class="row"><span class="bold">Endereço Completo:</span> <span>${end.toUpperCase()}</span></div>
+                        </div></div>
+                    <div class="section"><div class="section-title">DETALHES DO EQUIPAMENTO</div><div class="section-content">
+                            <div class="row"><span class="bold">Equipamento/Modelo:</span> <span>${equip.toUpperCase()}</span></div>
+                            <div class="row"><span class="bold">Número de Série:</span> <span>${serie.toUpperCase()}</span></div>
+                        </div></div>
+                    <div class="section"><div class="section-title">PARECER TÉCNICO E DIAGNÓSTICO</div><div class="section-content" style="font-size: 13px;">
+                            ${laudoHTML}
+                        </div></div>
+                    <div class="total-box">VALOR TOTAL: ${total}</div>
+                    <div class="signature-area"><div class="signature-box"><div class="signature-line"></div><p class="bold">Assinatura da Empresa</p></div><div class="signature-box"><div class="signature-line"></div><p class="bold">Assinatura do Cliente</p></div></div>
+                    <div class="footer">Documento gerado pelo sistema corporativo TechManager.</div>
+                </body></html>
+            `);
+            win.document.close(); setTimeout(() => { win.print(); }, 500);
         }
 
         /* ----- ABA 3 e 4: GESTÃO & LAUDO DETALHADO ----- */

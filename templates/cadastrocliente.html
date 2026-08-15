@@ -186,7 +186,7 @@
             </h3>
             <p style="margin: 0 0 8px 0;"><i class="fas fa-envelope"></i> {{ session.get('usuario_logado') }}</p>
             <div style="font-size: 0.75rem; background: rgba(255,255,255,0.15); padding: 3px 10px; border-radius: 6px; display: inline-block; font-weight: 600;">
-                <i class="fas fa-building"></i> {{ config_global.empresa_nome | default('TechManager', true) }}
+                <i class="fas fa-building"></i> {{ config_global.empresa_nome | default('SGTech', true) }}
             </div>
         </div>
         
@@ -588,7 +588,7 @@
           let csv = 'ID,Nome,CPF/CNPJ,Tipo,Data de Cadastro,Telefone,Celular,Email\n';
           clientes.forEach(c => { csv += `"${formatarId(c.id)}","${c.nome || ''}","${c.cpf || ''}","${c.tipo || ''}","${c.data_cadastro || c.dataCadastro || ''}","${c.telefone || ''}","${c.celular || ''}","${c.email || ''}"\n`; });
           const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], { type: 'text/csv;charset=utf-8;' });
-          const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'clientes_techmanager.csv'; link.click();
+          const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'clientes.csv'; link.click();
         }
 
         atualizarIdInput();

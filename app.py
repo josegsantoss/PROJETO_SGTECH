@@ -381,35 +381,53 @@ def salvar_config():
     conn = get_connection()
     cursor = conn.cursor(dictionary=True)
     try:
-        empresa_nome = request.form.get('empresaNome', '')
-        empresa_cnpj = request.form.get('empresaCnpj', '')
-        empresa_telefone = request.form.get('empresaTelefone', '')
-        empresa_email = request.form.get('empresaEmail', '')
-        empresa_endereco = request.form.get('empresaEndereco', '')
-        backup_freq = request.form.get('backupFrequencia', 'semanal')
+        # 1. Pega os valores do formulário com os nomes corretos do HTML
+        empresa_nome = request.form.get('empresa_nome', '')
+        empresa_cnpj = request.form.get('empresa_cnpj', '')
+        empresa_telefone = request.form.get('empresa_telefone', '')
+        empresa_email = request.form.get('empresa_email', '')
+        empresa_endereco = request.form.get('empresa_endereco', '')
+        backup_freq = request.form.get('backup_frequencia', 'semanal')
 
-        notificacoes = 1 if request.form.get('notificacoesToggle') else 0
-        relatorios = 1 if request.form.get('relatoriosToggle') else 0
-        two_factor = 1 if request.form.get('twoFactorToggle') else 0
+        notificacoes = 1 if request.form.get('notificacoes_ativas') else 0
+        relatorios = 1 if request.form.get('relatorios_ativos') else 0
+        two_factor = 1 if request.form.get('two_factor_ativo') else 0
 
-        cursor.execute('''
-            UPDATE configuracoes 
-            SET empresa_nome=%s, empresa_cnpj=%s, empresa_telefone=%s,
-                empresa_email=%s, empresa_endereco=%s, backup_frequencia=%s
-            WHERE id = 1
-        ''', (empresa_nome, empresa_cnpj, empresa_telefone, empresa_email, empresa_endereco, backup_freq))
+        # 2. Verifica se a configuração (id=1) já existe no banco de dados
+        cursor.execute("SELECT id FROM configuracoes WHERE id = 1")
+        existe = cursor.fetchone()
 
-        cursor.execute('''
-            UPDATE usuario 
-            SET notificacoes_ativas=%s, relatorios_ativos=%s, two_factor_ativo=%s
-            WHERE email = %s
-        ''', (notificacoes, relatorios, two_factor, session['usuario_logado']))
+        if existe:
+            # Se existe, atualiza os dados (UPDATE)
+            cursor.execute('''
+                UPDATE configuracoes 
+                SET empresa_nome=%s, empresa_cnpj=%s, empresa_telefone=%s,
+                    empresa_email=%s, empresa_endereco=%s, backup_frequencia=%s,
+                    notificacoes_ativas=%s, relatorios_ativos=%s, two_factor_ativo=%s
+                WHERE id = 1
+            ''', (empresa_nome, empresa_cnpj, empresa_telefone, empresa_email, empresa_endereco, backup_freq, notificacoes, relatorios, two_factor))
+        else:
+            # Se NÃO existe (tabela vazia), cria a primeira linha (INSERT)
+            cursor.execute('''
+                INSERT INTO configuracoes 
+                (id, empresa_nome, empresa_cnpj, empresa_telefone, empresa_email, empresa_endereco, backup_frequencia, notificacoes_ativas, relatorios_ativos, two_factor_ativo)
+                VALUES (1, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ''', (empresa_nome, empresa_cnpj, empresa_telefone, empresa_email, empresa_endereco, backup_freq, notificacoes, relatorios, two_factor))
 
-        session['empresa_nome'] = empresa_nome
+        # 3. Atualiza também as preferências na tabela do usuário logado
+        try:
+            cursor.execute('''
+                UPDATE usuario 
+                SET notificacoes_ativas=%s, relatorios_ativos=%s, two_factor_ativo=%s
+                WHERE email = %s
+            ''', (notificacoes, relatorios, two_factor, session['usuario_logado']))
+        except Exception as e_user:
+            print("Aviso: Falha ao atualizar preferências do usuário:", e_user)
 
-        senha_atual = request.form.get('senhaAtual', '').strip()
-        nova_senha = request.form.get('novaSenha', '').strip()
-        confirmar_senha = request.form.get('confirmarSenha', '').strip()
+        # 4. Tratamento de senha (se o usuário preencheu)
+        senha_atual = request.form.get('senha_atual', '').strip()
+        nova_senha = request.form.get('nova_senha', '').strip()
+        confirmar_senha = request.form.get('confirmar_senha', '').strip()
 
         if nova_senha or confirmar_senha or senha_atual:
             if not senha_atual:
@@ -430,12 +448,14 @@ def salvar_config():
             cursor.execute("UPDATE usuario SET senha = %s WHERE email = %s", (nova_senha, session['usuario_logado']))
             flash("Senha alterada com sucesso!", "success")
 
+        # 5. Salva no banco de dados e retorna
         conn.commit()
         flash("Configurações salvas com sucesso!", "success")
         
     except Exception as e:
         conn.rollback()
-        flash(f"Erro ao salvar: {e}", "error")
+        print(f"ERRO AO SALVAR CONFIGURAÇÕES: {e}")
+        flash("Erro ao salvar no banco de dados. Tente novamente.", "error")
     finally:
         cursor.close()
         conn.close()
@@ -534,7 +554,7 @@ def download_backup():
         buffer.seek(0)
         
         data_atual = datetime.now().strftime("%d-%m-%Y_%H-%M")
-        nome_ficheiro = f"backup_SGE_{data_atual}.json"
+        nome_ficheiro = f"backup_SGTEch_{data_atual}.json"
         
         return send_file(
             buffer, 
@@ -1450,7 +1470,7 @@ def enviar_email_relatorio(destinatario):
         html_content = f"""
         <html>
           <body style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
-            <h2 style="color: #2563eb; text-align: center;">📊 Relatório Semanal - TechManager</h2>
+            <h2 style="color: #2563eb; text-align: center;">📊 Relatório Semanal - SGTech</h2>
             <p style="text-align: center;">Gerado em {datetime.now().strftime('%d/%m/%Y %H:%M')}</p>
             
             <div style="background-color: #f8fafc; padding: 20px; border-radius: 12px; border-left: 6px solid #2563eb;">
@@ -1478,7 +1498,7 @@ def enviar_email_relatorio(destinatario):
         """
 
         msg = EmailMessage()
-        msg['Subject'] = '📊 Relatório Semanal - TechManager (Teste)'
+        msg['Subject'] = '📊 Relatório Semanal - SGTech (Teste)'
         msg['From'] = EMAIL_ADDRESS
         msg['To'] = destinatario
         msg.add_alternative(html_content, subtype='html')
@@ -1504,10 +1524,10 @@ def enviar_email_codigo(destinatario, codigo):
 
     try:
         msg = EmailMessage()
-        msg['Subject'] = 'Código de Verificação de Novo Dispositivo - SGE'
+        msg['Subject'] = 'Código de Verificação de Novo Dispositivo'
         msg['From'] = EMAIL_ADDRESS
         msg['To'] = destinatario
-        msg.set_content(f"Olá!\n\nDetectamos um acesso ao SGE a partir de um novo dispositivo.\n\nSeu código de segurança é: {codigo}\n\nSe não foi você, altere sua senha imediatamente.")
+        msg.set_content(f"Olá!\n\nDetectamos um acesso ao SGTech a partir de um novo dispositivo.\n\nSeu código de segurança é: {codigo}\n\nSe não foi você, altere sua senha imediatamente.")
 
         print(f"Tentando enviar código 2FA para {destinatario}...")
 
@@ -1519,6 +1539,79 @@ def enviar_email_codigo(destinatario, codigo):
 
     except Exception as e:
         print(f"❌ Erro ao enviar código 2FA: {e}")
+
+    # ===================== RECUPERAÇÃO DE SENHA =====================
+
+def enviar_email_recuperacao(destinatario, codigo):
+    EMAIL_ADDRESS = 'tdsatcc@gmail.com'
+    EMAIL_PASSWORD = 'fdvvxizyfqyersvg'
+    try:
+        msg = EmailMessage()
+        msg['Subject'] = 'Recuperação de Palavra-passe - SGTech'
+        msg['From'] = EMAIL_ADDRESS
+        msg['To'] = destinatario
+        msg.set_content(f"Olá!\n\nRecebemos um pedido para redefinir a sua palavra-passe no SGTech.\n\nO seu código de verificação é: {codigo}\n\nSe não fez este pedido, por favor ignore este e-mail.")
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+        print(f"✅ Email de recuperação enviado para: {destinatario}")
+    except Exception as e:
+        print(f"❌ Erro ao enviar e-mail de recuperação: {e}")
+
+@app.route('/api/recuperar_senha/enviar_codigo', methods=['POST'])
+def api_enviar_codigo():
+    email = request.json.get('email')
+    conn = get_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT email FROM usuario WHERE email = %s", (email,))
+        user = cursor.fetchone()
+        if user:
+            codigo = str(random.randint(100000, 999999))
+            session['reset_email'] = email
+            session['reset_codigo'] = codigo
+            enviar_email_recuperacao(email, codigo)
+        # Sempre retorna sucesso por segurança (para não revelar quais e-mails existem no sistema)
+        return jsonify({'status': 'success', 'msg': 'Se o e-mail estiver cadastrado, enviamos um código.'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'msg': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+@app.route('/api/recuperar_senha/verificar_codigo', methods=['POST'])
+def api_verificar_codigo():
+    codigo = request.json.get('codigo')
+    if 'reset_codigo' in session and session['reset_codigo'] == codigo:
+        session['reset_autorizado'] = True
+        return jsonify({'status': 'success'})
+    return jsonify({'status': 'error', 'msg': 'Código inválido ou expirado.'}), 400
+
+@app.route('/api/recuperar_senha/redefinir', methods=['POST'])
+def api_redefinir_senha():
+    if not session.get('reset_autorizado'):
+        return jsonify({'status': 'error', 'msg': 'Sessão expirada. Tente novamente.'}), 403
+    
+    nova_senha = request.json.get('nova_senha')
+    email = session.get('reset_email')
+    
+    if nova_senha and email:
+        conn = get_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute("UPDATE usuario SET senha = %s WHERE email = %s", (nova_senha, email))
+            conn.commit()
+            # Limpa as variáveis de sessão de segurança após a redefinição
+            session.pop('reset_email', None)
+            session.pop('reset_codigo', None)
+            session.pop('reset_autorizado', None)
+            return jsonify({'status': 'success', 'msg': 'Senha alterada com sucesso!'})
+        except Exception as e:
+            return jsonify({'status': 'error', 'msg': str(e)}), 500
+        finally:
+            cursor.close()
+            conn.close()
+    return jsonify({'status': 'error', 'msg': 'Dados inválidos.'}), 400
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
